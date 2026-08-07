@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Funga Hesabu (End of Day)" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+        <h3 class="font-bold text-lg text-slate-800 dark:text-white">{% translate "Funga Hesabu ya Siku (EOD Cash Reconciliation)" %}</h3>
+        <p class="text-xs text-slate-500">{% translate "Hesabu ya kurejelea makusanyo, disbursements, na fedha taslimu zilizopo leo." %}</p>
+    </div>
+
+    <div class="p-6 space-y-6">
+        <!-- Audit calculation metrics -->
+        <div class="bg-slate-50 dark:bg-slate-750 p-4 border rounded-lg space-y-3 text-sm">
+            <h4 class="font-bold text-brand-600 uppercase text-xs tracking-wider border-b pb-1.5">{% translate "Uchambuzi wa Kihesabu (System Computations)" %}</h4>
+            <div class="flex justify-between border-b pb-1">
+                <span class="text-slate-500">{% translate "1. Salio la Kufungulia (Opening Cash):" %}</span>
+                <span class="font-semibold text-slate-800 dark:text-white">TZS {{ opening_balance|localize }}</span>
+            </div>
+            <div class="flex justify-between border-b pb-1">
+                <span class="text-slate-500 text-green-600">{% translate "2. Makusanyo yote leo (Collections In):" %}</span>
+                <span class="font-semibold text-green-600">+ TZS {{ total_received|localize }}</span>
+            </div>
+            <div class="flex justify-between border-b pb-1">
+                <span class="text-slate-500 text-red-600">{% translate "3. Fedha zilizotoka leo (Disbursed Out):" %}</span>
+                <span class="font-semibold text-red-600">- TZS {{ total_disbursed|localize }}</span>
+            </div>
+            <div class="flex justify-between pt-1 font-bold">
+                <span>{% translate "4. Salio la kufungia (Calculated Closing):" %}</span>
+                <span class="text-slate-900 dark:text-white">TZS {{ calculated_closing|localize }}</span>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                <p class="text-xs text-red-600 mt-1 font-semibold">{{ field.errors.as_text }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="pt-4 flex justify-end gap-2 border-t">
+                <a href="{% url 'dashboard' %}" class="px-4 py-2 border rounded-lg text-sm font-semibold hover:bg-slate-100 transition">
+                    {% translate "Ghairi" %}
+                </a>
+                <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-sm transition">
+                    <i class="fa-solid fa-lock mr-1.5"></i>{% translate "Wasilisha EOD kwa Uhakiki" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

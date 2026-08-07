@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Portal ya Mteja" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Habari, " %}{{ user.get_full_name }}</h2>
+        <p class="text-slate-500">{% translate "Hapa unaweza kuona salio lako la mkopo, ratiba ya marejesho, na historia ya malipo yako binafsi." %}</p>
+    </div>
+
+    <!-- Active Loan Check -->
+    {% if active_loan %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Next payment alert card -->
+        <div class="md:col-span-1 p-6 bg-brand-900 text-white rounded-xl shadow-md border border-brand-800 flex flex-col justify-between">
+            <div class="space-y-4">
+                <p class="text-xs font-semibold uppercase tracking-widest text-brand-300">{% translate "Rejesho Linalofuata" %}</p>
+                {% if next_schedule %}
+                <div>
+                    <h3 class="text-3xl font-bold">TZS {{ next_schedule.installment_amount|localize }}</h3>
+                    <p class="text-xs text-brand-200 mt-1">{% translate "Mwisho wa Malipo (Due):" %} <span class="font-semibold">{{ next_schedule.due_date|date:"d M Y" }}</span></p>
+                </div>
+                {% else %}
+                <h3 class="text-xl font-bold">{% translate "Ratiba zote zimelipwa kikamilifu!" %}</h3>
+                {% endif %}
+            </div>
+
+            <div class="pt-4 mt-6 border-t border-brand-800 text-xs text-brand-200">
+                <p>{% translate "Loan ID:" %} <span class="font-semibold text-white">{{ active_loan.loan_id }}</span></p>
+            </div>
+        </div>
+
+        <!-- Balance metrics cards -->
+        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-sm">
+                <div class="space-y-1">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{% translate "Salio la Mkopo sasa" %}</p>
+                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">TZS {{ active_loan.balance|localize }}</h3>
+                    <p class="text-xs text-slate-400">{% translate "Jumla ya Mkopo: TZS " %}{{ active_loan.total_repayable|localize }}</p>
+                </div>
+                <div class="p-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg">
+                    <i class="fa-solid fa-wallet text-xl"></i>
+                </div>
+            </div>
+
+            <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-sm">
+                <div class="space-y-1">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{% translate "Kiasi Kilicholipwa (Paid)" %}</p>
+                    <h3 class="text-2xl font-bold text-green-600">TZS {{ total_paid|localize }}</h3>
+                    <p class="text-xs text-slate-400">{% translate "Riba ya Mkopo: " %}{{ active_loan.interest_rate }}%</p>
+                </div>
+                <div class="p-3 bg-green-50 dark:bg-slate-700 text-green-600 dark:text-green-400 rounded-lg">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repayment Schedule Table & Payment History -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Full Repayment Schedule -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Ratiba ya Marejesho (Repayment Schedule)" %}</h4>
+            <div class="overflow-y-auto max-h-96">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-900 text-slate-500 border-b border-slate-200 dark:border-slate-700">
+                            <th class="p-2.5">{% translate "Installment" %}</th>
+                            <th class="p-2.5">{% translate "Due Date" %}</th>
+                            <th class="p-2.5">{% translate "Kiasi cha Kulipa" %}</th>
+                            <th class="p-2.5">{% translate "Kiasi Kilicholipwa" %}</th>
+                            <th class="p-2.5">{% translate "Hali" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                        {% for s in full_schedule %}
+                        <tr>
+                            <td class="p-2.5">{{ forloop.counter }}</td>
+                            <td class="p-2.5">{{ s.due_date|date:"d M Y" }}</td>
+                            <td class="p-2.5 font-semibold">TZS {{ s.installment_amount|localize }}</td>
+                            <td class="p-2.5">TZS {{ s.paid_amount|localize }}</td>
+                            <td class="p-2.5">
+                                <span class="px-2 py-0.5 text-xs font-semibold rounded {% if s.status == 'PAID' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300{% elif s.status == 'OVERDUE' %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300{% else %}bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300{% endif %}">
+                                    {{ s.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Past Payment History -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Historia ya Malipo Aliyofanya (Receipts history)" %}</h4>
+            <div class="overflow-y-auto max-h-96">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-900 text-slate-500 border-b border-slate-200 dark:border-slate-700">
+                            <th class="p-2.5">{% translate "Risiti No" %}</th>
+                            <th class="p-2.5">{% translate "Kiasi Kilicholipwa" %}</th>
+                            <th class="p-2.5">{% translate "Tarehe ya Malipo" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                        {% for p in payment_history %}
+                        <tr>
+                            <td class="p-2.5 font-semibold text-brand-600">{{ p.receipt_no }}</td>
+                            <td class="p-2.5 font-bold text-green-600">TZS {{ p.amount_paid|localize }}</td>
+                            <td class="p-2.5">{{ p.payment_date|date:"d M Y, H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="p-6 text-center text-slate-400">{% translate "Hujafanya malipo yoyote bado." %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Placeholder when client has no active loan -->
+    <div class="p-12 text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+        <div class="text-slate-300 dark:text-slate-600">
+            <i class="fa-solid fa-folder-open text-6xl"></i>
+        </div>
+        <div class="space-y-1">
+            <h4 class="text-lg font-bold text-slate-800 dark:text-white">{% translate "Huna mkopo unaoendelea hivi sasa." %}</h4>
+            <p class="text-sm text-slate-500">{% translate "Ukihitaji mkopo, tafadhali wasiliana na Loan Officer wako kwa ajili ya usajili wa maombi." %}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

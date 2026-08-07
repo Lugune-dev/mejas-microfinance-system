@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Dashibodi ya Loan Officer" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Dashibodi ya Loan Officer" %}</h2>
+            <p class="text-slate-500">{% translate "Sajili wateja wapya, kagua maombi ya mikopo, na kamilisha ufuatiliaji wa marejesho." %}</p>
+        </div>
+
+        <div class="flex gap-2">
+            <a href="{% url 'client_register' %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-user-plus mr-2"></i>{% translate "Sajili Mteja Mpya" %}
+            </a>
+            <a href="{% url 'loan_apply' %}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-file-invoice mr-2"></i>{% translate "Maombi ya Mkopo" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Assigned clients count -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Wateja Wako" %}</p>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white">{{ assigned_clients_count }}</h3>
+            </div>
+            <div class="p-3 bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-lg">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </div>
+
+        <!-- Today scheduled installments -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Ratiba ya Leo" %}</p>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white">{{ today_schedules_count }}</h3>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-lg">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+        </div>
+
+        <!-- Paid today -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Waliolipa Leo" %}</p>
+                <h3 class="text-xl font-bold text-green-600">{{ today_paid_count }}</h3>
+            </div>
+            <div class="p-3 bg-green-50 dark:bg-slate-700 text-green-600 dark:text-green-400 rounded-lg">
+                <i class="fa-solid fa-check-double"></i>
+            </div>
+        </div>
+
+        <!-- Unpaid today -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Wasiolipa Leo" %}</p>
+                <h3 class="text-xl font-bold text-red-600">{{ today_unpaid_count }}</h3>
+            </div>
+            <div class="p-3 bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400 rounded-lg">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions / Pending Approval Loans -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Maombi ya Mikopo Yanayosubiri Kuidhinishwa (Pending Approval)" %}</h4>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                        <th class="p-3">{% translate "Namba ya Mkopo" %}</th>
+                        <th class="p-3">{% translate "Mteja" %}</th>
+                        <th class="p-3">{% translate "Kiasi" %}</th>
+                        <th class="p-3">{% translate "Muda wa Marejesho" %}</th>
+                        <th class="p-3">{% translate "Tarehe ya Ombi" %}</th>
+                        <th class="p-3">{% translate "Vitendo" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for l in pending_applications %}
+                    <tr>
+                        <td class="p-3 font-semibold">{{ l.loan_id }}</td>
+                        <td class="p-3">{{ l.client.get_full_name }}</td>
+                        <td class="p-3 font-semibold text-slate-800 dark:text-slate-200">TZS {{ l.principal_amount }}</td>
+                        <td class="p-3">{{ l.duration }} ({{ l.get_frequency_display }})</td>
+                        <td class="p-3 text-slate-500">{{ l.application_date|date:"d M Y" }}</td>
+                        <td class="p-3">
+                            <a href="{% url 'loan_detail' l.pk %}" class="px-2.5 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded font-bold hover:underline">
+                                <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="p-6 text-center text-slate-400">{% translate "Hakuna maombi ya mikopo yanayosubiri sasa." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

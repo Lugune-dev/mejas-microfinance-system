@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Orodha ya Wateja" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Orodha ya Wateja wetu (Clients)" %}</h2>
+            <p class="text-slate-500">{% translate "Sajili, tafuta, kagua taarifa, mikopo, na historia ya miamala ya kila mteja." %}</p>
+        </div>
+        {% if user.role in 'CEO,MANAGER,OFFICER' %}
+        <a href="{% url 'client_register' %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition inline-flex items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i>{% translate "Sajili Mteja Mpya" %}
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Search Bar Form -->
+    <form method="get" class="flex gap-2 max-w-md">
+        <input type="text" name="q" placeholder="{% translate 'Tafuta mteja kwa jina au simu au namba...' %}" value="{{ search_query }}" class="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+        <button type="submit" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg text-sm transition">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </form>
+
+    <!-- Clients Table List -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500 font-bold">
+                        <th class="p-4">{% translate "Mteja No. (Username)" %}</th>
+                        <th class="p-4">{% translate "Jina Kamili" %}</th>
+                        <th class="p-4">{% translate "Namba ya Simu" %}</th>
+                        <th class="p-4">{% translate "NIDA" %}</th>
+                        <th class="p-4">{% translate "Tawi (Branch)" %}</th>
+                        <th class="p-4">{% translate "Anwani" %}</th>
+                        <th class="p-4">{% translate "Vitendo" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for c in clients %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-850 transition">
+                        <td class="p-4 font-semibold text-brand-600">{{ c.username }}</td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-2">
+                                {% if c.photo %}
+                                <img src="{{ c.photo.url }}" class="h-8 w-8 rounded-full object-cover border">
+                                {% else %}
+                                <div class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-xs">
+                                    {{ c.first_name|slice:":1" }}
+                                </div>
+                                {% endif %}
+                                <span class="font-medium text-slate-900 dark:text-white">{{ c.get_full_name }}</span>
+                            </div>
+                        </td>
+                        <td class="p-4">{{ c.phone|default:"-" }}</td>
+                        <td class="p-4">{{ c.nida|default:"-" }}</td>
+                        <td class="p-4">{{ c.branch.name|default:"-" }}</td>
+                        <td class="p-4">{{ c.client_profile.address|default:"-" }}</td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-2">
+                                <a href="{% url 'client_detail' c.pk %}" class="text-xs text-indigo-600 hover:underline">
+                                    <i class="fa-solid fa-folder-open mr-1"></i>{% translate "Kagua (Profile)" %}
+                                </a>
+                                {% if user.role in 'CEO,MANAGER,OFFICER' %}
+                                <a href="{% url 'client_edit' c.pk %}" class="text-xs text-brand-600 hover:underline">
+                                    <i class="fa-solid fa-user-pen mr-1"></i>{% translate "Hariri" %}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-slate-400">{% translate "Hakuna wateja waliopatikana bado." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

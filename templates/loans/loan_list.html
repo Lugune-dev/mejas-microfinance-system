@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Orodha ya Mikopo" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Orodha ya Mikopo (Loans)" %}</h2>
+            <p class="text-slate-500">{% translate "Tazama, chuja, kuidhinisha na kutoa mikopo pamoja na kufuatilia salio la sasa." %}</p>
+        </div>
+        {% if user.role in 'CEO,MANAGER,OFFICER' %}
+        <a href="{% url 'loan_apply' %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition inline-flex items-center gap-2">
+            <i class="fa-solid fa-file-invoice"></i>{% translate "Wasilisha Ombi la Mkopo" %}
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Filters Bar Form -->
+    <form method="get" class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Status Filter -->
+        <div>
+            <label for="status" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Hali ya Mkopo (Status)" %}</label>
+            <select name="status" id="status" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+                <option value="">{% translate "Hali Zote" %}</option>
+                <option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>{% translate "Inayosubiri Kuidhinishwa" %}</option>
+                <option value="APPROVED" {% if status_filter == 'APPROVED' %}selected{% endif %}>{% translate "Imeidhinishwa" %}</option>
+                <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>{% translate "Imekataliwa" %}</option>
+                <option value="ACTIVE" {% if status_filter == 'ACTIVE' %}selected{% endif %}>{% translate "Inafanya kazi (Active)" %}</option>
+                <option value="COMPLETED" {% if status_filter == 'COMPLETED' %}selected{% endif %}>{% translate "Imelipwa Kamili" %}</option>
+                <option value="OVERDUE" {% if status_filter == 'OVERDUE' %}selected{% endif %}>{% translate "Iliyochelewa (Overdue)" %}</option>
+            </select>
+        </div>
+
+        <!-- Search input -->
+        <div>
+            <label for="q" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Tafuta" %}</label>
+            <input type="text" name="q" id="q" value="{{ search_query }}" placeholder="{% translate 'Tafuta kwa ID, mteja...' %}" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-end">
+            <button type="submit" class="w-full px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-filter mr-2"></i>{% translate "Chuja" %}
+            </button>
+        </div>
+    </form>
+
+    <!-- Loans Table Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500 font-bold">
+                        <th class="p-4">{% translate "Namba ya Mkopo" %}</th>
+                        <th class="p-4">{% translate "Mteja" %}</th>
+                        <th class="p-4">{% translate "Principal (Kiasi)" %}</th>
+                        <th class="p-4">{% translate "Riba" %}</th>
+                        <th class="p-4">{% translate "Muda wa Marejesho" %}</th>
+                        <th class="p-4">{% translate "Salio (Outstanding)" %}</th>
+                        <th class="p-4">{% translate "Hali (Status)" %}</th>
+                        <th class="p-4">{% translate "Vitendo" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for l in loans %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-850">
+                        <td class="p-4 font-semibold text-brand-600">{{ l.loan_id }}</td>
+                        <td class="p-4">
+                            <div class="font-semibold text-slate-800 dark:text-white">{{ l.client.get_full_name }}</div>
+                            <div class="text-xs text-slate-400">Branch: {{ l.branch.name }}</div>
+                        </td>
+                        <td class="p-4 font-semibold">TZS {{ l.principal_amount|localize }}</td>
+                        <td class="p-4">{{ l.interest_rate }}%</td>
+                        <td class="p-4">{{ l.duration }} ({{ l.get_frequency_display }})</td>
+                        <td class="p-4 font-bold text-slate-800 dark:text-slate-200">TZS {{ l.balance|localize }}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full
+                                {% if l.status == 'ACTIVE' %}bg-green-100 text-green-800
+                                {% elif l.status == 'COMPLETED' %}bg-blue-100 text-blue-800
+                                {% elif l.status == 'OVERDUE' %}bg-red-100 text-red-800
+                                {% elif l.status == 'PENDING' %}bg-amber-100 text-amber-800
+                                {% else %}bg-slate-100 text-slate-800{% endif %}">
+                                {{ l.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <a href="{% url 'loan_detail' l.pk %}" class="px-2.5 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded font-semibold hover:underline">
+                                <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="p-8 text-center text-slate-400">{% translate "Hakuna mikopo iliyopatikana." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

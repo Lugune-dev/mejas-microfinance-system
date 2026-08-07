@@ -1,0 +1,355 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MMS - Microfinance Management System{% endblock %}</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Printer styles for Reports */
+        @media print {
+            .no-print { display: none !important; }
+            .print-full { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 flex flex-col">
+
+    <!-- Language & Theme switcher (always top right or navbar) -->
+    <script>
+        // Check for saved theme preference or default to light
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <!-- Base Layout Wrapper -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR (no-print) -->
+        {% if user.is_authenticated %}
+        <aside id="sidebar" class="no-print hidden md:flex flex-col w-64 bg-brand-900 text-slate-100 dark:bg-slate-950 flex-shrink-0 z-20">
+            <!-- Sidebar Header / Logo -->
+            <div class="h-16 flex items-center justify-between px-4 bg-brand-950 border-b border-brand-800 dark:border-slate-800">
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-2">
+                    <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border border-brand-500" alt="logo">
+                    <span class="font-bold text-lg tracking-wider text-white">MEJAS MMS</span>
+                </a>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'dashboard' %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span>{% translate "Dashboard" %}</span>
+                </a>
+
+                {% if user.role != 'CLIENT' %}
+                <a href="{% url 'client_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'client' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-users w-5"></i>
+                    <span>{% translate "Wateja (Clients)" %}</span>
+                </a>
+                {% endif %}
+
+                <a href="{% url 'loan_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'loan' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-hand-holding-dollar w-5"></i>
+                    <span>{% translate "Mikopo (Loans)" %}</span>
+                </a>
+
+                {% if user.role != 'CLIENT' %}
+                <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'daily_repayment_tracking' %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-calendar-check w-5"></i>
+                    <span>{% translate "Ufuatiliaji wa Siku" %}</span>
+                </a>
+                {% endif %}
+
+                {% if user.role in 'CEO,MANAGER,CASHIER' %}
+                <a href="{% url 'cash_flow_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'cash_flow' in request.resolver_match.url_name or 'reconciliation' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                    <span>{% translate "Fedha & Hesabu" %}</span>
+                </a>
+                {% endif %}
+
+                {% if user.role in 'CEO,MANAGER' %}
+                <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'report' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-file-invoice-dollar w-5"></i>
+                    <span>{% translate "Ripoti (Reports)" %}</span>
+                </a>
+
+                <a href="{% url 'user_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'user_list' in request.resolver_match.url_name or 'user_create' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-user-gear w-5"></i>
+                    <span>{% translate "Watumiaji (Users)" %}</span>
+                </a>
+                {% endif %}
+
+                <div class="pt-4 mt-4 border-t border-brand-800 dark:border-slate-800">
+                    <a href="{% url 'password_change' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'password_change' %}bg-brand-800 text-white{% endif %}">
+                        <i class="fa-solid fa-key w-5"></i>
+                        <span>{% translate "Badili Password" %}</span>
+                    </a>
+                    <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-950 transition-colors mt-1">
+                        <i class="fa-solid fa-right-from-bracket w-5"></i>
+                        <span>{% translate "Ondoka (Logout)" %}</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Sidebar Footer / User Identity -->
+            <div class="p-4 bg-brand-950 border-t border-brand-800 dark:border-slate-800 flex items-center gap-3">
+                {% if user.photo %}
+                    <img src="{{ user.photo.url }}" class="h-9 w-9 rounded-full object-cover border border-brand-500" alt="avatar">
+                {% else %}
+                    <div class="h-9 w-9 rounded-full bg-brand-500 flex items-center justify-center text-white font-bold">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+                <div class="truncate">
+                    <p class="text-sm font-semibold text-white truncate">{{ user.get_full_name|default:user.username }}</p>
+                    <p class="text-xs text-brand-300 truncate">{{ user.get_role_display }}</p>
+                </div>
+            </div>
+        </aside>
+        {% endif %}
+
+        <!-- MAIN VIEW WRAPPER -->
+        <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+
+            <!-- TOP NAVBAR (no-print) -->
+            <header class="no-print h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 z-10 flex-shrink-0">
+                <!-- Mobile Sidebar Toggle -->
+                <div class="flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 dark:text-slate-400 focus:outline-none hover:text-brand-500">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    {% endif %}
+                    <div class="flex items-center gap-2">
+                        <img src="{% static 'logo.png' %}" class="md:hidden h-8 w-8 rounded-full object-cover border border-brand-600" alt="logo">
+                        <h1 class="text-lg font-bold text-slate-800 dark:text-white md:hidden">MEJAS MMS</h1>
+                        <span class="hidden md:inline-block text-sm font-semibold bg-brand-100 text-brand-800 dark:bg-slate-800 dark:text-brand-200 px-3 py-1 rounded-full">
+                            {% if user.is_authenticated %}
+                                {% if user.branch %}Tawi: {{ user.branch.name }}{% else %}HQ / Makao Makuu{% endif %}
+                            {% else %}
+                                MMS System
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions (Theme, Language, User Menu) -->
+                <div class="flex items-center gap-4">
+
+                    <!-- Language Switcher Form -->
+                    <form action="/i18n/setlang/" method="post" class="inline-flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1 text-xs">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <select name="language" onchange="this.form.submit()" class="bg-transparent text-slate-700 dark:text-slate-200 border-none outline-none focus:ring-0 font-medium">
+                            {% get_current_language as CURRENT_LANG %}
+                            {% get_available_languages as ALL_LANGS %}
+                            {% for lang in ALL_LANGS %}
+                                <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>
+                                    {{ lang.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+
+                    <!-- Dark/Light Mode Toggle -->
+                    <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 rounded-lg text-sm p-2">
+                        <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon text-lg"></i>
+                        <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun text-lg"></i>
+                    </button>
+
+                    <!-- User Identity Badge for small screens -->
+                    {% if user.is_authenticated %}
+                    <span class="md:hidden text-xs font-semibold px-2 py-1 rounded bg-slate-200 dark:bg-slate-800">
+                        {{ user.get_role_display }}
+                    </span>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- MOBILE NAV OVERLAY -->
+            {% if user.is_authenticated %}
+            <div id="mobile-menu-overlay" class="no-print hidden fixed inset-0 bg-slate-900 bg-opacity-50 z-30 transition-opacity"></div>
+            <div id="mobile-sidebar" class="no-print hidden fixed inset-y-0 left-0 w-64 bg-brand-900 dark:bg-slate-950 text-slate-100 z-40 flex flex-col">
+                <div class="h-16 flex items-center justify-between px-4 bg-brand-950 border-b border-brand-800 dark:border-slate-800">
+                    <span class="font-bold text-lg text-white">MEJAS MMS</span>
+                    <button id="close-mobile-menu" class="text-slate-300 focus:outline-none">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+                <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                    <!-- Same Nav as desktop -->
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-chart-pie w-5"></i>
+                        <span>{% translate "Dashboard" %}</span>
+                    </a>
+                    {% if user.role != 'CLIENT' %}
+                    <a href="{% url 'client_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-users w-5"></i>
+                        <span>{% translate "Wateja (Clients)" %}</span>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'loan_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-hand-holding-dollar w-5"></i>
+                        <span>{% translate "Mikopo (Loans)" %}</span>
+                    </a>
+                    {% if user.role != 'CLIENT' %}
+                    <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-calendar-check w-5"></i>
+                        <span>{% translate "Ufuatiliaji wa Siku" %}</span>
+                    </a>
+                    {% endif %}
+                    {% if user.role in 'CEO,MANAGER,CASHIER' %}
+                    <a href="{% url 'cash_flow_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                        <span>{% translate "Fedha & Hesabu" %}</span>
+                    </a>
+                    {% endif %}
+                    {% if user.role in 'CEO,MANAGER' %}
+                    <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-file-invoice-dollar w-5"></i>
+                        <span>{% translate "Ripoti (Reports)" %}</span>
+                    </a>
+                    <a href="{% url 'user_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-user-gear w-5"></i>
+                        <span>{% translate "Watumiaji (Users)" %}</span>
+                    </a>
+                    {% endif %}
+                    <div class="pt-4 mt-4 border-t border-brand-800 dark:border-slate-800">
+                        <a href="{% url 'password_change' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                            <i class="fa-solid fa-key w-5"></i>
+                            <span>{% translate "Badili Password" %}</span>
+                        </a>
+                        <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-950 transition-colors mt-1">
+                            <i class="fa-solid fa-right-from-bracket w-5"></i>
+                            <span>{% translate "Ondoka" %}</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+            {% endif %}
+
+            <!-- MAIN SCROLLABLE CONTENT VIEW -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 dark:bg-slate-900 print-full">
+
+                <!-- Toast Notifications / Messages -->
+                {% if messages %}
+                <div class="mb-6 no-print space-y-2">
+                    {% for message in messages %}
+                    <div class="p-4 rounded-lg flex items-center justify-between text-sm font-medium {% if message.tags == 'error' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% else %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% endif %}">
+                        <div class="flex items-center gap-2">
+                            {% if message.tags == 'error' %}
+                                <i class="fa-solid fa-circle-exclamation text-base"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-check text-base"></i>
+                            {% endif %}
+                            <span>{{ message }}</span>
+                        </div>
+                        <button type="button" onclick="this.parentElement.style.display='none'" class="hover:opacity-75 focus:outline-none">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Main Content Slot -->
+                {% block content %}{% endblock %}
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- Theme toggling & mobile menu javascript -->
+    <script>
+        var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        // Change the icons inside the button based on previous settings
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            themeToggleLightIcon.classList.remove('hidden');
+        } else {
+            themeToggleDarkIcon.classList.remove('hidden');
+        }
+
+        var themeToggleBtn = document.getElementById('theme-toggle');
+
+        themeToggleBtn.addEventListener('click', function() {
+            // toggle icons inside button
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            // if set via local storage previously
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+
+        // Mobile menu handling
+        var mobileBtn = document.getElementById('mobile-menu-btn');
+        var mobileOverlay = document.getElementById('mobile-menu-overlay');
+        var mobileSidebar = document.getElementById('mobile-sidebar');
+        var closeMobileBtn = document.getElementById('close-mobile-menu');
+
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', function() {
+                mobileOverlay.classList.remove('hidden');
+                mobileSidebar.classList.remove('hidden');
+            });
+
+            var closeFn = function() {
+                mobileOverlay.classList.add('hidden');
+                mobileSidebar.classList.add('hidden');
+            };
+
+            mobileOverlay.addEventListener('click', closeFn);
+            closeMobileBtn.addEventListener('click', closeFn);
+        }
+    </script>
+</body>
+</html>
