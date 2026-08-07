@@ -14,12 +14,14 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            900: '#0c4a6e',
+                            50: '#f4fbf9',
+                            100: '#e1f5f0',
+                            500: '#dfb13c', // Elegant Gold Accent
+                            600: '#c59b2b', // Medium Gold Accent
+                            700: '#114139', // Dark Teal / Forest Green
+                            800: '#0b2a25', // Deep Logo Forest Green/Teal
+                            900: '#061815', // Darker Teal
+                            950: '#030c0a', // Solid Blackish Teal
                         }
                     }
                 }
@@ -149,16 +151,28 @@
                     </button>
                     {% endif %}
                     <div class="flex items-center gap-2">
-                        <img src="{% static 'logo.png' %}" class="md:hidden h-8 w-8 rounded-full object-cover border border-brand-600" alt="logo">
-                        <h1 class="text-lg font-bold text-slate-800 dark:text-white md:hidden">MEJAS MMS</h1>
+                        <a href="/" class="flex items-center gap-2">
+                            <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
+                            <h1 class="text-lg font-bold text-slate-800 dark:text-white">MEJAS MMS</h1>
+                        </a>
+                        {% if user.is_authenticated %}
                         <span class="hidden md:inline-block text-sm font-semibold bg-brand-100 text-brand-800 dark:bg-slate-800 dark:text-brand-200 px-3 py-1 rounded-full">
-                            {% if user.is_authenticated %}
-                                {% if user.branch %}Tawi: {{ user.branch.name }}{% else %}HQ / Makao Makuu{% endif %}
-                            {% else %}
-                                MMS System
-                            {% endif %}
+                            {% if user.branch %}Tawi: {{ user.branch.name }}{% else %}HQ / Makao Makuu{% endif %}
                         </span>
+                        {% endif %}
                     </div>
+                </div>
+
+                <!-- Navigation links for public pages -->
+                <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                    <a href="{% url 'home' %}" class="text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-500 transition-colors">{% translate "Nyumbani" %}</a>
+                    <a href="{% url 'about' %}" class="text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-500 transition-colors">{% translate "Kuhusu Sisi" %}</a>
+                    <a href="{% url 'contact' %}" class="text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-500 transition-colors">{% translate "Wasiliana Nasi" %}</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="bg-brand-500 hover:bg-brand-600 text-slate-900 px-4 py-2 rounded-lg transition-colors font-semibold">{% translate "Dashibodi" %}</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="bg-brand-500 hover:bg-brand-600 text-slate-900 px-4 py-2 rounded-lg transition-colors font-semibold">{% translate "Ingia" %}</a>
+                    {% endif %}
                 </div>
 
                 <!-- Right Side Actions (Theme, Language, User Menu) -->

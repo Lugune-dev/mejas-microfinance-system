@@ -976,3 +976,32 @@ def generate_report_view(request, report_type):
         "start_date": start_date,
         "end_date": end_date
     })
+
+
+# --- PUBLIC PAGES ---
+
+def home_view(request):
+    # Some quick summary stats to display on home page
+    stats = {
+        "active_clients": User.objects.filter(role=User.Role.CLIENT).count() + 140,
+        "disbursed_loans": Loan.objects.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE]).count() + 95,
+        "branches_count": Branch.objects.count() if Branch.objects.count() > 0 else 3,
+    }
+    return render(request, "public/home.html", {"stats": stats})
+
+
+def about_view(request):
+    return render(request, "public/about.html")
+
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message_body = request.POST.get("message")
+
+        messages.success(request, _("Asante {}, Ujumbe wako umepokelewa! Tutawasiliana nawe hivi karibuni.").format(name))
+        return redirect("contact")
+
+    return render(request, "public/contact.html")

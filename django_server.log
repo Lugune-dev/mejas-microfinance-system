@@ -1,15 +1,11 @@
 Watching for file changes with StatReloader
-[07/Aug/2026 12:44:51] "HEAD /sw/ HTTP/1.1" 200 0
-[07/Aug/2026 12:46:48] "GET /sw/ HTTP/1.1" 200 5091
-[07/Aug/2026 12:46:53] "POST /sw/ HTTP/1.1" 302 0
-[07/Aug/2026 12:46:53] "GET /sw/dashboard/ HTTP/1.1" 200 29796
-Performing system checks...
-
-System check identified no issues (0 silenced).
-August 07, 2026 - 12:44:09
-Django version 6.1, using settings 'mms_project.settings'
-Starting WSGI development server at http://0.0.0.0:8000/
-Quit the server with CONTROL-C.
-
-WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
-For more information on production servers see: https://docs.djangoproject.com/en/6.1/howto/deployment/
+[07/Aug/2026 13:41:14] "GET / HTTP/1.1" 302 0
+[07/Aug/2026 13:41:14] "GET /sw/ HTTP/1.1" 200 19115
+[07/Aug/2026 13:41:15] "GET /static/logo.png HTTP/1.1" 200 350013
+[07/Aug/2026 13:41:17] "GET /sw/about/ HTTP/1.1" 200 17859
+[07/Aug/2026 13:41:19] "GET /sw/contact/ HTTP/1.1" 200 17009
+[07/Aug/2026 13:41:22] "POST /sw/contact/ HTTP/1.1" 302 0
+[07/Aug/2026 13:41:22] "GET /sw/contact/ HTTP/1.1" 200 17932
+[07/Aug/2026 13:41:24] "POST /i18n/setlang/ HTTP/1.1" 302 0
+[07/Aug/2026 13:41:24] "GET /en/contact/ HTTP/1.1" 200 16973
+[07/Aug/2026 13:41:26] "GET /en/ HTTP/1.1" 200 19061

@@ -261,3 +261,33 @@ class MMSCoreBusinessTests(TestCase):
         )
         self.assertEqual(AuditLog.objects.filter(action="USER_LOGIN").count(), 1)
         self.assertEqual(AuditLog.objects.first().user, self.ceo)
+
+    def test_public_pages(self):
+        """Verify that Home, About, and Contact public pages load and render successfully."""
+        client = Client()
+
+        # Test Home Page
+        res_home = client.get(reverse("home"), follow=True)
+        self.assertEqual(res_home.status_code, 200)
+        self.assertContains(res_home, "Mejas Enterprises")
+
+        # Test About Page
+        res_about = client.get(reverse("about"), follow=True)
+        self.assertEqual(res_about.status_code, 200)
+        self.assertContains(res_about, "Sisi ni Nani?")
+
+        # Test Contact Page
+        res_contact = client.get(reverse("contact"), follow=True)
+        self.assertEqual(res_contact.status_code, 200)
+        self.assertContains(res_contact, "Tutumie Ujumbe")
+
+        # Test Contact Form Submit
+        post_data = {
+            "name": "Juma Hamisi",
+            "email": "juma@hamisi.com",
+            "subject": "Inquiry about business loan",
+            "message": "I need a loan for my retail shop."
+        }
+        res_submit = client.post(reverse("contact"), post_data, follow=True)
+        self.assertEqual(res_submit.status_code, 200)
+        self.assertContains(res_submit, "Asante Juma Hamisi")

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-07 09:38+0000\n"
+"POT-Creation-Date: 2026-08-07 13:28+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: mms_app/forms.py:12 templates/auth/password_reset.html:43
 msgid "Username / Staff ID / Client No."
 msgstr ""
@@ -132,7 +133,7 @@ msgstr ""
 msgid "Branches"
 msgstr ""
 
-#: mms_app/models.py:23
+#: mms_app/models.py:23 templates/public/about.html:103
 msgid "CEO / Mkurugenzi"
 msgstr ""
 
@@ -149,7 +150,7 @@ msgstr ""
 msgid "Loan Officer"
 msgstr ""
 
-#: mms_app/models.py:27
+#: mms_app/models.py:27 templates/public/about.html:131
 msgid "Mteja (Client)"
 msgstr ""
 
@@ -647,7 +648,8 @@ msgid "Jina la Mteja"
 msgstr ""
 
 #: mms_app/views.py:833 templates/clients/client_detail.html:47
-#: templates/clients/client_list.html:37 templates/users/user_list.html:29
+#: templates/clients/client_list.html:37 templates/public/contact.html:51
+#: templates/users/user_list.html:29
 msgid "Namba ya Simu"
 msgstr ""
 
@@ -822,6 +824,10 @@ msgstr ""
 msgid "Bakaa ya Mtiririko wa Fedha (Net Cash flow)"
 msgstr ""
 
+#: mms_app/views.py:1004
+msgid "Asante {}, Ujumbe wako umepokelewa! Tutawasiliana nawe hivi karibuni."
+msgstr ""
+
 #: mms_project/settings.py:111
 msgid "Swahili"
 msgstr ""
@@ -834,20 +840,20 @@ msgstr ""
 msgid "Ingia Mfumoni"
 msgstr ""
 
-#: templates/auth/login.html:28
+#: templates/auth/login.html:26
 msgid "Mfumo wa Kidigitali wa Uendeshaji wa Ofisi (MMS)"
 msgstr ""
 
-#: templates/auth/login.html:71
+#: templates/auth/login.html:69
 msgid "Umesahau password?"
 msgstr ""
 
-#: templates/auth/login.html:78
+#: templates/auth/login.html:76
 msgid "Ingia (Login)"
 msgstr ""
 
-#: templates/auth/password_change.html:4 templates/base.html:116
-#: templates/base.html:253
+#: templates/auth/password_change.html:4 templates/base.html:115
+#: templates/base.html:262
 msgid "Badili Password"
 msgstr ""
 
@@ -899,40 +905,60 @@ msgstr ""
 msgid "Weka Password Mpya"
 msgstr ""
 
-#: templates/base.html:72 templates/base.html:216
+#: templates/base.html:71 templates/base.html:225
 #: templates/dashboard/placeholder.html:4
 msgid "Dashboard"
 msgstr ""
 
-#: templates/base.html:78 templates/base.html:221
+#: templates/base.html:77 templates/base.html:230
 msgid "Wateja (Clients)"
 msgstr ""
 
-#: templates/base.html:84 templates/base.html:226
+#: templates/base.html:83 templates/base.html:235
 msgid "Mikopo (Loans)"
 msgstr ""
 
-#: templates/base.html:90 templates/base.html:231
+#: templates/base.html:89 templates/base.html:240
 msgid "Ufuatiliaji wa Siku"
 msgstr ""
 
-#: templates/base.html:97 templates/base.html:237
+#: templates/base.html:96 templates/base.html:246
 msgid "Fedha & Hesabu"
 msgstr ""
 
-#: templates/base.html:104 templates/base.html:243
+#: templates/base.html:103 templates/base.html:252
 msgid "Ripoti (Reports)"
 msgstr ""
 
-#: templates/base.html:109 templates/base.html:247
+#: templates/base.html:108 templates/base.html:256
 msgid "Watumiaji (Users)"
 msgstr ""
 
-#: templates/base.html:120
+#: templates/base.html:119
 msgid "Ondoka (Logout)"
 msgstr ""
 
-#: templates/base.html:257
+#: templates/base.html:168
+msgid "Nyumbani"
+msgstr ""
+
+#: templates/base.html:169 templates/public/home.html:39
+msgid "Kuhusu Sisi"
+msgstr ""
+
+#: templates/base.html:170 templates/public/contact.html:15
+msgid "Wasiliana Nasi"
+msgstr ""
+
+#: templates/base.html:172
+msgid "Dashibodi"
+msgstr ""
+
+#: templates/base.html:174
+msgid "Ingia"
+msgstr ""
+
+#: templates/base.html:266
 msgid "Ondoka"
 msgstr ""
 
@@ -973,7 +999,7 @@ msgstr ""
 msgid "Wasilisha EOD kwa Uhakiki"
 msgstr ""
 
-#: templates/cash_flow/flow_list.html:4
+#: templates/cash_flow/flow_list.html:4 templates/public/home.html:127
 msgid "Mtiririko wa Fedha"
 msgstr ""
 
@@ -1013,7 +1039,7 @@ msgid "Makundi Yote"
 msgstr ""
 
 #: templates/cash_flow/flow_list.html:54
-#: templates/dashboard/ceo_manager.html:180
+#: templates/dashboard/ceo_manager.html:180 templates/public/home.html:61
 msgid "Mikopo Iliyotolewa"
 msgstr ""
 
@@ -1129,7 +1155,7 @@ msgid ""
 "tawi."
 msgstr ""
 
-#: templates/cash_flow/recon_list.html:22
+#: templates/cash_flow/recon_list.html:22 templates/public/about.html:117
 msgid "Mhazini (Cashier)"
 msgstr ""
 
@@ -1300,7 +1326,7 @@ msgstr ""
 msgid "Mteja No. (Username)"
 msgstr ""
 
-#: templates/clients/client_list.html:36
+#: templates/clients/client_list.html:36 templates/public/contact.html:109
 msgid "Jina Kamili"
 msgstr ""
 
@@ -1946,6 +1972,337 @@ msgstr ""
 
 #: templates/loans/payment_record.html:42
 msgid "Sajili Malipo & Toa Risiti"
+msgstr ""
+
+#: templates/public/about.html:4
+msgid "Mejas Microfinance - Kuhusu Sisi"
+msgstr ""
+
+#: templates/public/about.html:15
+msgid "Kuhusu Mejas Enterprises"
+msgstr ""
+
+#: templates/public/about.html:18
+msgid "Kuhusu Sisi & Maadili Yetu ya Msingi"
+msgstr ""
+
+#: templates/public/about.html:26
+msgid "Sisi ni Nani?"
+msgstr ""
+
+#: templates/public/about.html:29
+msgid ""
+"Mejas Enterprises ni taasisi ya kifedha inayojitolea kutoa huduma za mikopo "
+"ya kiwango kidogo na cha kati (Microfinance) ili kuwawezesha wajasiriamali, "
+"vikundi vya kijamii, na watu binafsi kukuza biashara zao na kufikia malengo "
+"yao ya kiuchumi nchini Tanzania."
+msgstr ""
+
+#: templates/public/about.html:32
+msgid ""
+"Kupitia Mfumo wetu mpya wa MMS (Microfinance Management System), tunaleta "
+"huduma zote za uendeshaji katika ulimwengu wa kidigitali ili kuongeza "
+"ufanisi wa huduma, kurahisisha marejesho ya mikopo na kuleta uwazi kamili "
+"kwa wateja wetu na wadau wote."
+msgstr ""
+
+#: templates/public/about.html:43
+msgid "Maono Yetu (Vision)"
+msgstr ""
+
+#: templates/public/about.html:45
+msgid ""
+"Kuwa taasisi inayoongoza nchini kwa kutoa suluhu rahisi, za haraka na za "
+"kidigitali za kifedha kwa jamii zote, tukiwa na mchango chanya kwenye kukuza "
+"uchumi na kuondoa umaskini."
+msgstr ""
+
+#: templates/public/about.html:54
+msgid "Lengo Letu Kuu (Mission)"
+msgstr ""
+
+#: templates/public/about.html:56
+msgid ""
+"Kurahisisha upatikanaji wa mikopo salama kwa wajasiriamali wadogo na wa kati "
+"kupitia ubunifu wa kidigitali, huduma bora za wateja, na usimamizi madhubuti "
+"wa rasilimali fedha."
+msgstr ""
+
+#: templates/public/about.html:64
+msgid "Maadili yetu ya Msingi (Core Values)"
+msgstr ""
+
+#: templates/public/about.html:69
+msgid "Uwazi (Transparency)"
+msgstr ""
+
+#: templates/public/about.html:70
+msgid "Mahesabu na riba wazi bila gharama zilizofichika."
+msgstr ""
+
+#: templates/public/about.html:74
+msgid "Uaminifu (Integrity)"
+msgstr ""
+
+#: templates/public/about.html:75
+msgid "Kutunza siri na mikataba ya wateja kwa weledi wa juu."
+msgstr ""
+
+#: templates/public/about.html:79
+msgid "Ufanisi (Efficiency)"
+msgstr ""
+
+#: templates/public/about.html:80
+msgid "Utoaji na kuidhinisha mikopo kwa muda mfupi zaidi."
+msgstr ""
+
+#: templates/public/about.html:84
+msgid "Usalama (Security)"
+msgstr ""
+
+#: templates/public/about.html:85
+msgid "Kuhifadhi data na miamala kwa njia salama na msimbo."
+msgstr ""
+
+#: templates/public/about.html:93
+msgid "Usimamizi wa Majukumu ya Watumiaji (User Roles)"
+msgstr ""
+
+#: templates/public/about.html:96
+msgid ""
+"Mfumo wa MMS umejengwa kwa kuzingatia mgawanyo wa majukumu (Role-Based "
+"Access Control) ili kuhakikisha kila mtumiaji anaona tu kile anachostahili "
+"kulingana na kazi yake:"
+msgstr ""
+
+#: templates/public/about.html:104
+msgid ""
+"Ana mamlaka kamili ya kuona taarifa zote, ripoti za jumla za kifedha, "
+"utendaji wa matawi na maamuzi makubwa ya uwekezaji."
+msgstr ""
+
+#: templates/public/about.html:110
+msgid "Meneja (Manager)"
+msgstr ""
+
+#: templates/public/about.html:111
+msgid ""
+"Anahusika na kuidhinisha maombi ya mikopo, kusimamia kazi za kila siku za "
+"ofisi na watumishi (Officers na Cashier), pamoja na kupata ripoti."
+msgstr ""
+
+#: templates/public/about.html:118
+msgid ""
+"Hufanya malipo (disbursement), anapokea marejesho ya mikopo (payment "
+"collection) na kufanya hesabu ya siku kila siku (End of Day reconciliation)."
+msgstr ""
+
+#: templates/public/about.html:124
+msgid "Afisa Mikopo (Loan Officer)"
+msgstr ""
+
+#: templates/public/about.html:125
+msgid ""
+"Anasajili wateja wapya, anajaza fomu za maombi, na kufuatilia marejesho ya "
+"wateja wake kila siku kwenye uwanja wa kazi."
+msgstr ""
+
+#: templates/public/about.html:132
+msgid ""
+"Anaona historia ya mkopo wake, salio lake la sasa la deni, na ratiba nzima "
+"ya marejesho inayofuata."
+msgstr ""
+
+#: templates/public/contact.html:4
+msgid "Mejas Microfinance - Wasiliana Nasi"
+msgstr ""
+
+#: templates/public/contact.html:18
+msgid "Tunafurahi Kusikia Kutoka Kwako"
+msgstr ""
+
+#: templates/public/contact.html:28
+msgid "Taarifa za Mawasiliano"
+msgstr ""
+
+#: templates/public/contact.html:37
+msgid "Ofisi Kuu"
+msgstr ""
+
+#: templates/public/contact.html:39
+msgid "Mlimani Tower, Ghorofa ya 3"
+msgstr ""
+
+#: templates/public/contact.html:40
+msgid "Barabara ya Sam Nujoma, Dar es Salaam, Tanzania"
+msgstr ""
+
+#: templates/public/contact.html:65 templates/public/contact.html:115
+msgid "Barua Pepe"
+msgstr ""
+
+#: templates/public/contact.html:77
+msgid "Masaa ya Kazi"
+msgstr ""
+
+#: templates/public/contact.html:80
+msgid "Jumatatu - Ijumaa"
+msgstr ""
+
+#: templates/public/contact.html:84
+msgid "Jumamosi"
+msgstr ""
+
+#: templates/public/contact.html:88
+msgid "Jumapili & Sikukuu"
+msgstr ""
+
+#: templates/public/contact.html:89
+msgid "Tumefungwa"
+msgstr ""
+
+#: templates/public/contact.html:98
+msgid "Tutumie Ujumbe"
+msgstr ""
+
+#: templates/public/contact.html:100
+msgid ""
+"Tafadhali jaza fomu hii hapa chini na timu yetu ya usaidizi itawasiliana "
+"nawe mara moja."
+msgstr ""
+
+#: templates/public/contact.html:110
+msgid "Ingiza jina lako kamili"
+msgstr ""
+
+#: templates/public/contact.html:122
+msgid "Kichwa cha Ujumbe"
+msgstr ""
+
+#: templates/public/contact.html:123
+msgid "Ushauri, Maoni au Swali la Mkopo"
+msgstr ""
+
+#: templates/public/contact.html:128
+msgid "Ujumbe Wako"
+msgstr ""
+
+#: templates/public/contact.html:129
+msgid "Andika ujumbe wako hapa..."
+msgstr ""
+
+#: templates/public/contact.html:136
+msgid "Tuma Ujumbe sasa"
+msgstr ""
+
+#: templates/public/home.html:4
+msgid "Mejas Microfinance - Nyumbani"
+msgstr ""
+
+#: templates/public/home.html:21
+msgid "Mfumo wa Kidigitali wa Uendeshaji wa Microfinance"
+msgstr ""
+
+#: templates/public/home.html:24
+msgid ""
+"Ufumbuzi thabiti kwa usimamizi rahisi wa wateja, mikopo, marejesho, na fedha "
+"za taasisi kwa uwazi na usalama wa hali ya juu."
+msgstr ""
+
+#: templates/public/home.html:30
+msgid "Nenda Kwenye Dashibodi"
+msgstr ""
+
+#: templates/public/home.html:35
+msgid "Ingia Mfumoni (Login)"
+msgstr ""
+
+#: templates/public/home.html:52
+msgid "Wateja Waliosajiliwa"
+msgstr ""
+
+#: templates/public/home.html:70
+msgid "Matawi ya Huduma"
+msgstr ""
+
+#: templates/public/home.html:80
+msgid "Huduma na Vipengele vya MMS"
+msgstr ""
+
+#: templates/public/home.html:84
+msgid ""
+"Mfumo wetu unajumuisha kila moduli unayohitaji kuendesha ofisi yako ya "
+"Microfinance kwa ufanisi wa hali ya juu."
+msgstr ""
+
+#: templates/public/home.html:94
+msgid "Usimamizi wa Wateja"
+msgstr ""
+
+#: templates/public/home.html:96
+msgid ""
+"Sajili wateja wapya ukiwa na picha zao, vitambulisho vya NIDA, na maelezo ya "
+"wadhamini wao kwa haraka."
+msgstr ""
+
+#: templates/public/home.html:105
+msgid "Mahesabu ya Riba"
+msgstr ""
+
+#: templates/public/home.html:107
+msgid ""
+"Hesabu kiotomatiki riba ya mikopo, ratiba ya marejesho kwa awamu, na toza "
+"faini kiotomatiki pale mteja anapochelewa kulipa."
+msgstr ""
+
+#: templates/public/home.html:116
+msgid "Ufuatiliaji wa Kila Siku"
+msgstr ""
+
+#: templates/public/home.html:118
+msgid ""
+"Fuatilia waliolipa na wasiolipa leo kwa kutumia rangi maalum (kijani na "
+"nyekundu) kwenye dashibodi yako."
+msgstr ""
+
+#: templates/public/home.html:129
+msgid ""
+"Rekodi fedha zinazoingia na kutoka (disbursements dhidi ya collections) kwa "
+"ajili ya usawa wa hesabu wa kila siku."
+msgstr ""
+
+#: templates/public/home.html:138
+msgid "Ripoti za Kina"
+msgstr ""
+
+#: templates/public/home.html:140
+msgid ""
+"Zalisha na pakua ripoti za kifedha, utendaji wa maofisa, na mikopo chechefu "
+"kwa mifumo ya Excel au PDF."
+msgstr ""
+
+#: templates/public/home.html:149
+msgid "Ulinzi na Usalama"
+msgstr ""
+
+#: templates/public/home.html:151
+msgid ""
+"Usimbaji wa password (hashing), udhibiti wa ngazi za watumiaji (role-based "
+"security) na activity log ya kina (audit trail)."
+msgstr ""
+
+#: templates/public/home.html:160
+msgid "Je, una maswali au unahitaji usaidizi wa kiufundi?"
+msgstr ""
+
+#: templates/public/home.html:163
+msgid ""
+"Tupo hapa kukuhudumia. Unaweza kuwasiliana nasi kwa maswali yoyote kuhusu "
+"matumizi au usanidi wa mfumo."
+msgstr ""
+
+#: templates/public/home.html:167
+msgid "Wasiliana Nasi sasa"
 msgstr ""
 
 #: templates/reports/generate.html:12
