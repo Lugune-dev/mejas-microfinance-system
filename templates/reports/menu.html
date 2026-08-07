@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Ripoti za MMS" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Ripoti za Taasisi (Financial & Operational Reports)" %}</h2>
+        <p class="text-slate-500">{% translate "Chagua ripoti unayotaka kuzalisha hapa chini. Unaweza kuchuja kwa tarehe na kupakua kama Excel au CSV." %}</p>
+    </div>
+
+    <!-- Reports Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Report 1: Daily paid/unpaid status -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-calendar-day text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "1. Wateja Waliolipa / Wasiolipa" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Huonyesha kwa siku husika, nani amelipa au hajalipa rejesho lake lililopangwa." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'daily_status' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Report 2: Disbursement report -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-hand-holding-dollar text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "2. Mikopo Iliyotolewa (Disbursements)" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Orodha kamili ya mikopo yote iliyotolewa (principal paid out) katika kipindi kilichochaguliwa." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'disbursement' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Report 3: Collection Report -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-arrow-down-9-1 text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "3. Marejesho / Makusanyo (Collections)" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Huonyesha makusanyo yote ya fedha (marejesho) yaliyofanywa na wateja katika muda husika." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'collection' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Report 4: Overdue/Defaulters Report -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "4. Mikopo Chechefu (Overdue / Defaulters)" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Orodha ya wateja waliopitisha muda wa malipo na kiasi cha penalti zilizolimbikizwa." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'overdue' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Report 5: Income & Expenditure -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="p-3 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-money-bill-wave text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "5. Mapato na Matumizi ya Ofisi" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Uchambuzi wa mapato na matumizi mbalimbali yasiyo ya mkopo katika matawi yetu." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'income_expense' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Report 6: Portfolio Performance -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
+            <div class="space-y-2">
+                <div class="p-3 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "6. Utendaji wa kila Loan Officer" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Hupima idadi ya wateja, mikopo hai na mikopo chechefu kwa kila loan officer." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'portfolio' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Report 7: Financial Summary CEO -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between lg:col-span-3">
+            <div class="space-y-2">
+                <div class="p-3 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg w-fit">
+                    <i class="fa-solid fa-receipt text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-800 dark:text-white">{% translate "7. Ripoti Kuu ya Kifedha kwa CEO (Financial Summary/Overview)" %}</h4>
+                <p class="text-xs text-slate-500">{% translate "Muhtasari wa kifedha wa kibiashara na mtiririko wote wa fedha (Disbursements, Collections, Incomes, Expenses, Net flow) kwa kipindi chochote." %}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                <a href="{% url 'generate_report' 'financial_summary' %}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-xs transition">
+                    {% translate "Zalisha Ripoti Kuu" %}<i class="fa-solid fa-chevron-right ml-2 text-3xs"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

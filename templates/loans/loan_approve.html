@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Kuidhinisha Mkopo" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+        <h3 class="font-bold text-lg text-slate-800 dark:text-white">{% translate "Kuidhinisha / Kukataa Mkopo (Loan Approval Decisions)" %}</h3>
+        <p class="text-xs text-slate-500">{% translate "Mkopo utajazwa sifa rasmi ukiidhinishwa na unaweza kuanza kutolewa bakaa baada ya hapo." %}</p>
+    </div>
+
+    <div class="p-6 space-y-4">
+        <!-- Summary of applied loan details -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-750 rounded-lg space-y-2 text-sm border">
+            <p><strong>{% translate "Client Name:" %}</strong> {{ loan.client.get_full_name }}</p>
+            <p><strong>{% translate "Principal Amount:" %}</strong> TZS {{ loan.principal_amount }}</p>
+            <p><strong>{% translate "Riba (Interest):" %}</strong> {{ loan.interest_rate }}%</p>
+            <p><strong>{% translate "Duration:" %}</strong> {{ loan.duration }} ({{ loan.get_frequency_display }})</p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">{% translate "Uamuzi Wako:" %}</label>
+                <div class="flex items-center gap-6">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-green-600 text-sm">
+                        <input type="radio" name="decision" value="APPROVED" checked class="text-green-600 focus:ring-green-500">
+                        {% translate "IDHINISHA / APPROVE" %}
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer font-semibold text-red-600 text-sm">
+                        <input type="radio" name="decision" value="REJECTED" class="text-red-600 focus:ring-red-500">
+                        {% translate "KATAA / REJECT" %}
+                    </label>
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end gap-2 border-t">
+                <a href="{% url 'loan_detail' loan.pk %}" class="px-4 py-2 border rounded-lg text-sm font-semibold hover:bg-slate-100 transition">
+                    {% translate "Ghairi" %}
+                </a>
+                <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-sm transition">
+                    {% translate "Wasilisha Uamuzi" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

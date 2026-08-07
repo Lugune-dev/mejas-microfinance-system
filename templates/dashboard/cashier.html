@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Dashibodi ya Mhazini (Cashier)" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Dashibodi ya Mhazini (Cashier)" %}</h2>
+            <p class="text-slate-500">{% translate "Dhibiti mapokezi ya marejesho, funga hesabu za kila siku, na uhakiki salio." %}</p>
+        </div>
+
+        <div class="flex gap-2">
+            <a href="{% url 'record_office_cash_flow' %}" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-plus-minus mr-2"></i>{% translate "Mtiririko wa Fedha za Ofisi" %}
+            </a>
+            <a href="{% url 'daily_reconciliation' %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-lock-open mr-2"></i>{% translate "Funga Hesabu (Close Day)" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Card 1: Today Cash In -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Leo Cash In (Collections)" %}</p>
+                <h3 class="text-xl font-bold text-green-600 dark:text-green-400">TZS {{ today_cash_in|localize }}</h3>
+            </div>
+            <div class="p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
+                <i class="fa-solid fa-arrow-turn-down"></i>
+            </div>
+        </div>
+
+        <!-- Card 2: Today Cash Out -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Leo Cash Out (Disbursments)" %}</p>
+                <h3 class="text-xl font-bold text-red-600 dark:text-red-400">TZS {{ today_cash_out|localize }}</h3>
+            </div>
+            <div class="p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg">
+                <i class="fa-solid fa-arrow-turn-up"></i>
+            </div>
+        </div>
+
+        <!-- Card 3: Ending calculated balance -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-1">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{% translate "Salio Lililokadiriwa (Calculated)" %}</p>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white">TZS {{ calculated_closing|localize }}</h3>
+                <p class="text-xs text-slate-400">{% translate "Opening: TZS " %}{{ opening_balance|localize }}</p>
+            </div>
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Reconciliation Status alert -->
+    {% if recon %}
+    <div class="p-4 rounded-xl border flex items-center justify-between {% if recon.status == 'CONFIRMED' %}bg-green-50 border-green-200 text-green-800 dark:bg-green-950/30 dark:border-green-800 dark:text-green-200{% elif recon.status == 'REJECTED' %}bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-800 dark:text-red-200{% else %}bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200{% endif %}">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid {% if recon.status == 'CONFIRMED' %}fa-circle-check{% elif recon.status == 'REJECTED' %}fa-circle-xmark{% else %}fa-circle-notch fa-spin{% endif %} text-xl"></i>
+            <div>
+                <p class="font-bold">{% translate "Hesabu ya Siku ya Leo imefungwa!" %}</p>
+                <p class="text-xs">
+                    {% translate "Physical Cash:" %} TZS {{ recon.actual_cash|localize }} | {% translate "Difference:" %} TZS {{ recon.difference|localize }}
+                </p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold {% if recon.status == 'CONFIRMED' %}bg-green-100 text-green-800{% elif recon.status == 'REJECTED' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                {{ recon.get_status_display }}
+            </span>
+        </div>
+    </div>
+    {% else %}
+    <div class="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl flex items-center justify-between text-amber-800 dark:text-amber-200">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span class="text-sm font-semibold">{% translate "Haujawasilisha hesabu ya siku ya leo bado. Tafadhali kumbuka kuifunga kabla ya kuondoka." %}</span>
+        </div>
+        <a href="{% url 'daily_reconciliation' %}" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-bold transition">
+            {% translate "Funga Sasa" %}
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Today payments list -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Malipo Yaliyopokelewa Leo (Today's Receipts)" %}</h4>
+            <span class="text-xs bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded font-semibold text-slate-500">
+                {{ today_payments.count }} {% translate "mizunguko ya malipo" %}
+            </span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                        <th class="p-3">{% translate "Receipt No" %}</th>
+                        <th class="p-3">{% translate "Mteja" %}</th>
+                        <th class="p-3">{% translate "Namba ya Mkopo" %}</th>
+                        <th class="p-3">{% translate "Kiasi Kilicholipwa" %}</th>
+                        <th class="p-3">{% translate "Muda wa Malipo" %}</th>
+                        <th class="p-3">{% translate "Vitendo" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for p in today_payments %}
+                    <tr>
+                        <td class="p-3 font-semibold text-brand-600">{{ p.receipt_no }}</td>
+                        <td class="p-3">{{ p.loan.client.get_full_name }}</td>
+                        <td class="p-3 font-medium">{{ p.loan.loan_id }}</td>
+                        <td class="p-3 font-bold text-green-600">TZS {{ p.amount_paid|localize }}</td>
+                        <td class="p-3 text-slate-500">{{ p.payment_date|date:"H:i" }}</td>
+                        <td class="p-3">
+                            <a href="{% url 'loan_detail' p.loan.pk %}" class="text-xs text-indigo-600 hover:underline">
+                                <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="p-6 text-center text-slate-400">{% translate "Hakuna malipo yaliyorekodiwa leo bado." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

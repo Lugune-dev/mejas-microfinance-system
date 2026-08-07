@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Dashboard ya Viongozi" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Title & Filter -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">{% translate "Dashibodi ya Uongozi (CEO / Manager)" %}</h2>
+            <p class="text-slate-500 dark:text-slate-400">{% translate "Karibu kwenye muhtasari wa utendaji wa taasisi yako ya microfinance." %}</p>
+        </div>
+
+        <!-- Branch Selector Filter -->
+        <form method="get" class="flex items-center gap-2">
+            <label for="branch" class="text-sm font-semibold text-slate-700 dark:text-slate-300">{% translate "Chagua Tawi:" %}</label>
+            <select name="branch" id="branch" onchange="this.form.submit()" class="px-3 py-1.5 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500">
+                <option value="">{% translate "Matawi Yote (All Branches)" %}</option>
+                {% for b in branches %}
+                    <option value="{{ b.id }}" {% if selected_branch and selected_branch.id == b.id %}selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Metrics Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Total Disbursed -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-2">
+                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Mikopo Iliyotolewa (Disbursement)" %}</p>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">TZS {{ total_disbursed|localize }}</h3>
+                <span class="text-xs text-brand-600 dark:text-brand-400 font-medium">{% translate "Principal accumulated" %}</span>
+            </div>
+            <div class="p-4 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
+                <i class="fa-solid fa-hand-holding-dollar text-2xl"></i>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Collection -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-2">
+                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Marejesho (Collections)" %}</p>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">TZS {{ total_collections|localize }}</h3>
+                <span class="text-xs text-green-600 dark:text-green-400 font-medium">{% translate "Out of TZS " %}{{ total_repayments_expected|localize }}</span>
+            </div>
+            <div class="p-4 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
+                <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
+            </div>
+        </div>
+
+        <!-- Card 3: Active Loans Count -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-2">
+                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Mikopo Hai (Active Loans)" %}</p>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ active_loans_count }}</h3>
+                <span class="text-xs text-amber-600 dark:text-amber-400 font-medium">{% translate "Pending approval: " %}{{ pending_loans_count }}</span>
+            </div>
+            <div class="p-4 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
+                <i class="fa-solid fa-percent text-2xl"></i>
+            </div>
+        </div>
+
+        <!-- Card 4: Overdue Loans Count -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="space-y-2">
+                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Iliyochelewa (Overdue)" %}</p>
+                <h3 class="text-2xl font-bold text-red-600 dark:text-red-400">{{ overdue_loans_count }}</h3>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">{% translate "Requires immediate attention" %}</span>
+            </div>
+            <div class="p-4 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Monthly Trend Line/Bar Chart (Chart.js) -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2 space-y-4">
+            <h4 class="text-base font-bold text-slate-800 dark:text-white">{% translate "Mwenendo wa Kila Mwezi (Disbursements vs Collections)" %}</h4>
+            <div class="relative h-64">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Quick Access and Status Actions -->
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
+            <h4 class="text-base font-bold text-slate-800 dark:text-white">{% translate "Vitendo vya Haraka" %}</h4>
+            <div class="flex flex-col gap-3">
+                <a href="{% url 'client_register' %}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    <div class="p-2 bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-md">
+                        <i class="fa-solid fa-user-plus text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">{% translate "Sajili Mteja Mpya" %}</p>
+                        <p class="text-xs text-slate-500">{% translate "Ongeza taarifa za mteja na mdhamini" %}</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'loan_apply' %}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    <div class="p-2 bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-md">
+                        <i class="fa-solid fa-file-contract text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">{% translate "Omba Mkopo Mpya" %}</p>
+                        <p class="text-xs text-slate-500">{% translate "Tengeneza ombi jipya la mkopo" %}</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    <div class="p-2 bg-green-100 dark:bg-slate-700 text-green-600 dark:text-green-400 rounded-md">
+                        <i class="fa-solid fa-calendar-days text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">{% translate "Ufuatiliaji wa Leo" %}</p>
+                        <p class="text-xs text-slate-500">{% translate "Waliolipa na wasiolipa leo" %}</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Audit Logs -->
+    <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h4 class="text-base font-bold text-slate-800 dark:text-white mb-4">{% translate "Kumbukumbu za Matukio (Activity Audit Log)" %}</h4>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                        <th class="py-2.5">{% translate "Muda (Timestamp)" %}</th>
+                        <th class="py-2.5">{% translate "Mtumiaji" %}</th>
+                        <th class="py-2.5">{% translate "Kitendo (Action)" %}</th>
+                        <th class="py-2.5">{% translate "Maelezo (Description)" %}</th>
+                        <th class="py-2.5">{% translate "IP Address" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td class="py-3">{{ log.timestamp|date:"d M Y, H:i" }}</td>
+                        <td class="py-3 font-semibold">{{ log.user.username|default:"System" }}</td>
+                        <td class="py-3">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 dark:bg-slate-700">
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td class="py-3">{{ log.description }}</td>
+                        <td class="py-3 text-slate-500">{{ log.ip_address|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-4 text-center text-slate-400">{% translate "Kumbukumbu hakuna bado." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ChartJS Script Integration -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+
+    // Parse monthly trend data injected from view
+    const trendData = {{ monthly_data|safe }};
+    const labels = trendData.map(item => item.month);
+    const disbursementData = trendData.map(item => item.disbursement);
+    const collectionData = trendData.map(item => item.collection);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '{% translate "Mikopo Iliyotolewa" %}',
+                    data: disbursementData,
+                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                    borderColor: 'rgb(59, 130, 246)',
+                    borderWidth: 1
+                },
+                {
+                    label: '{% translate "Marejesho / Makusanyo" %}',
+                    data: collectionData,
+                    backgroundColor: 'rgba(34, 197, 94, 0.75)',
+                    borderColor: 'rgb(34, 197, 94)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(148, 163, 184, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#0f172a'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Idhinisha Reconciliation" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+        <h3 class="font-bold text-lg text-slate-800 dark:text-white">{% translate "Uhakiki wa Hesabu ya Siku ya Leo" %}</h3>
+        <p class="text-xs text-slate-500">{% translate "Thibitisha kuwa hesabu iliyowasilishwa na mhazini inalingana na miamala yote halisi." %}</p>
+    </div>
+
+    <div class="p-6 space-y-6">
+        <!-- Recon Summary -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-750 border rounded-lg space-y-3 text-sm">
+            <p><strong>{% translate "Tawi (Branch):" %}</strong> {{ recon.branch.name }}</p>
+            <p><strong>{% translate "Tarehe (Date):" %}</strong> {{ recon.date|date:"d M Y" }}</p>
+            <p><strong>{% translate "Mhazini (Cashier):" %}</strong> {{ recon.cashier.get_full_name }}</p>
+            <p><strong>{% translate "Calculated Balance:" %}</strong> TZS {{ recon.calculated_closing|localize }}</p>
+            <p><strong>{% translate "Actual Physical Cash:" %}</strong> <span class="font-bold">TZS {{ recon.actual_cash|localize }}</span></p>
+            <p><strong>{% translate "Tofauti (Difference):" %}</strong>
+                <span class="font-bold {% if recon.difference == 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    TZS {{ recon.difference|localize }}
+                </span>
+            </p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">{% translate "Uamuzi Wako:" %}</label>
+                <div class="flex items-center gap-6">
+                    <button type="submit" name="decision" value="CONFIRMED" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-sm transition">
+                        <i class="fa-solid fa-circle-check mr-1.5"></i>{% translate "THIBITISHA / CONFIRM" %}
+                    </button>
+                    <button type="submit" name="decision" value="REJECTED" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-sm transition">
+                        <i class="fa-solid fa-circle-xmark mr-1.5"></i>{% translate "KATAA / REJECT" %}
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t flex justify-end">
+                <a href="{% url 'reconciliation_list' %}" class="px-4 py-2 border rounded-lg text-sm font-semibold hover:bg-slate-100 transition">
+                    {% translate "Ghairi" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Mtiririko wa Fedha" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Mtiririko wa Fedha (Cash Flow Logs)" %}</h2>
+            <p class="text-slate-500">{% translate "Historia kamili ya fedha zote zilizoingia (collections, incomes) na zilizotoka (disbursements, expenses)." %}</p>
+        </div>
+
+        <div class="flex gap-2">
+            {% if user.role == 'CASHIER' %}
+            <a href="{% url 'daily_reconciliation' %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-lock mr-1.5"></i>{% translate "Funga Hesabu ya Siku" %}
+            </a>
+            {% endif %}
+            {% if user.role in 'CEO,MANAGER' %}
+            <a href="{% url 'reconciliation_list' %}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-file-shield mr-1.5"></i>{% translate "Hesabu za Kila Siku (EOD Approvals)" %}
+            </a>
+            {% endif %}
+            <a href="{% url 'record_office_cash_flow' %}" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-plus mr-1.5"></i>{% translate "Rekodi Mapato/Matumizi" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Branch (For managers/CEO) -->
+        {% if user.role in 'CEO,MANAGER' %}
+        <div>
+            <label for="branch" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Tawi" %}</label>
+            <select name="branch" id="branch" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+                <option value="">{% translate "Matawi Yote" %}</option>
+                {% for b in branches %}
+                <option value="{{ b.id }}" {% if branch_id == b.id|stringformat:"i" %}selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        <!-- Category -->
+        <div>
+            <label for="category" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Kundi (Category)" %}</label>
+            <select name="category" id="category" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+                <option value="">{% translate "Makundi Yote" %}</option>
+                <option value="DISBURSEMENT" {% if category_filter == 'DISBURSEMENT' %}selected{% endif %}>{% translate "Mikopo Iliyotolewa" %}</option>
+                <option value="COLLECTION" {% if category_filter == 'COLLECTION' %}selected{% endif %}>{% translate "Marejesho ya Mikopo" %}</option>
+                <option value="OFFICE_INCOME" {% if category_filter == 'OFFICE_INCOME' %}selected{% endif %}>{% translate "Mapato ya Ofisi" %}</option>
+                <option value="OFFICE_EXPENSE" {% if category_filter == 'OFFICE_EXPENSE' %}selected{% endif %}>{% translate "Matumizi ya Ofisi" %}</option>
+            </select>
+        </div>
+
+        <div class="flex items-end">
+            <button type="submit" class="w-full px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-filter mr-2"></i>{% translate "Chuja" %}
+            </button>
+        </div>
+    </form>
+
+    <!-- Cash Flow Table -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500 font-bold">
+                        <th class="p-4">{% translate "Tarehe/Muda" %}</th>
+                        <th class="p-4">{% translate "Tawi" %}</th>
+                        <th class="p-4">{% translate "Aina (Type)" %}</th>
+                        <th class="p-4">{% translate "Kundi (Category)" %}</th>
+                        <th class="p-4">{% translate "Maelezo (Description)" %}</th>
+                        <th class="p-4">{% translate "Kiasi (Amount)" %}</th>
+                        <th class="p-4">{% translate "Mtumiaji" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for f in flows %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-850">
+                        <td class="p-4 text-slate-500">{{ f.date|date:"d M Y, H:i" }}</td>
+                        <td class="p-4 font-semibold">{{ f.branch.name }}</td>
+                        <td class="p-4">
+                            {% if f.flow_type == 'IN' %}
+                            <span class="inline-flex items-center gap-1 text-green-600 font-bold text-xs bg-green-50 dark:bg-green-950/20 px-2 py-0.5 rounded border border-green-200 dark:border-green-900">
+                                <i class="fa-solid fa-arrow-trend-up"></i>{% translate "INGIZO" %}
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 text-red-600 font-bold text-xs bg-red-50 dark:bg-red-950/20 px-2 py-0.5 rounded border border-red-200 dark:border-red-900">
+                                <i class="fa-solid fa-arrow-trend-down"></i>{% translate "TOLEO" %}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 font-medium">{{ f.get_category_display }}</td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">{{ f.description|default:"-" }}</td>
+                        <td class="p-4 font-bold {% if f.flow_type == 'IN' %}text-green-600{% else %}text-red-600{% endif %}">
+                            TZS {{ f.amount|localize }}
+                        </td>
+                        <td class="p-4 text-xs text-slate-500">{{ f.recorded_by.get_full_name|default:f.recorded_by.username }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-slate-400">{% translate "Hakuna miamala iliyorekodiwa bado." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

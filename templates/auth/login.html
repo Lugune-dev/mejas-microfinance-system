@@ -1,0 +1,101 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% translate "Ingia Mfumoni" %} - MMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="h-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <!-- Logo and Title -->
+        <div class="flex justify-center">
+            <img src="{% static 'logo.png' %}" class="h-24 w-24 rounded-xl object-cover border-2 border-slate-300 dark:border-slate-700 shadow-md" alt="logo">
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            MEJAS MICROFINANCE
+        </h2>
+        <p class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+            {% translate "Mfumo wa Kidigitali wa Uendeshaji wa Ofisi (MMS)" %}
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white dark:bg-slate-900 py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-slate-200 dark:border-slate-800">
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mb-4 space-y-2">
+                {% for message in messages %}
+                <div class="p-3 rounded bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200 text-xs font-semibold">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form class="space-y-6" action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+
+                <div>
+                    <label for="id_username" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        {{ form.username.label }}
+                    </label>
+                    <div class="mt-1">
+                        {{ form.username }}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="id_password" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        {{ form.password.label }}
+                    </label>
+                    <div class="mt-1">
+                        {{ form.password }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="text-sm">
+                        <a href="{% url 'password_reset' %}" class="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400">
+                            {% translate "Umesahau password?" %}
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition">
+                        {% translate "Ingia (Login)" %}
+                    </button>
+                </div>
+            </form>
+
+            <!-- Divider language switcher -->
+            <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-500">Language / Lugha:</span>
+                <form action="/i18n/setlang/" method="post" class="inline-flex">
+                    {% csrf_token %}
+                    <select name="language" onchange="this.form.submit()" class="bg-transparent text-slate-700 dark:text-slate-300 border-none outline-none font-semibold">
+                        {% get_current_language as CURRENT_LANG %}
+                        {% get_available_languages as ALL_LANGS %}
+                        {% for lang in ALL_LANGS %}
+                            <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>
+                                {{ lang.1 }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

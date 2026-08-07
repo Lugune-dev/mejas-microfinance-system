@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load i18n l10n %}
+
+{% block title %}{% translate "Ufuatiliaji wa Marejesho ya Kila Siku" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Ufuatiliaji wa Marejesho ya Kila Siku" %}</h2>
+            <p class="text-slate-500">{% translate "Orodha ya wateja wanaopaswa kurejesha leo na hali ya marejesho yao." %}</p>
+        </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <form method="get" class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Branch filter -->
+        <div>
+            <label for="branch" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Tawi" %}</label>
+            <select name="branch" id="branch" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+                <option value="">{% translate "Matawi Yote" %}</option>
+                {% for b in branches %}
+                <option value="{{ b.id }}" {% if branch_id == b.id|stringformat:"i" %}selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Officer filter -->
+        <div>
+            <label for="officer" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Loan Officer" %}</label>
+            <select name="officer" id="officer" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+                <option value="">{% translate "Makamu Wote (All Officers)" %}</option>
+                {% for o in officers %}
+                <option value="{{ o.id }}" {% if officer_id == o.id|stringformat:"i" %}selected{% endif %}>{{ o.get_full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Action Button -->
+        <div class="flex items-end">
+            <button type="submit" class="w-full px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
+                <i class="fa-solid fa-filter mr-2"></i>{% translate "Chuja (Apply Filters)" %}
+            </button>
+        </div>
+    </form>
+
+    <!-- Tracking List Table -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Marejesho ya Leo (Today's Scheduled Installments)" %}</h4>
+            <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full font-bold">
+                {{ schedules.count }} {% translate "Wateja" %}
+            </span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
+                        <th class="p-4">{% translate "Mteja" %}</th>
+                        <th class="p-4">{% translate "Loan ID" %}</th>
+                        <th class="p-4">{% translate "Officer" %}</th>
+                        <th class="p-4">{% translate "Kiasi cha Kulipa Leo" %}</th>
+                        <th class="p-4">{% translate "Kiasi Kilicholipwa" %}</th>
+                        <th class="p-4">{% translate "Hali (Status)" %}</th>
+                        <th class="p-4">{% translate "Vitendo" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for s in schedules %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-850">
+                        <!-- Client name & phone -->
+                        <td class="p-4">
+                            <div class="font-semibold text-slate-800 dark:text-white">{{ s.loan.client.get_full_name }}</div>
+                            <div class="text-xs text-slate-500">{{ s.loan.client.phone|default:"-" }}</div>
+                        </td>
+                        <td class="p-4 font-semibold text-brand-600">{{ s.loan.loan_id }}</td>
+                        <td class="p-4 text-slate-600 dark:text-slate-300">{{ s.loan.officer.get_full_name|default:"-" }}</td>
+                        <td class="p-4 font-semibold text-slate-800 dark:text-slate-200">TZS {{ s.installment_amount|localize }}</td>
+                        <td class="p-4 font-medium text-slate-800 dark:text-slate-200">TZS {{ s.paid_amount|localize }}</td>
+
+                        <!-- Color status display (Green for paid today, Red for unpaid today) -->
+                        <td class="p-4">
+                            {% if s.status == 'PAID' %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                                <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                                {% translate "AMELIPA" %}
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300">
+                                <span class="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                                {% translate "HAJARIPA" %}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-2">
+                                <a href="{% url 'loan_detail' s.loan.pk %}" class="text-xs font-medium text-slate-600 hover:underline">
+                                    <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
+                                </a>
+                                {% if s.status != 'PAID' and user.role in 'CEO,MANAGER,CASHIER,OFFICER' %}
+                                <a href="{% url 'payment_record' s.loan.pk %}" class="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-semibold transition">
+                                    <i class="fa-solid fa-cash-register mr-1"></i>{% translate "Lipisha" %}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-slate-400">
+                            {% translate "Hakuna marejesho yaliyopangwa kwa siku ya leo kulingana na vichujio vyako." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
