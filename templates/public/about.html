@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate "Mejas Microfinance - Kuhusu Sisi" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+    <!-- Header Section -->
+    <div class="text-center mb-12">
+        <div class="inline-block p-4 bg-brand-50 dark:bg-brand-900 rounded-full mb-4">
+            <img src="{% static 'logo.png' %}" class="h-20 w-20 rounded-full object-cover border-2 border-brand-500 shadow-md" alt="logo">
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-800 dark:text-white mb-2">
+            {% translate "Kuhusu Mejas Enterprises" %}
+        </h1>
+        <p class="text-brand-500 font-bold tracking-wider uppercase text-sm">
+            {% translate "Kuhusu Sisi & Maadili Yetu ya Msingi" %}
+        </p>
+        <div class="h-1 w-20 bg-brand-500 mx-auto rounded-full mt-4"></div>
+    </div>
+
+    <!-- Company Background -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-md border-b-4 border-brand-500 mb-10">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">
+            {% translate "Sisi ni Nani?" %}
+        </h2>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 text-base">
+            {% translate "Mejas Enterprises ni taasisi ya kifedha inayojitolea kutoa huduma za mikopo ya kiwango kidogo na cha kati (Microfinance) ili kuwawezesha wajasiriamali, vikundi vya kijamii, na watu binafsi kukuza biashara zao na kufikia malengo yao ya kiuchumi nchini Tanzania." %}
+        </p>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-base">
+            {% translate "Kupitia Mfumo wetu mpya wa MMS (Microfinance Management System), tunaleta huduma zote za uendeshaji katika ulimwengu wa kidigitali ili kuongeza ufanisi wa huduma, kurahisisha marejesho ya mikopo na kuleta uwazi kamili kwa wateja wetu na wadau wote." %}
+        </p>
+    </div>
+
+    <!-- Mission & Vision Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <!-- Vision -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-md border-t-4 border-brand-500">
+            <div class="w-12 h-12 rounded-full bg-brand-50 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-eye text-xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-3">{% translate "Maono Yetu (Vision)" %}</h3>
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                {% translate "Kuwa taasisi inayoongoza nchini kwa kutoa suluhu rahisi, za haraka na za kidigitali za kifedha kwa jamii zote, tukiwa na mchango chanya kwenye kukuza uchumi na kuondoa umaskini." %}
+            </p>
+        </div>
+
+        <!-- Mission -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-md border-t-4 border-brand-500">
+            <div class="w-12 h-12 rounded-full bg-brand-50 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-bullseye text-xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-3">{% translate "Lengo Letu Kuu (Mission)" %}</h3>
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                {% translate "Kurahisisha upatikanaji wa mikopo salama kwa wajasiriamali wadogo na wa kati kupitia ubunifu wa kidigitali, huduma bora za wateja, na usimamizi madhubuti wa rasilimali fedha." %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Core Values Section -->
+    <div class="mb-12">
+        <h2 class="text-2xl font-bold text-center text-slate-800 dark:text-white mb-8">
+            {% translate "Maadili yetu ya Msingi (Core Values)" %}
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm text-center">
+                <div class="text-brand-500 text-2xl mb-3"><i class="fa-solid fa-handshake"></i></div>
+                <h4 class="font-bold text-slate-800 dark:text-white mb-1">{% translate "Uwazi (Transparency)" %}</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-xs">{% translate "Mahesabu na riba wazi bila gharama zilizofichika." %}</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm text-center">
+                <div class="text-brand-500 text-2xl mb-3"><i class="fa-solid fa-award"></i></div>
+                <h4 class="font-bold text-slate-800 dark:text-white mb-1">{% translate "Uaminifu (Integrity)" %}</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-xs">{% translate "Kutunza siri na mikataba ya wateja kwa weledi wa juu." %}</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm text-center">
+                <div class="text-brand-500 text-2xl mb-3"><i class="fa-solid fa-bolt"></i></div>
+                <h4 class="font-bold text-slate-800 dark:text-white mb-1">{% translate "Ufanisi (Efficiency)" %}</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-xs">{% translate "Utoaji na kuidhinisha mikopo kwa muda mfupi zaidi." %}</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm text-center">
+                <div class="text-brand-500 text-2xl mb-3"><i class="fa-solid fa-shield-halved"></i></div>
+                <h4 class="font-bold text-slate-800 dark:text-white mb-1">{% translate "Usalama (Security)" %}</h4>
+                <p class="text-slate-500 dark:text-slate-400 text-xs">{% translate "Kuhifadhi data na miamala kwa njia salama na msimbo." %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Five Roles Section -->
+    <div class="bg-slate-100 dark:bg-slate-800 rounded-2xl p-8 mb-6">
+        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">
+            {% translate "Usimamizi wa Majukumu ya Watumiaji (User Roles)" %}
+        </h3>
+        <p class="text-slate-600 dark:text-slate-300 text-center max-w-2xl mx-auto mb-8 text-sm">
+            {% translate "Mfumo wa MMS umejengwa kwa kuzingatia mgawanyo wa majukumu (Role-Based Access Control) ili kuhakikisha kila mtumiaji anaona tu kile anachostahili kulingana na kazi yake:" %}
+        </p>
+
+        <div class="space-y-4">
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl flex items-start gap-4">
+                <span class="bg-brand-500 text-slate-900 font-bold px-3 py-1 rounded text-xs mt-1">1</span>
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white">{% translate "CEO / Mkurugenzi" %}</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">{% translate "Ana mamlaka kamili ya kuona taarifa zote, ripoti za jumla za kifedha, utendaji wa matawi na maamuzi makubwa ya uwekezaji." %}</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl flex items-start gap-4">
+                <span class="bg-brand-500 text-slate-900 font-bold px-3 py-1 rounded text-xs mt-1">2</span>
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Meneja (Manager)" %}</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">{% translate "Anahusika na kuidhinisha maombi ya mikopo, kusimamia kazi za kila siku za ofisi na watumishi (Officers na Cashier), pamoja na kupata ripoti." %}</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl flex items-start gap-4">
+                <span class="bg-brand-500 text-slate-900 font-bold px-3 py-1 rounded text-xs mt-1">3</span>
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Mhazini (Cashier)" %}</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">{% translate "Hufanya malipo (disbursement), anapokea marejesho ya mikopo (payment collection) na kufanya hesabu ya siku kila siku (End of Day reconciliation)." %}</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl flex items-start gap-4">
+                <span class="bg-brand-500 text-slate-900 font-bold px-3 py-1 rounded text-xs mt-1">4</span>
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Afisa Mikopo (Loan Officer)" %}</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">{% translate "Anasajili wateja wapya, anajaza fomu za maombi, na kufuatilia marejesho ya wateja wake kila siku kwenye uwanja wa kazi." %}</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl flex items-start gap-4">
+                <span class="bg-brand-500 text-slate-900 font-bold px-3 py-1 rounded text-xs mt-1">5</span>
+                <div>
+                    <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Mteja (Client)" %}</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">{% translate "Anaona historia ya mkopo wake, salio lake la sasa la deni, na ratiba nzima ya marejesho inayofuata." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

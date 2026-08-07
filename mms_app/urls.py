@@ -2,8 +2,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Public Pages
+    path("", views.home_view, name="home"),
+    path("about/", views.about_view, name="about"),
+    path("contact/", views.contact_view, name="contact"),
+
     # Auth
-    path("", views.mms_login, name="login"),
+    path("login/", views.mms_login, name="login"),
     path("logout/", views.mms_logout, name="logout"),
     path("password-reset/", views.password_reset_view, name="password_reset"),
     path("password-change/", views.password_change_view, name="password_change"),
