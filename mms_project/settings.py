@@ -71,8 +71,15 @@ WSGI_APPLICATION = "mms_project.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres.pvpctrtncdrbbdhjlmsv",
+        "PASSWORD": "##LugunE66**",
+        "HOST": "aws-0-eu-central-1.pooler.supabase.com",
+        "PORT": "6543",
+        "OPTIONS": {
+            "sslmode": "require",
+        },
     }
 }
 
@@ -139,3 +146,4 @@ LOGOUT_REDIRECT_URL = "login"
 
 # Email backend for development / console output
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

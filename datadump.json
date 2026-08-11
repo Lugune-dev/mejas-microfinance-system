@@ -1,0 +1,1070 @@
+[
+{
+    "model": "sessions.session",
+    "pk": "4azf5fsq5mwlqw7fsrxtc6dawzu5u3nj",
+    "fields": {
+        "session_data": ".eJxVjMEOwiAQRP-FsyFQCQWP3v0GsrvsStXQpLQn479Lkx70NnnzZt4qwbaWtDVe0pTVRVl1-mUI9OS6F_kB9T5rmuu6TKh3RR9t07c58-t6uH8HBVrpa3AOHBpjvET0nLNIOEcYwIbBowSy4rAHCCKRxrETE0WIIxkfHKvPFwoZOTo:1wsHAD:80jvFak2FlafxdBR4tdXvAAu3tAtEHSInV3T3mHh1AY",
+        "expire_date": "2026-08-21T09:46:53.396Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "dsi3g0wmq2sm7hsu1asmyrurzzv298cg",
+    "fields": {
+        "session_data": ".eJxVjDsOwjAQBe_iGllrx19K-pzB2vUaHECOFCcV4u4QKQW0b2beSyTc1pq2XpY0sTgLK06_G2F-lLYDvmO7zTLPbV0mkrsiD9rlOHN5Xg7376Bir986FCDCYoMyEfJg6DoY0N6gjsWbDAodkGGLzKQiE4HzDC54xKwCaPH-AOY9N-I:1wtgKK:9sy1864IVtPZxYtU_7hLsJ8w0wJLM86dBxr6TdwzCAo",
+        "expire_date": "2026-08-25T06:51:08.264Z"
+    }
+},
+{
+    "model": "mms_app.branch",
+    "pk": 1,
+    "fields": {
+        "name": "Dar es Salaam (HQ)",
+        "location": "Sam Nujoma Road, Dar es Salaam",
+        "created_at": "2026-08-07T09:41:14.558Z"
+    }
+},
+{
+    "model": "mms_app.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1500000$xEULNI0O6cnvlYlpgRucd8$AEQsiO5Cxtnq1z6+TfhCGTke2xhai+W2Igs5b9MqbkI=",
+        "last_login": "2026-08-07T09:46:53.390Z",
+        "is_superuser": false,
+        "username": "ceo",
+        "first_name": "John",
+        "last_name": "Meja",
+        "email": "ceo@mejas.co.tz",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-07T09:41:14.563Z",
+        "role": "CEO",
+        "branch": null,
+        "phone": "+255711111111",
+        "nida": "19900101-11111-00001-11",
+        "photo": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "mms_app.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$6sxDZWA6D09PxNk2AVVfwd$10nBO208NGdh/82BM4TWzkRAbKE2+haHQ5hU0uKMh/Q=",
+        "last_login": "2026-08-10T09:50:08.105Z",
+        "is_superuser": false,
+        "username": "manager",
+        "first_name": "Amina",
+        "last_name": "Said",
+        "email": "manager@mejas.co.tz",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-07T09:41:15.848Z",
+        "role": "MANAGER",
+        "branch": 1,
+        "phone": "+255722222222",
+        "nida": "19920202-22222-00002-22",
+        "photo": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "mms_app.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$a2F98bOrOKhZNYB7Ukdd4b$nXJCrVdfXRN6maxhr8jFLnb4nFCN54pDsH/+aW0RPWM=",
+        "last_login": "2026-08-10T09:52:25.328Z",
+        "is_superuser": false,
+        "username": "cashier",
+        "first_name": "David",
+        "last_name": "Temu",
+        "email": "cashier@mejas.co.tz",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-07T09:41:17.131Z",
+        "role": "CASHIER",
+        "branch": 1,
+        "phone": "+255733333333",
+        "nida": "19930303-33333-00003-33",
+        "photo": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "mms_app.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$6bJGRPJkZ3Q3NBYDbLstmW$yA9TbCXSo+JU5mVpmX0JdfbI7ZJGyXeQP60DGI+mC14=",
+        "last_login": "2026-08-10T09:54:46.713Z",
+        "is_superuser": false,
+        "username": "officer",
+        "first_name": "Grace",
+        "last_name": "Lema",
+        "email": "officer@mejas.co.tz",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-07T09:41:18.403Z",
+        "role": "OFFICER",
+        "branch": 1,
+        "phone": "+255744444444",
+        "nida": "19940404-44444-00004-44",
+        "photo": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "mms_app.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$21xVnAu1GTfc9qiUaSJPys$QPXgVkfDNWpV5Io6VxwlBM7FvZlbff8jLlEJfl9EOeo=",
+        "last_login": "2026-08-11T06:51:08.125Z",
+        "is_superuser": false,
+        "username": "client",
+        "first_name": "Juma",
+        "last_name": "Kaseja",
+        "email": "client@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-08-07T09:41:19.679Z",
+        "role": "CLIENT",
+        "branch": 1,
+        "phone": "+255755555555",
+        "nida": "19950505-55555-00005-55",
+        "photo": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "mms_app.user",
+    "fields": {
+        "password": "pbkdf2_sha256$600000$DifNITA0cT1542481NdXnj$zrMPRnqoEEwQc+9HQnSQ9w6IbTsHO3TpuxJ8OGoLWZQ=",
+        "last_login": "2026-08-10T09:31:18.638Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "Admin",
+        "last_name": "User",
+        "email": "admin@mejas.co.tz",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-08-10T08:02:52.710Z",
+        "role": "ADMIN",
+        "branch": 1,
+        "phone": "+255766666666",
+        "nida": "19960606-66666-00006-66",
+        "photo": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "mms_app.clientprofile",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "address": "Kijitonyama, Dar es Salaam",
+        "guarantor_name": "Rashid Juma",
+        "guarantor_phone": "+255766666666",
+        "guarantor_nida": "19850505-88888-00008-88",
+        "guarantor_address": "Sinza, Dar es Salaam",
+        "guarantor_relationship": "Kaka (Brother)",
+        "created_at": "2026-08-07T09:41:20.948Z"
+    }
+},
+{
+    "model": "mms_app.loan",
+    "pk": 1,
+    "fields": {
+        "loan_id": "LN-20260810-0001",
+        "client": [
+            "client"
+        ],
+        "officer": [
+            "officer"
+        ],
+        "branch": 1,
+        "principal_amount": "200000.00",
+        "interest_rate": "10.00",
+        "duration": 30,
+        "frequency": "DAILY",
+        "total_repayable": "220000.00",
+        "installment_amount": "7333.33",
+        "balance": "220000.00",
+        "status": "ACTIVE",
+        "application_date": "2026-08-10",
+        "approval_date": "2026-08-10",
+        "approved_by": [
+            "manager"
+        ],
+        "disbursement_date": "2026-08-10",
+        "disbursed_by": [
+            "cashier"
+        ],
+        "penalty_rate": "4.00",
+        "penalty_accumulated": "0.00",
+        "created_at": "2026-08-10T09:38:51.829Z",
+        "updated_at": "2026-08-10T12:26:10.489Z"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 1,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-11",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 2,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-12",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 3,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-13",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 4,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-14",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 5,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-15",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 6,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-16",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 7,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-17",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 8,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-18",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 9,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-19",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 10,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-20",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 11,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-21",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 12,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-22",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 13,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-23",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 14,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-24",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 15,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-25",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 16,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-26",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 17,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-27",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 18,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-28",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 19,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-29",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 20,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-30",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 21,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-08-31",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 22,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-01",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 23,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-02",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 24,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-03",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 25,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-04",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 26,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-05",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 27,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-06",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 28,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-07",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 29,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-08",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.repaymentschedule",
+    "pk": 30,
+    "fields": {
+        "loan": 1,
+        "due_date": "2026-09-09",
+        "installment_amount": "7333.33",
+        "paid_amount": "0.00",
+        "status": "UNPAID"
+    }
+},
+{
+    "model": "mms_app.cashflow",
+    "pk": 1,
+    "fields": {
+        "branch": 1,
+        "flow_type": "OUT",
+        "category": "DISBURSEMENT",
+        "amount": "200000.00",
+        "date": "2026-08-10T09:53:32.182Z",
+        "description": "Disbursement for Loan LN-20260810-0001",
+        "recorded_by": [
+            "cashier"
+        ]
+    }
+},
+{
+    "model": "mms_app.dailyreconciliation",
+    "pk": 1,
+    "fields": {
+        "branch": 1,
+        "date": "2026-08-10",
+        "cashier": [
+            "cashier"
+        ],
+        "opening_balance": "0.00",
+        "total_received": "0.00",
+        "total_disbursed": "0.00",
+        "calculated_closing": "0.00",
+        "actual_cash": "400000.00",
+        "difference": "400000.00",
+        "status": "PENDING",
+        "confirmed_by": null,
+        "confirmation_date": null,
+        "created_at": "2026-08-10T09:29:16.230Z"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "ceo"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch HQ",
+        "timestamp": "2026-08-07T09:46:53.393Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T08:38:49.275Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T08:41:06.189Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 4,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T08:42:03.917Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 5,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T08:45:31.901Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 6,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T08:49:33.624Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 7,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T08:52:15.674Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 8,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T08:57:33.459Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 9,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:05:07.761Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 10,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:09:41.738Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 11,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:12:34.653Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 12,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:13:01.565Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 13,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:24:14.545Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 14,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:24:44.020Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 15,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:26:59.674Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 16,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:27:16.397Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 17,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "DAILY_RECONCILIATION_SUBMITTED",
+        "description": "Submitted EOD Cash Reconciliation for branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:29:16.348Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 18,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:29:51.881Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 19,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:30:10.911Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 20,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:30:56.051Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 21,
+    "fields": {
+        "user": [
+            "officer"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:35:25.046Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 22,
+    "fields": {
+        "user": [
+            "officer"
+        ],
+        "action": "LOAN_APPLICATION",
+        "description": "Submitted loan application of TZS 200000 for client Juma Kaseja",
+        "timestamp": "2026-08-10T09:38:52.085Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 23,
+    "fields": {
+        "user": [
+            "officer"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:40:00.598Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 24,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:41:27.155Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 25,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:49:36.836Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 26,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:50:08.173Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 27,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "LOAN_APPROVAL_APPROVED",
+        "description": "Loan LN-20260810-0001 has been APPROVED by Amina Said",
+        "timestamp": "2026-08-10T09:51:36.694Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 28,
+    "fields": {
+        "user": [
+            "manager"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:52:06.628Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 29,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:52:25.401Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 30,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "LOAN_DISBURSEMENT",
+        "description": "Disbursed TZS 200000.00 for loan LN-20260810-0001",
+        "timestamp": "2026-08-10T09:53:32.258Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 31,
+    "fields": {
+        "user": [
+            "cashier"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:54:16.003Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 32,
+    "fields": {
+        "user": [
+            "officer"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:54:46.797Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 33,
+    "fields": {
+        "user": [
+            "officer"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T09:57:51.649Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 34,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T09:58:14.510Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 35,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T10:02:02.608Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 36,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-10T12:24:53.832Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 37,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGOUT",
+        "description": "User logged out",
+        "timestamp": "2026-08-10T12:26:28.854Z",
+        "ip_address": "127.0.0.1"
+    }
+},
+{
+    "model": "mms_app.auditlog",
+    "pk": 38,
+    "fields": {
+        "user": [
+            "client"
+        ],
+        "action": "USER_LOGIN",
+        "description": "User logged in successfully from branch Dar es Salaam (HQ)",
+        "timestamp": "2026-08-11T06:51:08.195Z",
+        "ip_address": "127.0.0.1"
+    }
+}
+]

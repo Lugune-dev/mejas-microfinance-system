@@ -41,8 +41,8 @@ class User(AbstractUser):
         related_name="users",
         verbose_name=_("Branch"),
     )
-    phone = models.CharField(_("Phone Number"), max_length=20, blank=True, null=True)
-    nida = models.CharField(_("NIDA ID Number"), max_length=20, blank=True, null=True)
+    phone = models.CharField(_("Phone Number"), max_length=50, blank=True, null=True)
+    nida = models.CharField(_("NIDA ID Number"), max_length=50, blank=True, null=True)
     photo = models.ImageField(_("Photo"), upload_to="user_photos/", blank=True, null=True)
 
     def __str__(self):
@@ -66,8 +66,8 @@ class ClientProfile(models.Model):
 
     # Guarantor details
     guarantor_name = models.CharField(_("Guarantor Full Name"), max_length=150)
-    guarantor_phone = models.CharField(_("Guarantor Phone Number"), max_length=20)
-    guarantor_nida = models.CharField(_("Guarantor NIDA ID"), max_length=20, blank=True, null=True)
+    guarantor_phone = models.CharField(_("Guarantor Phone Number"), max_length=50)
+    guarantor_nida = models.CharField(_("Guarantor NIDA ID"), max_length=50, blank=True, null=True)
     guarantor_address = models.CharField(_("Guarantor Address"), max_length=255, blank=True, null=True)
     guarantor_relationship = models.CharField(_("Relationship to Client"), max_length=100, blank=True, null=True)
 
