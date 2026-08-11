@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from mms_app.models import Branch, User, ClientProfile
 
 class Command(BaseCommand):
-    help = "Seeds the database with test accounts for the 5 different roles as requested in SRS."
+    help = "Seeds the database with test accounts for the core roles: CEO/Admin, Manager, Cashier, Loan Officer, and Client."
 
     def handle(self, *args, **options):
         self.stdout.write("Seeding test accounts...")
@@ -18,7 +18,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f"Branch already exists: {branch.name}")
 
-        # 2. CEO / Mkurugenzi
+        # 2. CEO / Admin
         ceo, created = User.objects.get_or_create(
             username="ceo",
             defaults={
@@ -38,7 +38,33 @@ class Command(BaseCommand):
         else:
             self.stdout.write("CEO user already exists.")
 
-        # 3. Manager
+        # 3. Admin
+        admin, created = User.objects.get_or_create(
+            username="admin",
+            defaults={
+                "first_name": "Admin",
+                "last_name": "User",
+                "email": "admin@mejas.co.tz",
+                "role": User.Role.ADMIN,
+                "branch": branch,
+                "phone": "+255766666666",
+                "nida": "19960606-66666-00006-66",
+                "is_active": True,
+                "is_staff": True,
+                "is_superuser": True,
+            }
+        )
+        if created:
+            admin.set_password("Admin_password123")
+            admin.save()
+            self.stdout.write("Created Admin user: username 'admin', password 'Admin_password123'")
+        else:
+            admin.is_staff = True
+            admin.is_superuser = True
+            admin.save()
+            self.stdout.write("Admin user already exists and has been granted staff/superuser rights.")
+
+        # 4. Manager
         manager, created = User.objects.get_or_create(
             username="manager",
             defaults={

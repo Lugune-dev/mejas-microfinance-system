@@ -20,7 +20,8 @@ class Branch(models.Model):
 
 class User(AbstractUser):
     class Role(models.TextChoices):
-        CEO = "CEO", _("CEO / Mkurugenzi")
+        CEO = "CEO", _("CEO / Admin")
+        ADMIN = "ADMIN", _("Administrator")
         MANAGER = "MANAGER", _("Manager")
         CASHIER = "CASHIER", _("Cashier (Mhazini)")
         OFFICER = "OFFICER", _("Loan Officer")

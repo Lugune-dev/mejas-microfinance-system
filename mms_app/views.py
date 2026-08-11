@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.db.models import Sum, Q, Count
@@ -18,7 +19,7 @@ from .models import (
 from .forms import (
     MMSLoginForm, UserForm, ClientRegistrationForm, ClientProfileForm,
     LoanApplicationForm, LoanApprovalForm, PaymentRecordingForm,
-    OfficeCashFlowForm, DailyReconciliationForm, PasswordResetForm
+    OfficeCashFlowForm, DailyReconciliationForm, PasswordChangeForm, PasswordResetForm
 )
 from .utils import log_activity
 
@@ -40,6 +41,10 @@ def mms_login(request):
             login(request, user)
             log_activity(user, "USER_LOGIN", f"User logged in successfully from branch {user.branch.name if user.branch else 'HQ'}", request)
             messages.success(request, _("Karibu tena, {}!").format(user.get_full_name() or user.username))
+
+            next_url = request.POST.get("next") or request.GET.get("next")
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
             return redirect("dashboard")
         else:
             messages.error(request, _("Jina la mtumiaji au password si sahihi."))
@@ -111,29 +116,32 @@ def dashboard_view(request):
     today = datetime.date.today()
     branch_filter = request.GET.get("branch")
     selected_branch = None
-    if branch_filter and user.role in [User.Role.CEO, User.Role.MANAGER]:
+    if branch_filter and user.role in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         selected_branch = Branch.objects.filter(id=branch_filter).first()
     else:
         selected_branch = user.branch
 
     # We can query based on branch
-    branch_q = Q(branch=selected_branch) if selected_branch else Q()
+    branch_q_loans = Q(branch=selected_branch) if selected_branch else Q()
+    branch_q_payments = Q(loan__branch=selected_branch) if selected_branch else Q()
 
-    if role in [User.Role.CEO, User.Role.MANAGER]:
-        # CEO / Manager Metrics
+    if role in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
+        # CEO / Admin / Manager Metrics
         context["branches"] = Branch.objects.all()
         context["selected_branch"] = selected_branch
-
-        loans = Loan.objects.filter(branch_q)
+        loans = Loan.objects.filter(branch_q_loans)
         context["total_disbursed"] = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(sum=Sum("principal_amount"))["sum"] or Decimal("0.00")
         context["total_repayments_expected"] = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(sum=Sum("total_repayable"))["sum"] or Decimal("0.00")
 
-        # Total collections
-        context["total_collections"] = Payment.objects.filter(loan__branch_q if selected_branch else Q()).aggregate(sum=Sum("amount_paid"))["sum"] or Decimal("0.00")
+        # Total collections (payments tied to loans in the selected branch)
+        context["total_collections"] = Payment.objects.filter(branch_q_payments).aggregate(sum=Sum("amount_paid"))["sum"] or Decimal("0.00")
         context["active_loans_count"] = loans.filter(status=Loan.Status.ACTIVE).count()
         context["overdue_loans_count"] = loans.filter(status=Loan.Status.OVERDUE).count()
         context["pending_loans_count"] = loans.filter(status=Loan.Status.PENDING).count()
-        context["clients_count"] = User.objects.filter(role=User.Role.CLIENT).filter(branch=selected_branch if selected_branch else Q()).count()
+        clients_q = User.objects.filter(role=User.Role.CLIENT)
+        if selected_branch:
+            clients_q = clients_q.filter(branch=selected_branch)
+        context["clients_count"] = clients_q.count()
 
         # Monthly trend - last 6 months for chart
         monthly_data = []
@@ -212,7 +220,7 @@ def dashboard_view(request):
 
 @login_required
 def user_list_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
     users = User.objects.all().order_by("role", "username")
     return render(request, "users/user_list.html", {"users": users})
@@ -220,7 +228,7 @@ def user_list_view(request):
 
 @login_required
 def user_create_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
     if request.method == "POST":
         form = UserForm(request.POST, request.FILES)
@@ -238,7 +246,7 @@ def user_create_view(request):
 
 @login_required
 def user_update_view(request, pk):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
     target_user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
@@ -257,7 +265,7 @@ def user_update_view(request, pk):
 
 @login_required
 def user_toggle_status_view(request, pk):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
     target_user = get_object_or_404(User, pk=pk)
     if target_user == request.user:
@@ -275,7 +283,7 @@ def user_toggle_status_view(request, pk):
 
 @login_required
 def client_register_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.OFFICER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     if request.method == "POST":
@@ -306,7 +314,7 @@ def client_register_view(request):
 
 @login_required
 def client_list_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.OFFICER, User.Role.CASHIER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER, User.Role.CASHIER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     search_query = request.GET.get("q", "")
@@ -329,7 +337,7 @@ def client_list_view(request):
 
 @login_required
 def client_detail_view(request, pk):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.OFFICER, User.Role.CASHIER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER, User.Role.CASHIER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     client_user = get_object_or_404(User, pk=pk, role=User.Role.CLIENT)
@@ -343,7 +351,7 @@ def client_detail_view(request, pk):
 
 @login_required
 def client_edit_view(request, pk):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.OFFICER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     client_user = get_object_or_404(User, pk=pk, role=User.Role.CLIENT)
@@ -379,7 +387,7 @@ def client_edit_view(request, pk):
 
 @login_required
 def loan_apply_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.OFFICER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     if request.method == "POST":
@@ -460,7 +468,7 @@ def loan_detail_view(request, pk):
 
 @login_required
 def loan_approve_view(request, pk):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     loan = get_object_or_404(Loan, pk=pk, status=Loan.Status.PENDING)
@@ -488,7 +496,7 @@ def loan_approve_view(request, pk):
 @login_required
 def loan_disburse_view(request, pk):
     """Cashier disburses funds, initiating active schedules and recording cash flow out"""
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.CASHIER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     loan = get_object_or_404(Loan, pk=pk, status=Loan.Status.APPROVED)
@@ -546,7 +554,7 @@ def loan_disburse_view(request, pk):
 @login_required
 def payment_record_view(request, pk):
     """Recorded by Cashier or Officer"""
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     loan = get_object_or_404(Loan, pk=pk, status__in=[Loan.Status.ACTIVE, Loan.Status.OVERDUE])
@@ -617,7 +625,7 @@ def payment_record_view(request, pk):
 
 @login_required
 def daily_repayment_tracking_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     today = datetime.date.today()
@@ -648,7 +656,7 @@ def daily_repayment_tracking_view(request):
 
 @login_required
 def cash_flow_list_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.CASHIER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     flows = CashFlow.objects.all().order_by("-date")
@@ -659,7 +667,7 @@ def cash_flow_list_view(request):
             flows = flows.filter(branch=request.user.branch)
 
     branch_id = request.GET.get("branch", "")
-    if branch_id and request.user.role in [User.Role.CEO, User.Role.MANAGER]:
+    if branch_id and request.user.role in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         flows = flows.filter(branch_id=branch_id)
 
     category_filter = request.GET.get("category", "")
@@ -678,7 +686,7 @@ def cash_flow_list_view(request):
 
 @login_required
 def office_cash_flow_record_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER, User.Role.CASHIER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     if request.method == "POST":
@@ -754,7 +762,7 @@ def daily_reconciliation_view(request):
 
 @login_required
 def reconciliation_list_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     recons = DailyReconciliation.objects.all().order_by("-date")
@@ -763,7 +771,7 @@ def reconciliation_list_view(request):
 
 @login_required
 def reconciliation_approve_view(request, pk):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     recon = get_object_or_404(DailyReconciliation, pk=pk, status=DailyReconciliation.Status.PENDING)
@@ -793,14 +801,14 @@ def reconciliation_approve_view(request, pk):
 
 @login_required
 def reports_menu_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
     return render(request, "reports/menu.html")
 
 
 @login_required
 def generate_report_view(request, report_type):
-    if request.user.role not in [User.Role.CEO, User.Role.MANAGER]:
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
     start_date_str = request.GET.get("start_date")
