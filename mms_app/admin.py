@@ -3,6 +3,10 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
 from .models import User, Branch, ClientProfile, Loan, Payment, CashFlow, DailyReconciliation, AuditLog, RepaymentSchedule
 
+admin.site.site_header = "MEJAS MMS ADMIN"
+admin.site.site_title = "Mejas Microfinance System"
+admin.site.index_title = "Usimamizi wa Mfumo"
+
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):

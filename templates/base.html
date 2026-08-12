@@ -107,6 +107,11 @@
                     <i class="fa-solid fa-user-gear w-5"></i>
                     <span>{% translate "Watumiaji (Users)" %}</span>
                 </a>
+
+                <a href="{% url 'audit_log_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'audit_log_list' %}bg-brand-800 text-white{% endif %}">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                    <span>{% translate "Audit/Activity Logs" %}</span>
+                </a>
                 {% endif %}
 
                 <div class="pt-4 mt-4 border-t border-brand-800 dark:border-slate-800">
@@ -199,6 +204,42 @@
                         </div>
                     </form>
 
+                    <!-- In-app Notifications Dropdown -->
+                    {% if user.is_authenticated %}
+                    <div class="relative" id="notification-dropdown">
+                        <button id="notification-btn" type="button" class="relative text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none rounded-full text-sm p-2 transition-colors duration-200">
+                            <i class="fa-solid fa-bell text-base"></i>
+                            <!-- Dynamic Badge -->
+                            <span id="notif-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold leading-none text-white bg-red-600 rounded-full {% if not user.notifications.all %}hidden{% endif %}">
+                                {{ user.notifications.all.count }}
+                            </span>
+                        </button>
+                        <!-- Dropdown panel -->
+                        <div id="notification-menu" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
+                            <div class="p-3 bg-brand-900 text-white font-bold text-xs tracking-wider flex items-center justify-between border-b border-brand-800">
+                                <span>{% translate "Arifa za Mfumo" %}</span>
+                                <span class="bg-brand-500 text-slate-900 text-[10px] px-1.5 py-0.5 rounded-full font-extrabold">{{ user.notifications.all.count }}</span>
+                            </div>
+                            <div class="divide-y divide-slate-100 dark:divide-slate-700 max-h-64 overflow-y-auto">
+                                {% for n in user.notifications.all|slice:":5" %}
+                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                                    <p class="text-xs font-bold text-slate-800 dark:text-slate-100">{{ n.title }}</p>
+                                    <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{{ n.message }}</p>
+                                    <p class="text-[9px] text-slate-400 mt-1.5 flex items-center gap-1">
+                                        <i class="fa-regular fa-clock"></i> {{ n.created_at|date:"d M, H:i" }}
+                                    </p>
+                                </div>
+                                {% empty %}
+                                <div class="p-6 text-center text-slate-400 dark:text-slate-500 text-xs">
+                                    <i class="fa-solid fa-bell-slash text-xl mb-2 block"></i>
+                                    {% translate "Hauna arifa yoyote hivi sasa." %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Dark/Light Mode Toggle -->
                     <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none rounded-full text-sm p-2 transition-colors duration-200">
                         <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon text-base"></i>
@@ -269,6 +310,10 @@
                     <a href="{% url 'user_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
                         <i class="fa-solid fa-user-gear w-5"></i>
                         <span>{% translate "Watumiaji (Users)" %}</span>
+                    </a>
+                    <a href="{% url 'audit_log_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
+                        <i class="fa-solid fa-clock-rotate-left w-5"></i>
+                        <span>{% translate "Audit/Activity Logs" %}</span>
                     </a>
                     {% endif %}
                     <div class="pt-4 mt-4 border-t border-brand-800 dark:border-slate-800">
@@ -381,6 +426,21 @@
 
             mobileOverlay.addEventListener('click', closeFn);
             closeMobileBtn.addEventListener('click', closeFn);
+        }
+
+        // Notification dropdown toggle
+        var notifBtn = document.getElementById('notification-btn');
+        var notifMenu = document.getElementById('notification-menu');
+        if (notifBtn && notifMenu) {
+            notifBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notifMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function(e) {
+                if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
+                    notifMenu.classList.add('hidden');
+                }
+            });
         }
     </script>
 </body>

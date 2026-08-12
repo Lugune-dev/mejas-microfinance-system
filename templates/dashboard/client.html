@@ -59,6 +59,102 @@
         </div>
     </div>
 
+    <!-- Lipa Number & AzamPay Repayment Section -->
+    <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
+            <!-- Left Info Panel -->
+            <div class="lg:w-1/2 space-y-4">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen-button text-brand-500"></i>
+                    {% translate "Lipia Mkopo Kupitia Simu (Lipa Number)" %}
+                </h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {% translate "Unaweza kulipia rejesho lako kwa urahisi ukiwa popote kwa kutumia Airtel Money, Tigo Pesa (yas), M-Pesa au Halopesa. Malipo yote yanasindikwa kiusalama kupitia mtoa huduma rasmi wa <strong>AzamPay</strong>." %}
+                </p>
+                <div class="space-y-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
+                    <p class="font-bold text-slate-700 dark:text-slate-300">{% translate "Hatua za Kulipia:" %}</p>
+                    <ol class="list-decimal list-inside space-y-1">
+                        <li>{% translate "Chagua mtandao wako wa simu." %}</li>
+                        <li>{% translate "Weka namba ya simu ya malipo." %}</li>
+                        <li>{% translate "Weka kiasi unachotaka kulipa leo." %}</li>
+                        <li>{% translate "Bonyeza kitufe cha 'Fanya Malipo' na utapokea ujumbe wa uthibitisho (push prompt) kwenye simu yako kuingiza PIN." %}</li>
+                    </ol>
+                </div>
+                <!-- Operator Badges with Icons -->
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                        <i class="fa-solid fa-circle text-red-600 text-[8px]"></i> Vodacom M-Pesa
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                        <i class="fa-solid fa-circle text-blue-600 text-[8px]"></i> Tigo Pesa (Yas)
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                        <i class="fa-solid fa-circle text-rose-600 text-[8px]"></i> Airtel Money
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200">
+                        <i class="fa-solid fa-circle text-orange-600 text-[8px]"></i> Halopesa
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <form action="{% url 'client_lipa_payment' active_loan.pk %}" method="POST" class="lg:w-1/2 w-full space-y-4 bg-slate-50 dark:bg-slate-900/30 p-5 rounded-xl border border-slate-100 dark:border-slate-800">
+                {% csrf_token %}
+
+                <!-- Operator Selection -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Mtoa Huduma (Operator)" %}</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-red-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
+                            <input type="radio" name="operator" value="MPESA" required class="absolute top-2 right-2 text-red-600 focus:ring-red-500">
+                            <span class="text-xs font-bold text-red-600">M-PESA</span>
+                        </label>
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
+                            <input type="radio" name="operator" value="TIGOPESA" required class="absolute top-2 right-2 text-blue-600 focus:ring-blue-500">
+                            <span class="text-xs font-bold text-blue-600">TIGO PESA</span>
+                        </label>
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-rose-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
+                            <input type="radio" name="operator" value="AIRTEL" required class="absolute top-2 right-2 text-rose-600 focus:ring-rose-500">
+                            <span class="text-xs font-bold text-rose-600">AIRTEL</span>
+                        </label>
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-orange-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
+                            <input type="radio" name="operator" value="HALOPESA" required class="absolute top-2 right-2 text-orange-600 focus:ring-orange-500">
+                            <span class="text-xs font-bold text-orange-600">HALOPESA</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Phone number -->
+                <div>
+                    <label for="id_phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Namba ya Simu ya Malipo" %}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-phone text-xs"></i>
+                        </div>
+                        <input type="text" name="phone" id="id_phone" required value="{{ user.phone|default:'' }}" placeholder="e.g. 0712345678" class="w-full pl-9 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition">
+                    </div>
+                </div>
+
+                <!-- Amount -->
+                <div>
+                    <label for="id_amount" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Kiasi cha Kulipia (TZS)" %}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <span class="text-xs font-semibold">TZS</span>
+                        </div>
+                        <input type="number" name="amount" id="id_amount" required value="{% if next_schedule %}{{ next_schedule.installment_amount|unlocalize }}{% else %}{{ active_loan.balance|unlocalize }}{% endif %}" class="w-full pl-12 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none text-sm font-bold transition">
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold rounded-lg shadow transition duration-150 flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-credit-card"></i>
+                    {% translate "Fanya Malipo kupitia AzamPay" %}
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Repayment Schedule Table & Payment History -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Full Repayment Schedule -->

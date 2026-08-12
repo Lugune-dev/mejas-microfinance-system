@@ -291,3 +291,68 @@ class MMSCoreBusinessTests(TestCase):
         res_submit = client.post(reverse("contact"), post_data, follow=True)
         self.assertEqual(res_submit.status_code, 200)
         self.assertContains(res_submit, "Asante Juma Hamisi")
+
+    def test_rbac_restrictions(self):
+        """Verify that role-based access control blocks clients from accessing management URLs."""
+        client = Client()
+        # Log in as client
+        client.login(username="test_client", password="Client_password123")
+
+        # Client should be blocked from user management
+        res_users = client.get(reverse("user_list"))
+        self.assertEqual(res_users.status_code, 404)
+
+        # Client should be blocked from office cash flow record
+        res_cf = client.get(reverse("record_office_cash_flow"))
+        self.assertEqual(res_cf.status_code, 404)
+
+        # Client should be blocked from generating reports
+        res_rep = client.get(reverse("reports_menu"))
+        self.assertEqual(res_rep.status_code, 404)
+
+    def test_two_factor_authentication_flow(self):
+        """Verify the 2FA intercept flow, session storing, and verification view."""
+        # Enable 2FA for the cashier user
+        self.cashier.two_factor_enabled = True
+        self.cashier.save()
+
+        client = Client()
+        # Post credentials to standard login
+        res_login = client.post(reverse("login"), {"username": "test_cashier", "password": "Cashier_password123"}, follow=True)
+
+        # Verify redirect to 2FA verification page
+        self.assertContains(res_login, "Thibitisha 2FA")
+        self.assertIn("pre_2fa_user_id", client.session)
+        self.assertIn("otp_code", client.session)
+
+        # Retrieve generated code from session
+        otp_code = client.session["otp_code"]
+
+        # Submit incorrect OTP code
+        res_fail = client.post(reverse("verify_2fa"), {"otp_code": "000000"}, follow=True)
+        self.assertContains(res_fail, "si sahihi")
+
+        # Submit correct OTP code
+        res_success = client.post(reverse("verify_2fa"), {"otp_code": otp_code}, follow=True)
+        self.assertRedirects(res_success, reverse("dashboard"))
+
+    def test_database_backup_and_restore(self):
+        """Verify backup download as JSON and successful database restore mechanism."""
+        client = Client()
+        client.login(username="test_ceo", password="CEO_password123")
+
+        # 1. Trigger Backup download
+        res_backup = client.get(reverse("db_backup"))
+        self.assertEqual(res_backup.status_code, 200)
+        self.assertEqual(res_backup["content-type"], "application/json")
+        backup_data = res_backup.content.decode("utf-8")
+        self.assertIn("Arusha Branch", backup_data)  # checks serialized branch name is present
+
+        # 2. Trigger Restore upload simulation
+        import io
+        backup_file = io.BytesIO(res_backup.content)
+        backup_file.name = "backup.json"
+
+        res_restore = client.post(reverse("db_restore"), {"backup_file": backup_file}, follow=True)
+        self.assertEqual(res_restore.status_code, 200)
+        self.assertContains(res_restore, "imerejeshwa kikamilifu")

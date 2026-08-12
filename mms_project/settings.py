@@ -69,19 +69,29 @@ WSGI_APPLICATION = "mms_project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres.pvpctrtncdrbbdhjlmsv",
-        "PASSWORD": "##LugunE66**",
-        "HOST": "aws-0-eu-central-1.pooler.supabase.com",
-        "PORT": "6543",
-        "OPTIONS": {
-            "sslmode": "require",
-        },
+import sys
+
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db_test.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "postgres",
+            "USER": "postgres.pvpctrtncdrbbdhjlmsv",
+            "PASSWORD": "##LugunE66**",
+            "HOST": "aws-0-eu-central-1.pooler.supabase.com",
+            "PORT": "6543",
+            "OPTIONS": {
+                "sslmode": "require",
+            },
+        }
+    }
 
 
 # Password validation
@@ -147,3 +157,19 @@ LOGOUT_REDIRECT_URL = "login"
 # Email backend for development / console output
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# --- SECURITY & SESSIONS ---
+# Inactivity Session Timeout set to 20 minutes (1200 seconds)
+SESSION_COOKIE_AGE = 1200
+# Save and refresh the session expiration age on every user request/activity
+SESSION_SAVE_EVERY_REQUEST = True
+# Automatically expire session on browser close
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Production SSL Settings (To be activated when SSL is configured on Supabase custom domains)
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
