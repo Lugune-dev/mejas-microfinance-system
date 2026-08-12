@@ -1,0 +1,118 @@
+{% load i18n static %}
+<footer class="no-print mt-12 bg-slate-900 text-slate-300 border-t border-slate-800 dark:bg-slate-950 dark:border-slate-900 transition-colors duration-200">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Brand Column -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                    <img src="{% static 'logo.png' %}" class="h-10 w-10 rounded-full object-cover border border-brand-500 shadow-sm" alt="logo">
+                    <span class="font-extrabold text-lg text-white tracking-wider">MEJAS</span>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    {% translate "Taasisi inayotoa mikopo salama na ya haraka ili kukuza wajasiriamali wadogo na wa kati nchini Tanzania kwa kutumia mifumo ya kisasa ya kidigitali." %}
+                </p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="Facebook">
+                        <i class="fa-brands fa-facebook text-xl"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="Twitter">
+                        <i class="fa-brands fa-x-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="LinkedIn">
+                        <i class="fa-brands fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="https://wa.me/255712345678" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="WhatsApp">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4 border-b border-brand-500 pb-2 inline-block">
+                    {% translate "Kurasa za Haraka" %}
+                </h3>
+                <ul class="space-y-2.5 text-sm">
+                    <li>
+                        <a href="{% url 'home' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
+                            {% translate "Nyumbani" %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'about' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
+                            {% translate "Kuhusu Sisi" %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'contact' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
+                            {% translate "Wasiliana Nasi" %}
+                        </a>
+                    </li>
+                    {% if not user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'login' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
+                            {% translate "Ingia Mfumoni (Login)" %}
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Contacts Info -->
+            <div>
+                <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4 border-b border-brand-500 pb-2 inline-block">
+                    {% translate "Wasiliana Nasi" %}
+                </h3>
+                <ul class="space-y-3 text-sm text-slate-400">
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-location-dot text-brand-500 mt-1"></i>
+                        <span>Dar es Salaam, Tanzania<br><span class="text-xs text-slate-500">Mbezi/Kimara Complex</span></span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-phone text-brand-500"></i>
+                        <a href="tel:+255712345678" class="hover:text-brand-500 transition duration-150">+255 712 345 678</a>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-envelope text-brand-500"></i>
+                        <a href="mailto:info@mejas.co.tz" class="hover:text-brand-500 transition duration-150">info@mejas.co.tz</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Service Hours -->
+            <div>
+                <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4 border-b border-brand-500 pb-2 inline-block">
+                    {% translate "Muda wa Kazi" %}
+                </h3>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li class="flex justify-between">
+                        <span>{% translate "Jumatatu - Ijumaa" %}:</span>
+                        <span class="text-white font-semibold">08:00 AM - 05:00 PM</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>{% translate "Jumamosi" %}:</span>
+                        <span class="text-white font-semibold">09:00 AM - 01:00 PM</span>
+                    </li>
+                    <li class="flex justify-between">
+                        <span>{% translate "Jumapili & Sikukuu" %}:</span>
+                        <span class="text-red-400 font-semibold">{% translate "Tumefungwa" %}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="border-t border-slate-800 dark:border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-600 gap-4">
+            <p>
+                &copy; 2026 Mejas Enterprises. All rights reserved.
+            </p>
+            <p class="flex items-center gap-1">
+                <span>Digitized by</span>
+                <span class="font-semibold text-brand-500">Mejas MMS Team</span>
+            </p>
+        </div>
+    </div>
+</footer>

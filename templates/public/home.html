@@ -7,38 +7,121 @@
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
 
     <!-- Hero Section -->
-    <div class="relative rounded-3xl overflow-hidden bg-brand-800 text-white shadow-2xl mb-12 border-b-4 border-brand-500">
-        <!-- Accent decorative circles -->
-        <div class="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 rounded-full bg-brand-700 opacity-20"></div>
-        <div class="absolute bottom-0 left-0 -mb-16 -ml-16 w-80 h-80 rounded-full bg-brand-500 opacity-10"></div>
+    <div class="relative rounded-3xl overflow-hidden bg-brand-800 text-white shadow-2xl mb-12" style="background: linear-gradient(135deg, #061815 0%, #0b2a25 50%, #114139 100%);">
+        <!-- Layered ambient orbs -->
+        <div class="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20" style="background: radial-gradient(circle, #dfb13c 0%, transparent 70%); transform: translate(30%, -30%);"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 rounded-full opacity-10" style="background: radial-gradient(circle, #dfb13c 0%, transparent 70%); transform: translate(-30%, 30%);"></div>
+        <div class="absolute top-1/2 left-1/2 w-[600px] h-[600px] rounded-full opacity-5" style="background: radial-gradient(circle, #114139 0%, transparent 70%); transform: translate(-50%, -50%);"></div>
+        <!-- Subtle grid overlay -->
+        <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(#dfb13c 1px, transparent 1px), linear-gradient(to right, #dfb13c 1px, transparent 1px); background-size: 48px 48px;"></div>
 
-        <div class="relative z-10 px-8 py-16 md:py-24 max-w-3xl">
-            <div class="inline-flex items-center gap-2 bg-brand-700 bg-opacity-60 px-4 py-2 rounded-full border border-brand-500 mb-6">
-                <img src="{% static 'logo.png' %}" class="h-6 w-6 rounded-full object-cover" alt="logo">
-                <span class="text-brand-500 font-semibold text-xs tracking-wider uppercase">Mejas Enterprises</span>
-            </div>
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-                {% translate "Mfumo wa Kidigitali wa Uendeshaji wa Microfinance" %}
-            </h1>
-            <p class="text-lg md:text-xl text-brand-100 mb-8 leading-relaxed">
-                {% translate "Ufumbuzi thabiti kwa usimamizi rahisi wa wateja, mikopo, marejesho, na fedha za taasisi kwa uwazi na usalama wa hali ya juu." %}
-            </p>
-            <div class="flex flex-wrap gap-4">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition duration-150 flex items-center gap-2">
-                        <i class="fa-solid fa-gauge"></i>
-                        <span>{% translate "Nenda Kwenye Dashibodi" %}</span>
+        <div class="relative z-10 px-8 py-14 md:py-20 lg:py-24 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Content Column -->
+            <div class="lg:col-span-7 space-y-7">
+                <!-- Brand pill with animated dot -->
+                <div class="inline-flex items-center gap-2.5 bg-white/8 backdrop-blur-sm px-4 py-2 rounded-full border border-brand-500/40">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    <img src="{% static 'logo.png' %}" class="h-5 w-5 rounded-full object-cover" alt="logo">
+                    <span class="text-brand-400 font-semibold text-xs tracking-widest uppercase">Mejas Enterprises</span>
+                </div>
+
+                <!-- Headline with gradient accent word -->
+                <div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
+                        <span class="block text-white">{% translate "Mfumo wa Kisasa" %}</span>
+                        <span class="block" style="background: linear-gradient(90deg, #dfb13c 0%, #f0c96e 50%, #c59b2b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            {% translate "wa Microfinance" %}
+                        </span>
+                        <span class="block text-white/90 text-3xl md:text-4xl font-bold mt-1">{% translate "Tanzania" %}</span>
+                    </h1>
+                </div>
+
+                <p class="text-base md:text-lg text-white/70 leading-relaxed max-w-xl">
+                    {% translate "Ufumbuzi thabiti kwa usimamizi rahisi wa wateja, mikopo, marejesho, na fedha za taasisi kwa uwazi na usalama wa hali ya juu." %}
+                </p>
+
+                <!-- Feature pills row -->
+                <div class="flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-shield-halved text-brand-500 text-[10px]"></i> {% translate "Salama 100%" %}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-bolt text-brand-500 text-[10px]"></i> {% translate "Haraka & Rahisi" %}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-chart-line text-brand-500 text-[10px]"></i> {% translate "Ripoti za Muda Halisi" %}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-cloud text-brand-500 text-[10px]"></i> {% translate "Mtandaoni" %}
+                    </span>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap gap-4 pt-1">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="group inline-flex items-center gap-2.5 font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-brand-500/30 hover:shadow-xl text-slate-900 text-sm" style="background: linear-gradient(135deg, #dfb13c 0%, #c59b2b 100%);">
+                            <i class="fa-solid fa-gauge text-xs group-hover:rotate-12 transition-transform duration-200"></i>
+                            <span>{% translate "Nenda Kwenye Dashibodi" %}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="group inline-flex items-center gap-2.5 font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-brand-500/30 hover:shadow-xl text-slate-900 text-sm" style="background: linear-gradient(135deg, #dfb13c 0%, #c59b2b 100%);">
+                            <i class="fa-solid fa-right-to-bracket text-xs group-hover:translate-x-0.5 transition-transform duration-200"></i>
+                            <span>{% translate "Ingia Mfumoni (Login)" %}</span>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'about' %}" class="inline-flex items-center gap-2.5 text-white font-semibold px-8 py-3.5 rounded-xl border border-white/25 hover:bg-white/10 hover:border-white/50 transition-all duration-200 text-sm backdrop-blur-sm">
+                        {% translate "Kuhusu Sisi" %}
+                        <i class="fa-solid fa-arrow-right text-xs text-brand-400"></i>
                     </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition duration-150 flex items-center gap-2">
-                        <i class="fa-solid fa-right-to-bracket"></i>
-                        <span>{% translate "Ingia Mfumoni (Login)" %}</span>
-                    </a>
-                {% endif %}
-                <a href="{% url 'about' %}" class="bg-transparent hover:bg-brand-700 text-white border-2 border-white px-8 py-4 rounded-xl font-semibold transition duration-150">
-                    {% translate "Kuhusu Sisi" %}
-                </a>
+                </div>
             </div>
+
+            <!-- Right CEO Card Column -->
+            <div class="lg:col-span-5 flex justify-center items-center">
+                <!-- Advanced CEO Photo Card -->
+                <div id="ceo-card-trigger" class="group relative cursor-pointer w-full max-w-[300px]" style="filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));">
+                    
+                    <!-- Animated glow ring -->
+                    <div class="absolute -inset-3 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: conic-gradient(from 180deg, #dfb13c, #114139, #dfb13c); border-radius: 1.5rem; filter: blur(16px); z-index:-1;"></div>
+                    
+                    <!-- Card outer border glow -->
+                    <div class="absolute -inset-px rounded-2xl opacity-60 group-hover:opacity-100 transition-all duration-400" style="background: linear-gradient(135deg, rgba(223,177,60,0.6), rgba(17,65,57,0.3), rgba(223,177,60,0.4));"></div>
+                    
+                    <div class="relative rounded-2xl overflow-hidden border border-brand-500/30 group-hover:border-brand-500/70 transition-colors duration-300" style="background: #030c0a;">
+                        <!-- Image -->
+                        <div class="aspect-[3/4] overflow-hidden relative">
+                            <img src="{% static 'mej.jpeg' %}" class="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out" alt="Mkurugenzi Mtendaji">
+                            <!-- Gradient overlay -->
+                            <div class="absolute inset-0" style="background: linear-gradient(to top, #030c0a 0%, rgba(3,12,10,0.5) 40%, transparent 70%);"></div>
+                        </div>
+
+                        <!-- Card bottom info -->
+                        <div class="absolute bottom-0 left-0 right-0 p-5">
+                            <div class="mb-2">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-slate-950" style="background: linear-gradient(135deg, #dfb13c, #c59b2b);">
+                                    <i class="fa-solid fa-star text-[9px]"></i>
+                                    {% translate "Mkurugenzi Mtendaji" %}
+                                </span>
+                            </div>
+                            <h3 class="text-white text-xl font-extrabold tracking-wide">Meja S.</h3>
+                            <p class="text-brand-400 text-xs mt-1 flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
+                                {% translate "Gusa kusoma ujumbe wake" %}
+                                <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform duration-200"></i>
+                            </p>
+                        </div>
+
+                        <!-- Decorative corner accent -->
+                        <div class="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-100 scale-75" style="background: rgba(223,177,60,0.2); border: 1px solid rgba(223,177,60,0.5);">
+                            <i class="fa-solid fa-envelope text-brand-400 text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -168,6 +251,122 @@
             </a>
         </div>
     </div>
+
+    <!-- CEO Message Modal (Ukurasa katika Page) -->
+    <div id="ceo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 hidden bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 opacity-0">
+        <!-- Modal Container -->
+        <div id="ceo-modal-container" class="relative bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 transition-all transform scale-90 duration-300 opacity-0 flex flex-col md:flex-row overflow-hidden">
+            
+            <!-- Close Button -->
+            <button id="close-ceo-modal" class="absolute top-4 right-4 z-10 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 p-2.5 rounded-full transition shadow-md" aria-label="Funga">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Left: Image Column -->
+            <div class="md:w-2/5 bg-brand-900 relative min-h-[300px] md:min-h-full">
+                <img src="{% static 'mej.jpeg' %}" class="absolute inset-0 w-full h-full object-cover" alt="CEO Portrait">
+                <!-- Overlay gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-900/40 to-transparent"></div>
+                <div class="absolute bottom-6 left-6 right-6">
+                    <span class="bg-brand-500 text-slate-950 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm mb-2 inline-block">
+                        {% translate "Ujumbe wa Mwanzilishi" %}
+                    </span>
+                    <h3 class="text-white text-2xl font-bold">Meja S.</h3>
+                    <p class="text-brand-300 text-xs mt-1">{% translate "Mwanzilishi & Mkurugenzi Mtendaji" %}</p>
+                </div>
+            </div>
+
+            <!-- Modal Right: Content Column -->
+            <div class="md:w-3/5 p-8 sm:p-10 overflow-y-auto flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-6">
+                        <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
+                        <span class="text-slate-400 dark:text-slate-500 text-sm font-semibold tracking-widest uppercase">Mejas Enterprises</span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight border-b border-slate-100 dark:border-slate-800 pb-4">
+                        {% translate "Karibu Mejas Enterprises" %}
+                    </h2>
+
+                    <div class="text-slate-600 dark:text-slate-300 space-y-4 text-sm sm:text-base leading-relaxed">
+                        <p>
+                            {% translate "Nikiwa kama Mkurugenzi Mtendaji wa Mejas Enterprises, nina furaha kubwa kukukaribisha kwenye mfumo wetu mpya wa MMS (Microfinance Management System). Mfumo huu ni hatua kubwa katika safari yetu ya kuleta mapinduzi ya kidigitali katika sekta ya huduma ndogo za kifedha Tanzania." %}
+                        </p>
+                        <p>
+                            {% translate "Dira yetu tangu mwanzo imekuwa ni kuwawezesha kiuchumi wajasiriamali wadogo na wa kati ambao ni nguzo kuu ya uchumi wa jamii zetu. Tunatambua kwamba upatikanaji wa mikopo ya haraka, salama na yenye gharama nafuu ndiyo chachu ya mafanikio ya biashara zenu." %}
+                        </p>
+                        <p>
+                            {% translate "MMS inaleta uwazi, ufanisi wa hali ya juu na usalama wa taarifa zako zote. Sasa unaweza kufuatilia maombi ya mkopo, historia ya marejesho yako, na kuwasiliana na maafisa wetu kwa urahisi zaidi wakati wowote." %}
+                        </p>
+                        <p class="italic font-medium text-brand-600 dark:text-brand-500">
+                            {% translate "\"Malengo yetu ni mafanikio yako. Pamoja tutakuza biashara yako na kufikia malengo yako ya kifedha.\"" %}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer of modal -->
+                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                    <div class="text-xs text-slate-400 dark:text-slate-500">
+                        <p>{% translate "Barua pepe" %}: <a href="mailto:meja@mejas.co.tz" class="hover:text-brand-500">meja@mejas.co.tz</a></p>
+                        <p>{% translate "Simu" %}: +255 712 345 678</p>
+                    </div>
+                    <button id="close-ceo-modal-btn" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-6 py-2.5 rounded-xl shadow transition duration-150 text-sm">
+                        {% translate "Funga Ukurasa" %}
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal Control Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const trigger = document.getElementById('ceo-card-trigger');
+            const modal = document.getElementById('ceo-modal');
+            const container = document.getElementById('ceo-modal-container');
+            const closeBtn = document.getElementById('close-ceo-modal');
+            const closeBtnSecondary = document.getElementById('close-ceo-modal-btn');
+
+            function openModal() {
+                modal.classList.remove('hidden');
+                // Trigger reflow to apply transitions
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                container.classList.remove('scale-90', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+                // Prevent background scrolling
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeModal() {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
+                container.classList.remove('scale-100', 'opacity-100');
+                container.classList.add('scale-90', 'opacity-0');
+                
+                // Wait for animation to finish
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }, 300);
+            }
+
+            if (trigger) trigger.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (closeBtnSecondary) closeBtnSecondary.addEventListener('click', closeModal);
+
+            // Close modal by clicking outside
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+            }
+        });
+    </script>
 
 </div>
 {% endblock %}

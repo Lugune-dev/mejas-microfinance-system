@@ -142,68 +142,83 @@
         <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
             <!-- TOP NAVBAR (no-print) -->
-            <header class="no-print h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 z-10 flex-shrink-0">
-                <!-- Mobile Sidebar Toggle -->
-                <div class="flex items-center gap-3">
+            <header class="no-print h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0 gap-4">
+
+                <!-- ZONE 1: Brand (Left) -->
+                <div class="flex items-center gap-3 flex-shrink-0">
                     {% if user.is_authenticated %}
                     <button id="mobile-menu-btn" class="md:hidden text-slate-500 dark:text-slate-400 focus:outline-none hover:text-brand-500">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
                     {% endif %}
-                    <div class="flex items-center gap-2">
-                        <a href="/" class="flex items-center gap-2">
-                            <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
-                            <h1 class="text-lg font-bold text-slate-800 dark:text-white">MEJAS MMS</h1>
-                        </a>
-                        {% if user.is_authenticated %}
-                        <span class="hidden md:inline-block text-sm font-semibold bg-brand-100 text-brand-800 dark:bg-slate-800 dark:text-brand-200 px-3 py-1 rounded-full">
-                            {% if user.branch %}Tawi: {{ user.branch.name }}{% else %}HQ / Makao Makuu{% endif %}
+                    <a href="{% url 'home' %}" class="flex items-center gap-2.5 group">
+                        <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm group-hover:scale-105 transition-transform duration-200" alt="logo">
+                        <span class="hidden sm:block">
+                            <span class="text-base font-extrabold text-slate-800 dark:text-white tracking-tight">MEJAS</span>
+                            <span class="text-base font-light text-brand-500 tracking-tight"> MMS</span>
                         </span>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Navigation links for public pages -->
-                <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-                    <a href="{% url 'home' %}" class="text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-500 transition-colors">{% translate "Nyumbani" %}</a>
-                    <a href="{% url 'about' %}" class="text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-500 transition-colors">{% translate "Kuhusu Sisi" %}</a>
-                    <a href="{% url 'contact' %}" class="text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-500 transition-colors">{% translate "Wasiliana Nasi" %}</a>
+                    </a>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="bg-brand-500 hover:bg-brand-600 text-slate-900 px-4 py-2 rounded-lg transition-colors font-semibold">{% translate "Dashibodi" %}</a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="bg-brand-500 hover:bg-brand-600 text-slate-900 px-4 py-2 rounded-lg transition-colors font-semibold">{% translate "Ingia" %}</a>
+                    <span class="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 px-3 py-1 rounded-full border border-brand-200 dark:border-brand-800">
+                        <i class="fa-solid fa-building-columns text-[10px]"></i>
+                        {% if user.branch %}{{ user.branch.name }}{% else %}Makao Makuu{% endif %}
+                    </span>
                     {% endif %}
                 </div>
 
-                <!-- Right Side Actions (Theme, Language, User Menu) -->
-                <div class="flex items-center gap-4">
+                <!-- ZONE 2: Center Navigation (Public pages only) -->
+                {% if not user.is_authenticated %}
+                <nav class="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+                    <a href="{% url 'home' %}" class="relative px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-400 transition-colors duration-200 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 after:content-[''] after:absolute after:w-[calc(100%-24px)] after:scale-x-0 after:h-[2px] after:bottom-0.5 after:left-3 after:bg-brand-500 after:origin-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left">{% translate "Nyumbani" %}</a>
+                    <a href="{% url 'about' %}" class="relative px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-400 transition-colors duration-200 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 after:content-[''] after:absolute after:w-[calc(100%-24px)] after:scale-x-0 after:h-[2px] after:bottom-0.5 after:left-3 after:bg-brand-500 after:origin-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left">{% translate "Kuhusu Sisi" %}</a>
+                    <a href="{% url 'contact' %}" class="relative px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-400 transition-colors duration-200 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 after:content-[''] after:absolute after:w-[calc(100%-24px)] after:scale-x-0 after:h-[2px] after:bottom-0.5 after:left-3 after:bg-brand-500 after:origin-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left">{% translate "Wasiliana Nasi" %}</a>
+                </nav>
+                {% else %}
+                <!-- Authenticated: spacer for layout balance -->
+                <div class="flex-1"></div>
+                {% endif %}
 
-                    <!-- Language Switcher Form -->
-                    <form action="/i18n/setlang/" method="post" class="inline-flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1 text-xs">
+                <!-- ZONE 3: Right Utility Actions -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+
+                    <!-- Modern Language Switcher -->
+                    {% load i18n %}
+                    {% get_current_language as CURRENT_LANG %}
+                    {% get_available_languages as ALL_LANGS %}
+                    <form action="/i18n/setlang/" method="post" class="relative inline-flex items-center">
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                        <select name="language" onchange="this.form.submit()" class="bg-transparent text-slate-700 dark:text-slate-200 border-none outline-none focus:ring-0 font-medium">
-                            {% get_current_language as CURRENT_LANG %}
-                            {% get_available_languages as ALL_LANGS %}
-                            {% for lang in ALL_LANGS %}
-                                <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>
-                                    {{ lang.1 }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                        <div class="relative flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1.5 transition-colors duration-200 cursor-pointer">
+                            <i class="fa-solid fa-globe text-brand-500 text-xs"></i>
+                            <select name="language" onchange="this.form.submit()" class="appearance-none bg-transparent text-slate-700 dark:text-slate-200 border-none outline-none focus:ring-0 text-xs font-semibold cursor-pointer pr-3">
+                                {% for lang in ALL_LANGS %}
+                                    <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>{{ lang.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] pointer-events-none absolute right-2.5"></i>
+                        </div>
                     </form>
 
                     <!-- Dark/Light Mode Toggle -->
-                    <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 rounded-lg text-sm p-2">
-                        <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon text-lg"></i>
-                        <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun text-lg"></i>
+                    <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none rounded-full text-sm p-2 transition-colors duration-200">
+                        <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon text-base"></i>
+                        <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun text-base"></i>
                     </button>
 
-                    <!-- User Identity Badge for small screens -->
+                    <!-- Login / Dashboard CTA Button (far right) -->
                     {% if user.is_authenticated %}
-                    <span class="md:hidden text-xs font-semibold px-2 py-1 rounded bg-slate-200 dark:bg-slate-800">
-                        {{ user.get_role_display }}
-                    </span>
+                        <a href="{% url 'dashboard' %}" class="hidden md:inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 active:scale-95 text-slate-900 text-sm font-bold px-4 py-2 rounded-full shadow-sm transition-all duration-200">
+                            <i class="fa-solid fa-gauge-high text-xs"></i>
+                            <span>{% translate "Dashibodi" %}</span>
+                        </a>
+                        <span class="md:hidden text-xs font-semibold px-2 py-1 rounded-full bg-brand-100 text-brand-800 dark:bg-slate-800 dark:text-brand-200">
+                            {{ user.get_role_display }}
+                        </span>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 active:scale-95 text-slate-900 text-sm font-bold px-4 py-2 rounded-full shadow-sm transition-all duration-200">
+                            <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                            <span class="hidden sm:inline">{% translate "Ingia" %}</span>
+                        </a>
                     {% endif %}
                 </div>
             </header>
@@ -298,6 +313,9 @@
 
                 <!-- Main Content Slot -->
                 {% block content %}{% endblock %}
+
+                <!-- Footer (no-print) -->
+                {% include "partials/footer.html" %}
 
             </main>
 
