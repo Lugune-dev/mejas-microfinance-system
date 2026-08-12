@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% translate "Kumbukumbu za Matukio (Activity Logs)" %} - MMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">{% translate "Kumbukumbu za Matukio (Activity logs / Audit Trail)" %}</h2>
+            <p class="text-slate-500 dark:text-slate-400">{% translate "Fuatilia vitendo vyote vilivyofanywa na watumiaji kwenye mfumo kwa usalama na uwazi." %}</p>
+        </div>
+    </div>
+
+    <!-- Backup & Restore Panel (CEO/Admin Only) -->
+    {% if user.role == 'CEO' or user.role == 'ADMIN' %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
+        <!-- Backup Section -->
+        <div class="space-y-3">
+            <h4 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-down text-brand-500"></i>
+                {% translate "Hifadhi ya Ndani (Database Backup)" %}
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                {% translate "Pakua nakala kamili ya taarifa zote zilizopo kwenye database ya mfumo sasa katika muundo wa JSON kwa usalama wako wa dharura." %}
+            </p>
+            <div>
+                <a href="{% url 'db_backup' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold rounded-lg text-xs shadow transition duration-150">
+                    <i class="fa-solid fa-download"></i> {% translate "Pakua Nakala (JSON Backup)" %}
+                </a>
+            </div>
+        </div>
+
+        <!-- Restore Section -->
+        <div class="space-y-3 md:border-l md:border-slate-200 dark:border-slate-700 md:pl-6">
+            <h4 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-up text-red-500"></i>
+                {% translate "Rejesha Nakala (Database Restore)" %}
+            </h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                {% translate "Pakia faili la JSON la backup uliyopakua hapo awali ili kurejesha au kusawazisha taarifa zote za mfumo kwenye database sasa." %}
+            </p>
+            <form action="{% url 'db_restore' %}" method="post" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                {% csrf_token %}
+                <input type="file" name="backup_file" accept=".json" required class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-slate-800 dark:file:text-slate-200 file:text-slate-700 hover:file:bg-slate-300 dark:hover:file:bg-slate-700 transition cursor-pointer">
+                <button type="submit" onclick="return confirm('{% translate "Je, una uhakika unataka kurejesha database? Kitendo hiki kitaongeza/kusasisha taarifa zilizopo." %}')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs shadow transition duration-150">
+                    <i class="fa-solid fa-upload"></i> {% translate "Rejesha Database sasa" %}
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filters & Search Form -->
+    <div class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Search Text -->
+            <div>
+                <label for="q" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{% translate "Tafuta (Maelezo / IP)" %}</label>
+                <input type="text" name="q" id="q" value="{{ search_query }}" placeholder="{% translate "Tafuta hapa..." %}" class="w-full px-3 py-1.5 border rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 text-sm">
+            </div>
+
+            <!-- Action Filter -->
+            <div>
+                <label for="action" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{% translate "Kitendo (Action)" %}</label>
+                <select name="action" id="action" class="w-full px-3 py-1.5 border rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 text-sm">
+                    <option value="">{% translate "Vitendo vyote (All Actions)" %}</option>
+                    {% for act in available_actions %}
+                        <option value="{{ act }}" {% if selected_action == act %}selected{% endif %}>{{ act }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- User Filter -->
+            <div>
+                <label for="user" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">{% translate "Mtumiaji (User)" %}</label>
+                <select name="user" id="user" class="w-full px-3 py-1.5 border rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 text-sm">
+                    <option value="">{% translate "Watumiaji wote (All Users)" %}</option>
+                    {% for u in available_users %}
+                        <option value="{{ u.id }}" {% if selected_user == u.id|slugify %}selected{% endif %}>{{ u.username }} ({{ u.get_role_display }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="flex items-end gap-2">
+                <button type="submit" class="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold rounded-lg shadow transition text-sm">
+                    <i class="fa-solid fa-filter mr-1.5"></i> {% translate "Chuja" %}
+                </button>
+                <a href="{% url 'audit_log_list' %}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm transition">
+                    {% translate "Futa" %}
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 text-slate-500 font-semibold">
+                        <th class="p-3">{% translate "Muda (Timestamp)" %}</th>
+                        <th class="p-3">{% translate "Mtumiaji (User)" %}</th>
+                        <th class="p-3">{% translate "Kitendo (Action)" %}</th>
+                        <th class="p-3">{% translate "Maelezo (Description)" %}</th>
+                        <th class="p-3">{% translate "IP Address" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                    {% for log in page_obj %}
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
+                        <td class="p-3 whitespace-nowrap">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
+                        <td class="p-3">
+                            {% if log.user %}
+                                <div class="font-semibold text-slate-900 dark:text-white">{{ log.user.get_full_name|default:log.user.username }}</div>
+                                <div class="text-[10px] text-brand-600 dark:text-brand-400 font-semibold">{{ log.user.get_role_display }}</div>
+                            {% else %}
+                                <span class="text-slate-400 italic">{% translate "System (Kiotomatiki)" %}</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300">
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td class="p-3 leading-relaxed">{{ log.description }}</td>
+                        <td class="p-3 text-xs text-slate-500 dark:text-slate-400 font-mono">{{ log.ip_address|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-12 text-center text-slate-400 dark:text-slate-500">
+                            <i class="fa-solid fa-list-check text-4xl mb-3 block"></i>
+                            {% translate "Hakuna kumbukumbu yoyote iliyopatikana." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if page_obj.has_other_pages %}
+        <div class="p-4 bg-slate-50 dark:bg-slate-900/20 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                {% translate "Inaonyesha ukurasa" %} {{ page_obj.number }} {% translate "kati ya" %} {{ page_obj.paginator.num_pages }}
+            </div>
+            <div class="flex items-center gap-1">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}" class="px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border rounded hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}" class="px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border rounded hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}" class="px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border rounded hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if selected_user %}&user={{ selected_user }}{% endif %}" class="px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border rounded hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-angles-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

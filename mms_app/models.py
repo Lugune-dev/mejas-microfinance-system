@@ -44,6 +44,7 @@ class User(AbstractUser):
     phone = models.CharField(_("Phone Number"), max_length=50, blank=True, null=True)
     nida = models.CharField(_("NIDA ID Number"), max_length=50, blank=True, null=True)
     photo = models.ImageField(_("Photo"), upload_to="user_photos/", blank=True, null=True)
+    two_factor_enabled = models.BooleanField(_("Two-Factor Authentication (2FA)"), default=False)
 
     def __str__(self):
         full_name = self.get_full_name()
@@ -397,3 +398,24 @@ class AuditLog(models.Model):
         ordering = ["-timestamp"]
         verbose_name = _("Audit Log")
         verbose_name_plural = _("Audit Logs")
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        verbose_name=_("User"),
+    )
+    title = models.CharField(_("Title"), max_length=150)
+    message = models.TextField(_("Message"))
+    is_read = models.BooleanField(_("Is Read"), default=False)
+    created_at = models.DateTimeField(_("Created At"), auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.user.username} ({'Read' if self.is_read else 'Unread'})"
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = _("Notification")
+        verbose_name_plural = _("Notifications")

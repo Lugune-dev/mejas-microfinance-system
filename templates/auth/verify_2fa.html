@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% translate "Kurejesha Password" %} - MMS</title>
+    <title>{% translate "Thibitisha 2FA" %} - MMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -90,10 +90,12 @@
             width: 100% !important;
             padding-top: 0.65rem !important;
             padding-bottom: 0.65rem !important;
-            font-size: 0.9rem !important;
+            font-size: 1.1rem !important;
+            letter-spacing: 0.5em !important;
+            text-align: center !important;
             transition: border-color 0.2s, box-shadow 0.2s !important;
         }
-        .input-icon-wrapper input::placeholder { color: rgba(255,255,255,0.35) !important; }
+        .input-icon-wrapper input::placeholder { color: rgba(255,255,255,0.25) !important; letter-spacing: normal !important; }
         .input-icon-wrapper input:focus {
             outline: none !important;
             border-color: #dfb13c !important;
@@ -145,13 +147,13 @@
                 </div>
                 <h1 class="text-2xl font-extrabold tracking-tight text-white mt-1">MEJAS MICROFINANCE</h1>
                 <p class="mt-1.5 text-xs text-brand-300 tracking-widest uppercase font-medium text-center">
-                    {% translate "Kurejesha Password (Reset)" %}
+                    {% translate "Uthibitisho wa 2FA (Two-Factor)" %}
                 </p>
                 <div class="h-px w-16 bg-gradient-to-r from-transparent via-brand-500 to-transparent mt-4"></div>
             </div>
 
             <p class="text-slate-300 text-center text-xs mb-6">
-                {% translate "Ingiza Staff ID/Client No na NIDA yako ili kuweka password mpya." %}
+                {% translate "Tafadhali ingiza namba ya siri ya tarakimu 6 (OTP) uliyotumiwa kwenye barua pepe au simu yako ili kukamilisha kuingia." %}
             </p>
 
             <!-- Error Messages -->
@@ -167,42 +169,17 @@
             {% endif %}
 
             <!-- Form -->
-            <form class="space-y-5" action="{% url 'password_reset' %}" method="POST" id="reset-form">
+            <form class="space-y-6" action="{% url 'verify_2fa' %}" method="POST" id="verify-form">
                 {% csrf_token %}
 
-                <!-- Username Field -->
+                <!-- OTP Code Field -->
                 <div>
-                    <label for="id_username" class="block text-xs font-semibold text-brand-300 uppercase tracking-wider mb-2">
-                        {% translate "Username / Staff ID / Client No." %}
+                    <label for="id_otp_code" class="block text-xs font-semibold text-brand-300 uppercase tracking-wider mb-2 text-center">
+                        {% translate "Namba ya Siri (OTP Code)" %}
                     </label>
                     <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-user icon-left"></i>
-                        <input type="text" name="username" id="id_username" required placeholder="e.g. CLI001" class="w-full">
-                    </div>
-                </div>
-
-                <!-- NIDA Field -->
-                <div>
-                    <label for="id_nida" class="block text-xs font-semibold text-brand-300 uppercase tracking-wider mb-2">
-                        {% translate "NIDA ID Number" %}
-                    </label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-id-card icon-left"></i>
-                        <input type="text" name="nida" id="id_nida" required placeholder="199XXXXXXXXXXXXXXX" class="w-full">
-                    </div>
-                </div>
-
-                <!-- New Password Field -->
-                <div>
-                    <label for="id_new_password" class="block text-xs font-semibold text-brand-300 uppercase tracking-wider mb-2">
-                        {% translate "Password Mpya (New Password)" %}
-                    </label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-lock icon-left"></i>
-                        <input type="password" name="new_password" id="id_new_password" required placeholder="••••••••" class="w-full">
-                        <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-400 transition-colors focus:outline-none text-xs z-10">
-                            <i class="fa-solid fa-eye" id="eye-icon"></i>
-                        </button>
+                        <i class="fa-solid fa-shield-halved icon-left"></i>
+                        <input type="text" name="otp_code" id="id_otp_code" maxlength="6" required placeholder="••••••" class="w-full" autocomplete="off" autofocus>
                     </div>
                 </div>
 
@@ -214,9 +191,9 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" id="reset-btn" class="brand-btn w-full flex items-center justify-center gap-2.5 py-3 px-4 text-sm mt-2">
-                    <i class="fa-solid fa-key text-xs"></i>
-                    {% translate "Weka Password Mpya" %}
+                <button type="submit" id="verify-btn" class="brand-btn w-full flex items-center justify-center gap-2.5 py-3 px-4 text-sm mt-2">
+                    <i class="fa-solid fa-circle-check text-xs"></i>
+                    {% translate "Thibitisha na Kuingia" %}
                 </button>
 
             </form>
@@ -230,27 +207,13 @@
     </div>
 
     <script>
-        // Password visibility toggle
-        const toggleBtn = document.getElementById('toggle-password');
-        const eyeIcon   = document.getElementById('eye-icon');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                const pwInput = document.getElementById('id_new_password');
-                if (!pwInput) return;
-                const isPassword = pwInput.type === 'password';
-                pwInput.type = isPassword ? 'text' : 'password';
-                eyeIcon.classList.toggle('fa-eye', !isPassword);
-                eyeIcon.classList.toggle('fa-eye-slash', isPassword);
-            });
-        }
-
         // Add loading state on submit
-        const form     = document.getElementById('reset-form');
-        const resetBtn = document.getElementById('reset-btn');
-        if (form && resetBtn) {
+        const form      = document.getElementById('verify-form');
+        const verifyBtn = document.getElementById('verify-btn');
+        if (form && verifyBtn) {
             form.addEventListener('submit', function() {
-                resetBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> {% translate "Inasave..." %}';
-                resetBtn.disabled = true;
+                verifyBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> {% translate "Inathibitisha..." %}';
+                verifyBtn.disabled = true;
             });
         }
     </script>

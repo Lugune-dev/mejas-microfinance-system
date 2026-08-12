@@ -19,3 +19,19 @@ def log_activity(user, action, description, request=None):
         description=description,
         ip_address=ip_addr
     )
+
+
+def send_sms(to_phone, message_text):
+    """
+    Simulates sending an SMS through a Tanzanian SMS Gateway (e.g., Beem SMS, NextSMS).
+    In development, it prints beautifully to the console.
+    """
+    if not to_phone:
+        return False
+    print(f"============================================================")
+    print(f"--- SMS GATEWAY TRANSMISSION ---")
+    print(f"TO: {to_phone}")
+    print(f"MESSAGE: {message_text}")
+    print(f"STATUS: DELIVERED (Simulated)")
+    print(f"============================================================")
+    return True

@@ -12,6 +12,7 @@ urlpatterns = [
     path("logout/", views.mms_logout, name="logout"),
     path("password-reset/", views.password_reset_view, name="password_reset"),
     path("password-change/", views.password_change_view, name="password_change"),
+    path("verify-2fa/", views.verify_2fa_view, name="verify_2fa"),
 
     # Dashboard
     path("dashboard/", views.dashboard_view, name="dashboard"),
@@ -35,6 +36,7 @@ urlpatterns = [
     path("loans/<int:pk>/approve/", views.loan_approve_view, name="loan_approve"),
     path("loans/<int:pk>/disburse/", views.loan_disburse_view, name="loan_disburse"),
     path("loans/<int:pk>/record-payment/", views.payment_record_view, name="payment_record"),
+    path("loans/<int:pk>/pay-lipa-number/", views.client_lipa_payment_view, name="client_lipa_payment"),
 
     # Daily tracking
     path("daily-tracking/", views.daily_repayment_tracking_view, name="daily_repayment_tracking"),
@@ -49,4 +51,11 @@ urlpatterns = [
     # Reports
     path("reports/", views.reports_menu_view, name="reports_menu"),
     path("reports/<str:report_type>/", views.generate_report_view, name="generate_report"),
+
+    # Audit / Activity Logs
+    path("audit-logs/", views.audit_log_list_view, name="audit_log_list"),
+
+    # Backup & Restore
+    path("settings/backup/", views.db_backup_view, name="db_backup"),
+    path("settings/restore/", views.db_restore_view, name="db_restore"),
 ]

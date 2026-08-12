@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Theme overrides using CSS Custom Properties for Mejas Enterprises Logo Colors */
+    :root {
+        --primary: #0b2a25 !important;              /* Deep Forest Green/Teal */
+        --primary-fg: #ffffff !important;
+        --secondary: #114139 !important;            /* Lighter Teal */
+        --accent: #dfb13c !important;               /* Elegant Gold */
+        --accent-fg: #030c0a !important;
+        --header-bg: #0b2a25 !important;
+        --header-color: #ffffff !important;
+        --header-link-color: #dfb13c !important;
+        --breadcrumbs-bg: #114139 !important;
+        --breadcrumbs-fg: #ffffff !important;
+        --breadcrumbs-link-color: #dfb13c !important;
+        --button-bg: #dfb13c !important;
+        --button-fg: #030c0a !important;
+        --button-hover-bg: #c59b2b !important;
+    }
+
+    #header {
+        background: #0b2a25 !important;
+        color: #fff !important;
+        border-bottom: 3px solid #dfb13c !important;
+    }
+
+    #header a:link, #header a:visited {
+        color: #dfb13c !important;
+    }
+
+    div.breadcrumbs {
+        background: #114139 !important;
+        color: #ffffff !important;
+    }
+
+    div.breadcrumbs a {
+        color: #dfb13c !important;
+    }
+
+    .module h2, .module caption, .inline-group h2 {
+        background: #0b2a25 !important;
+        color: #ffffff !important;
+    }
+
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: #dfb13c !important;
+        color: #030c0a !important;
+        font-weight: bold !important;
+        border: none !important;
+    }
+
+    .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+        background: #c59b2b !important;
+        color: #030c0a !important;
+    }
+
+    #branding h1 {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+    }
+
+    #branding h1 span {
+        color: #dfb13c !important;
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<div id="branding">
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; gap: 10px;">
+            <img src="{% static 'logo.png' %}" style="height: 35px; width: 35px; border-radius: 50%; border: 2px solid #dfb13c; object-cover: cover;" alt="logo">
+            <span>MEJAS</span> <span style="color: #dfb13c;">MMS</span>
+        </a>
+    </h1>
+</div>
+{% endblock %}

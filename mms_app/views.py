@@ -26,6 +26,8 @@ from .utils import log_activity
 
 # --- AUTH VIEWS ---
 
+import random
+
 def mms_login(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
@@ -38,6 +40,39 @@ def mms_login(request):
                 messages.error(request, _("Akaunti yako imezimwa. Wasiliana na msimamizi."))
                 return render(request, "auth/login.html", {"form": form})
 
+            # Check if 2FA is enabled
+            if user.two_factor_enabled:
+                otp_code = str(random.randint(100000, 999999))
+                expiry = timezone.now() + datetime.timedelta(minutes=5)
+
+                # Store in session
+                request.session["pre_2fa_user_id"] = user.id
+                request.session["otp_code"] = otp_code
+                request.session["otp_expiry"] = expiry.isoformat()
+
+                # Send Simulated SMS
+                from .utils import send_sms
+                sms_text = _("MMS: Namba yako ya siri ya kuingia mfumoni (2FA OTP) ni {}. Itamalizika baada ya dakika 5.").format(otp_code)
+                send_sms(user.phone, sms_text)
+
+                # Send Email Notification
+                if user.email:
+                    from django.core.mail import send_mail
+                    try:
+                        send_mail(
+                            subject=_("MMS - Two-Factor Authentication OTP"),
+                            message=sms_text,
+                            from_email="noreply@mejas.co.tz",
+                            recipient_list=[user.email],
+                            fail_silently=True
+                        )
+                    except Exception as e:
+                        print(f"2FA Email failed: {e}")
+
+                messages.info(request, _("Tafadhali jaza namba ya siri (OTP) uliyotumiwa kwenye barua pepe au simu yako."))
+                return redirect("verify_2fa")
+
+            # Standard Direct Login
             login(request, user)
             log_activity(user, "USER_LOGIN", f"User logged in successfully from branch {user.branch.name if user.branch else 'HQ'}", request)
             messages.success(request, _("Karibu tena, {}!").format(user.get_full_name() or user.username))
@@ -51,6 +86,58 @@ def mms_login(request):
     else:
         form = MMSLoginForm()
     return render(request, "auth/login.html", {"form": form})
+
+
+def verify_2fa_view(request):
+    """
+    Handles 2FA OTP verification before finalizing login.
+    """
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
+    user_id = request.session.get("pre_2fa_user_id")
+    if not user_id:
+        messages.error(request, _("Kipindi chako kimeisha au hakipo sahihi. Tafadhali ingia tena."))
+        return redirect("login")
+
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == "POST":
+        entered_code = request.POST.get("otp_code", "").strip()
+        session_code = request.session.get("otp_code")
+        expiry_str = request.session.get("otp_expiry")
+
+        if not entered_code or not session_code or not expiry_str:
+            messages.error(request, _("Tafadhali jaza namba ya siri (OTP)."))
+            return render(request, "auth/verify_2fa.html")
+
+        # Check Expiry
+        expiry = datetime.datetime.fromisoformat(expiry_str)
+        if timezone.is_naive(expiry):
+            expiry = timezone.make_aware(expiry)
+
+        if timezone.now() > expiry:
+            messages.error(request, _("Namba ya siri (OTP) imeisha muda wake. Tafadhali ingia tena."))
+            # Clear invalid session
+            request.session.pop("pre_2fa_user_id", None)
+            return redirect("login")
+
+        if entered_code == session_code:
+            # Login successful
+            login(request, user)
+            log_activity(user, "USER_LOGIN_2FA_SUCCESS", f"User logged in successfully via 2FA verification", request)
+            messages.success(request, _("Karibu tena, {}!").format(user.get_full_name() or user.username))
+
+            # Clear session auth fields
+            request.session.pop("pre_2fa_user_id", None)
+            request.session.pop("otp_code", None)
+            request.session.pop("otp_expiry", None)
+
+            return redirect("dashboard")
+        else:
+            messages.error(request, _("Namba ya siri (OTP) uliyojaza si sahihi."))
+
+    return render(request, "auth/verify_2fa.html")
 
 
 def mms_logout(request):
@@ -86,6 +173,15 @@ def password_reset_view(request):
 @login_required
 def password_change_view(request):
     if request.method == "POST":
+        if "toggle_2fa" in request.POST:
+            user = request.user
+            user.two_factor_enabled = not user.two_factor_enabled
+            user.save()
+            status_str = "ENABLED" if user.two_factor_enabled else "DISABLED"
+            log_activity(request.user, f"USER_2FA_{status_str}", f"User {user.username} toggled 2FA to {status_str}", request)
+            messages.success(request, _("Ulinzi wa Two-Factor Authentication (2FA) imesasishwa kikamilifu!"))
+            return redirect("password_change")
+
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
@@ -621,6 +717,152 @@ def payment_record_view(request, pk):
     })
 
 
+@login_required
+def client_lipa_payment_view(request, pk):
+    """
+    Simulates Lipa Number Mobile Money checkout using AzamPay integration gateway.
+    Handles Airtel Money, Tigo Pesa, M-Pesa, Halopesa payments.
+    """
+    loan = get_object_or_404(Loan, pk=pk)
+
+    # RBAC check: only client owner or staff can initiate payment
+    if request.user.role == User.Role.CLIENT and loan.client != request.user:
+        raise Http404(_("Ruhusa imekataliwa."))
+
+    if request.method == "POST":
+        operator = request.POST.get("operator", "").upper()
+        phone = request.POST.get("phone", "").strip()
+        amount_str = request.POST.get("amount", "").strip()
+
+        if not operator or not phone or not amount_str:
+            messages.error(request, _("Tafadhali jaza taarifa zote kwa usahihi."))
+            return redirect("dashboard")
+
+        try:
+            amount_paid = Decimal(amount_str)
+        except ValueError:
+            messages.error(request, _("Kiasi kilichowekwa si sahihi."))
+            return redirect("dashboard")
+
+        if amount_paid <= 0:
+            messages.error(request, _("Kiasi cha kulipa lazima kiwe zaidi ya 0."))
+            return redirect("dashboard")
+
+        # Simulate AzamPay payment processing payload
+        print(f"--- Simulating AzamPay Integration request ---")
+        print(f"POST https://api.azampay.co.tz/v1/checkout")
+        print(f"Payload: {{ 'amount': '{amount_paid}', 'phone': '{phone}', 'operator': '{operator}', 'utility': 'MMS_REPAYMENT', 'loan_id': '{loan.loan_id}' }}")
+        print(f"--- Response from AzamPay: Status: SUCCESS, reference_id: 'AZ-{timezone.now().strftime('%Y%m%d%H%M%S')}' ---")
+
+        # Simulate successful processing:
+        # Create payment receipt
+        date_str = timezone.now().strftime("%Y%m%d%H%M%S")
+        receipt_no = f"REC-AZ-{date_str}-{Payment.objects.count() + 1}"
+
+        payment = Payment.objects.create(
+            loan=loan,
+            amount_paid=amount_paid,
+            receipt_no=receipt_no,
+            payment_date=timezone.now(),
+            cashier_or_officer=None  # Client Self-Paid via AzamPay
+        )
+
+        # Log collection in CashFlow
+        CashFlow.objects.create(
+            branch=loan.branch,
+            flow_type=CashFlow.FlowType.IN,
+            category=CashFlow.Category.COLLECTION,
+            amount=amount_paid,
+            description=_("Repayment collection for loan {} via AzamPay ({})").format(loan.loan_id, operator),
+            recorded_by=None
+        )
+
+        # Update Loan Balance
+        loan.balance = max(Decimal("0.00"), loan.balance - amount_paid)
+
+        # Allocate payment across schedules sequentially
+        remaining_payment = amount_paid
+        schedules = loan.schedules.filter(status__in=[RepaymentSchedule.Status.UNPAID, RepaymentSchedule.Status.OVERDUE]).order_by("due_date")
+
+        for sched in schedules:
+            if remaining_payment <= 0:
+                break
+            due_balance = sched.installment_amount - sched.paid_amount
+            if remaining_payment >= due_balance:
+                sched.paid_amount = sched.installment_amount
+                sched.status = RepaymentSchedule.Status.PAID
+                remaining_payment -= due_balance
+                sched.save()
+            else:
+                sched.paid_amount += remaining_payment
+                remaining_payment = Decimal("0.00")
+                sched.save()
+
+        if loan.balance == Decimal("0.00"):
+            loan.status = Loan.Status.COMPLETED
+
+        loan.save()
+
+        # Trigger notifications (SMS, Email, System Notification)
+        from .utils import send_sms
+        from django.core.mail import send_mail
+        from .models import Notification
+
+        # 1. System notification to loan officer & branch cashier/managers
+        notification_msg = _("Mteja {} amelipia TZS {} kupitia AzamPay ({}) kwa ajili ya Mkopo {}.").format(
+            loan.client.get_full_name(), amount_paid, operator, loan.loan_id
+        )
+
+        # Find staff users associated with the loan branch/officer to notify
+        staff_users = User.objects.filter(role__in=[User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER])
+        if loan.branch:
+            staff_users = staff_users.filter(branch=loan.branch)
+
+        # Also notify the specific officer of this loan
+        if loan.officer:
+            staff_users = staff_users | User.objects.filter(id=loan.officer.id)
+
+        for staff in staff_users.distinct():
+            Notification.objects.create(
+                user=staff,
+                title=_("Malipo Mapya (AzamPay)"),
+                message=notification_msg
+            )
+
+        # 2. Simulated SMS Notification
+        sms_text = _("Habari, Malipo ya TZS {} kwa ajili ya Mkopo {} yamepokelewa. Risiti: {}. Asante!").format(
+            amount_paid, loan.loan_id, receipt_no
+        )
+        send_sms(loan.client.phone, sms_text)
+
+        # Send SMS notify to Admin too
+        admin_sms = _("Arifa: Mteja {} amelipia TZS {} kwa mkopo {}. Risiti: {}").format(
+            loan.client.get_full_name(), amount_paid, loan.loan_id, receipt_no
+        )
+        for staff in staff_users.filter(role__in=[User.Role.ADMIN, User.Role.MANAGER]):
+            if staff.phone:
+                send_sms(staff.phone, admin_sms)
+
+        # 3. Email Notification to Admin/Staff
+        emails = [s.email for s in staff_users if s.email]
+        if emails:
+            try:
+                send_mail(
+                    subject=_("MMS - Arifa ya Malipo ya AzamPay"),
+                    message=notification_msg,
+                    from_email="noreply@mejas.co.tz",
+                    recipient_list=emails,
+                    fail_silently=True
+                )
+            except Exception as e:
+                print(f"Email failed to send: {e}")
+
+        log_activity(loan.client, "CLIENT_AZAMPAY_REPAYMENT", f"Self-paid TZS {amount_paid} via AzamPay ({operator}). Receipt: {receipt_no}", request)
+        messages.success(request, _("Marejesho yako ya TZS {} yamepokelewa kikamilifu kupitia AzamPay! Risiti yako ni {}.").format(amount_paid, receipt_no))
+
+    return redirect("dashboard")
+
+
 # --- DAILY REPAYMENT TRACKING ---
 
 @login_required
@@ -1013,3 +1255,114 @@ def contact_view(request):
         return redirect("contact")
 
     return render(request, "public/contact.html")
+
+
+@login_required
+def audit_log_list_view(request):
+    """
+    Displays system-wide user activity logs with role-based restrictions.
+    Only CEO, Admin, and Managers can view audit logs.
+    """
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
+        raise Http404(_("Ruhusa imekataliwa."))
+
+    logs = AuditLog.objects.all().order_by("-timestamp")
+
+    # Search & filters
+    q = request.GET.get("q", "")
+    action_filter = request.GET.get("action", "")
+    user_filter = request.GET.get("user", "")
+
+    if q:
+        logs = logs.filter(
+            Q(description__icontains=q) |
+            Q(ip_address__icontains=q)
+        )
+    if action_filter:
+        logs = logs.filter(action=action_filter)
+    if user_filter:
+        logs = logs.filter(user_id=user_filter)
+
+    # Distinct actions for filter dropdown
+    available_actions = AuditLog.objects.values_list("action", flat=True).distinct()
+    available_users = User.objects.all()
+
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(logs, 25)  # 25 logs per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "tracking/audit_logs.html", {
+        "page_obj": page_obj,
+        "search_query": q,
+        "selected_action": action_filter,
+        "selected_user": user_filter,
+        "available_actions": available_actions,
+        "available_users": available_users,
+    })
+
+
+from django.core import serializers
+from django.apps import apps
+
+@login_required
+def db_backup_view(request):
+    """
+    Exports a complete serialized JSON backup of the system database.
+    Strictly restricted to CEO and Admin roles.
+    """
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN]:
+        raise Http404(_("Ruhusa imekataliwa."))
+
+    # Collect all model records
+    mms_models = apps.get_app_config("mms_app").get_models()
+
+    # Collect all querysets
+    all_objects = []
+    for model in mms_models:
+        all_objects.extend(list(model.objects.all()))
+
+    # Serialize
+    data = serializers.serialize("json", all_objects, indent=4)
+
+    # Create downloadable response
+    response = HttpResponse(data, content_type="application/json")
+    filename = f"mms_backup_{timezone.now().strftime('%Y%m%d_%H%M%S')}.json"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    log_activity(request.user, "DATABASE_BACKUP_DOWNLOAD", "User downloaded a full database backup snapshot", request)
+    return response
+
+
+@login_required
+def db_restore_view(request):
+    """
+    Imports and deserializes a JSON backup file to restore database records.
+    Strictly restricted to CEO and Admin roles.
+    """
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN]:
+        raise Http404(_("Ruhusa imekataliwa."))
+
+    if request.method == "POST":
+        backup_file = request.FILES.get("backup_file")
+        if not backup_file:
+            messages.error(request, _("Tafadhali chagua faili la backup la kurejesha."))
+            return redirect("audit_log_list")
+
+        try:
+            data = backup_file.read().decode("utf-8")
+
+            # Deserialize and save each object
+            count = 0
+            for obj in serializers.deserialize("json", data):
+                obj.save()
+                count += 1
+
+            log_activity(request.user, "DATABASE_RESTORE_SUCCESS", f"Successfully restored {count} database objects from uploaded backup", request)
+            messages.success(request, _("Database imerejeshwa kikamilifu! Jumla ya vitu vilivyorejeshwa: {}").format(count))
+        except Exception as e:
+            messages.error(request, _("Imeshindikana kurejesha database. Sababu: {}").format(e))
+            log_activity(request.user, "DATABASE_RESTORE_FAILED", f"Database restore failed: {e}", request)
+
+    return redirect("audit_log_list")
