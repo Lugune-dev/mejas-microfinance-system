@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "mms_app",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -157,6 +158,18 @@ LOGOUT_REDIRECT_URL = "login"
 # Email backend for development / console output
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# --- AZAMPAY & BANK INTEGRATION SETTINGS ---
+AZAMPAY_APP_NAME = "MEJAS_MMS"
+AZAMPAY_CLIENT_ID = os.environ.get("AZAMPAY_CLIENT_ID", "mejas_client_id")
+AZAMPAY_CLIENT_SECRET = os.environ.get("AZAMPAY_CLIENT_SECRET", "mejas_client_secret")
+AZAMPAY_API_KEY = os.environ.get("AZAMPAY_API_KEY", "mejas_api_key")
+AZAMPAY_BASE_URL = os.environ.get("AZAMPAY_BASE_URL", "https://checkout.azampay.co.tz")
+
+# Target Institution NMB Bank Account Details
+NMB_BANK_NAME = "NMB BANK PLC"
+NMB_BANK_ACCOUNT_NUMBER = "12345678901"
+NMB_BANK_ACCOUNT_NAME = "MEJAS ENTERPRISES MICROFINANCE"
 
 # --- SECURITY & SESSIONS ---
 # Inactivity Session Timeout set to 20 minutes (1200 seconds)

@@ -16,6 +16,7 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     path("admin/", admin.site.urls),
     path("", include("mms_app.urls")),
+    path("payments/", include("payments.urls")),
 )
 
 if settings.DEBUG:
