@@ -156,6 +156,15 @@
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
                     {% endif %}
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5 group">
+                        <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm group-hover:scale-105 transition-transform duration-200" alt="logo">
+                        <span class="hidden sm:block">
+                            <span class="text-base font-extrabold text-slate-800 dark:text-white tracking-tight">MEJAS</span>
+                            <span class="text-base font-light text-brand-500 tracking-tight"> MMS</span>
+                        </span>
+                    </a>
+                    {% else %}
                     <a href="{% url 'home' %}" class="flex items-center gap-2.5 group">
                         <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm group-hover:scale-105 transition-transform duration-200" alt="logo">
                         <span class="hidden sm:block">
@@ -163,6 +172,7 @@
                             <span class="text-base font-light text-brand-500 tracking-tight"> MMS</span>
                         </span>
                     </a>
+                    {% endif %}
                     {% if user.is_authenticated %}
                     <span class="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 px-3 py-1 rounded-full border border-brand-200 dark:border-brand-800">
                         <i class="fa-solid fa-building-columns text-[10px]"></i>
@@ -206,24 +216,30 @@
 
                     <!-- In-app Notifications Dropdown -->
                     {% if user.is_authenticated %}
+                    {% with unread_notifs=user.notifications.all %}
                     <div class="relative" id="notification-dropdown">
                         <button id="notification-btn" type="button" class="relative text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none rounded-full text-sm p-2 transition-colors duration-200">
                             <i class="fa-solid fa-bell text-base"></i>
                             <!-- Dynamic Badge -->
                             <span id="notif-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold leading-none text-white bg-red-600 rounded-full {% if not user.notifications.all %}hidden{% endif %}">
-                                {{ user.notifications.all.count }}
+                                {% for n in user.notifications.all %}{% if not n.is_read %}{% if forloop.first %}{{ user.notifications.all|length }}{% endif %}{% endif %}{% empty %}0{% endfor %}
                             </span>
                         </button>
                         <!-- Dropdown panel -->
                         <div id="notification-menu" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
                             <div class="p-3 bg-brand-900 text-white font-bold text-xs tracking-wider flex items-center justify-between border-b border-brand-800">
                                 <span>{% translate "Arifa za Mfumo" %}</span>
-                                <span class="bg-brand-500 text-slate-900 text-[10px] px-1.5 py-0.5 rounded-full font-extrabold">{{ user.notifications.all.count }}</span>
+                                <span id="notif-header-count" class="bg-brand-500 text-slate-900 text-[10px] px-1.5 py-0.5 rounded-full font-extrabold">{{ user.notifications.all.count }}</span>
                             </div>
                             <div class="divide-y divide-slate-100 dark:divide-slate-700 max-h-64 overflow-y-auto">
-                                {% for n in user.notifications.all|slice:":5" %}
-                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-                                    <p class="text-xs font-bold text-slate-800 dark:text-slate-100">{{ n.title }}</p>
+                                {% for n in user.notifications.all|slice:":10" %}
+                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition {% if not n.is_read %}bg-brand-50/40 dark:bg-brand-900/10{% endif %}">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <p class="text-xs font-bold text-slate-800 dark:text-slate-100">{{ n.title }}</p>
+                                        {% if not n.is_read %}
+                                        <span class="inline-block w-2 h-2 bg-brand-500 rounded-full"></span>
+                                        {% endif %}
+                                    </div>
                                     <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{{ n.message }}</p>
                                     <p class="text-[9px] text-slate-400 mt-1.5 flex items-center gap-1">
                                         <i class="fa-regular fa-clock"></i> {{ n.created_at|date:"d M, H:i" }}
@@ -238,6 +254,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endwith %}
                     {% endif %}
 
                     <!-- Dark/Light Mode Toggle -->
@@ -428,13 +445,35 @@
             closeMobileBtn.addEventListener('click', closeFn);
         }
 
-        // Notification dropdown toggle
+        // Notification dropdown toggle & Mark as Read endpoint call
         var notifBtn = document.getElementById('notification-btn');
         var notifMenu = document.getElementById('notification-menu');
+        var notifBadge = document.getElementById('notif-badge');
         if (notifBtn && notifMenu) {
             notifBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
+                var isOpening = notifMenu.classList.contains('hidden');
                 notifMenu.classList.toggle('hidden');
+
+                if (isOpening) {
+                    // Call backend endpoint to mark notifications as read
+                    fetch("{% url 'mark_notifications_read' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(function(res) {
+                        if (res.ok) {
+                            if (notifBadge) {
+                                notifBadge.textContent = '0';
+                                notifBadge.classList.add('hidden');
+                            }
+                        }
+                    }).catch(function(err) {
+                        console.log('Error marking notifications read:', err);
+                    });
+                }
             });
             document.addEventListener('click', function(e) {
                 if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {

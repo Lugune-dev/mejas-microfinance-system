@@ -59,37 +59,62 @@
         </div>
     </div>
 
-    <!-- Lipa Number & AzamPay Repayment Section -->
+    <!-- Lipa Number & Bank Settlement Section -->
     <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+        <!-- Target NMB Account Info Banner -->
+        <div class="p-4 bg-emerald-900/10 border border-emerald-500/30 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-emerald-600 text-white rounded-lg">
+                    <i class="fa-solid fa-building-columns text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs uppercase tracking-wider font-extrabold text-emerald-700 dark:text-emerald-400">{% translate "Akaunti Rasmi ya Banki (NMB Bank Settlement)" %}</h4>
+                    <p class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">NMB Bank A/C: <span class="text-brand-600 font-extrabold">12345678901</span></p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{% translate "Jina la Akaunti: " %}<span class="font-semibold text-slate-700 dark:text-slate-300">MEJAS ENTERPRISES MICROFINANCE</span></p>
+                </div>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-full border border-emerald-200">
+                <i class="fa-solid fa-shield-halved text-[10px]"></i> {% translate "Akaunti Salama ya Taasisi" %}
+            </span>
+        </div>
+
         <div class="flex flex-col lg:flex-row gap-6 items-start">
             <!-- Left Info Panel -->
             <div class="lg:w-1/2 space-y-4">
                 <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-mobile-screen-button text-brand-500"></i>
-                    {% translate "Lipia Mkopo Kupitia Simu (Lipa Number)" %}
+                    {% translate "Lipia Mkopo Kupitia Airtel Lipa Namba au Simu Yako" %}
                 </h3>
                 <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {% translate "Unaweza kulipia rejesho lako kwa urahisi ukiwa popote kwa kutumia Airtel Money, Tigo Pesa (yas), M-Pesa au Halopesa. Malipo yote yanasindikwa kiusalama kupitia mtoa huduma rasmi wa <strong>AzamPay</strong>." %}
+                    {% translate "Tutatumia namba ya Lipa ya Airtel Money. Pia unaweza kutumia M-Pesa, Tigo Pesa, au Halopesa. Malipo yako yote yataenda moja kwa moja kwenye akaunti ya taasisi ya NMB Bank." %}
                 </p>
-                <div class="space-y-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
-                    <p class="font-bold text-slate-700 dark:text-slate-300">{% translate "Hatua za Kulipia:" %}</p>
-                    <ol class="list-decimal list-inside space-y-1">
-                        <li>{% translate "Chagua mtandao wako wa simu." %}</li>
-                        <li>{% translate "Weka namba ya simu ya malipo." %}</li>
-                        <li>{% translate "Weka kiasi unachotaka kulipa leo." %}</li>
-                        <li>{% translate "Bonyeza kitufe cha 'Fanya Malipo' na utapokea ujumbe wa uthibitisho (push prompt) kwenye simu yako kuingiza PIN." %}</li>
+
+                <!-- Airtel Money Lipa Number Guide Box -->
+                <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300 bg-rose-50/60 dark:bg-rose-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-900/50">
+                    <p class="font-extrabold text-rose-700 dark:text-rose-300 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        {% translate "Jinsi ya Kulipia kwa Airtel Money (*150*60#):" %}
+                    </p>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-700 dark:text-slate-300">
+                        <li>{% translate "Piga <strong>*150*60#</strong> kwenye simu yako ya Airtel." %}</li>
+                        <li>{% translate "Chagua <strong>5: Lipa kwa Airtel Money</strong>." %}</li>
+                        <li>{% translate "Chagua <strong>1: Lipa Namba</strong>." %}</li>
+                        <li>{% translate "Weka Airtel Lipa Namba: <strong class='text-rose-600 font-extrabold'>55443322</strong> (MEJAS MMS)." %}</li>
+                        <li>{% translate "Weka Kiasi cha Kulipa na Weka PIN yako ya Airtel Money." %}</li>
+                        <li>{% translate "Pia unaweza kutumia fomu ya kulipia hapa chini kwa instant push prompt." %}</li>
                     </ol>
                 </div>
+
                 <!-- Operator Badges with Icons -->
-                <div class="flex flex-wrap items-center gap-3 pt-2">
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300">
+                        <i class="fa-solid fa-star text-rose-600 text-[10px]"></i> Airtel Lipa Namba (Inayopendekezwa)
+                    </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
-                        <i class="fa-solid fa-circle text-red-600 text-[8px]"></i> Vodacom M-Pesa
+                        <i class="fa-solid fa-circle text-red-600 text-[8px]"></i> M-Pesa
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                        <i class="fa-solid fa-circle text-blue-600 text-[8px]"></i> Tigo Pesa (Yas)
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                        <i class="fa-solid fa-circle text-rose-600 text-[8px]"></i> Airtel Money
+                        <i class="fa-solid fa-circle text-blue-600 text-[8px]"></i> Tigo Pesa
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200">
                         <i class="fa-solid fa-circle text-orange-600 text-[8px]"></i> Halopesa
@@ -98,13 +123,18 @@
             </div>
 
             <!-- Right Form Panel -->
-            <form action="{% url 'client_lipa_payment' active_loan.pk %}" method="POST" class="lg:w-1/2 w-full space-y-4 bg-slate-50 dark:bg-slate-900/30 p-5 rounded-xl border border-slate-100 dark:border-slate-800">
+            <form action="{% url 'payments:initiate_payment' active_loan.pk %}" method="POST" class="lg:w-1/2 w-full space-y-4 bg-slate-50 dark:bg-slate-900/30 p-5 rounded-xl border border-slate-100 dark:border-slate-800">
                 {% csrf_token %}
 
                 <!-- Operator Selection -->
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Mtoa Huduma (Operator)" %}</label>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border-2 border-rose-300 dark:border-rose-800 hover:border-rose-500 cursor-pointer transition text-center bg-rose-50/50 dark:bg-slate-800">
+                            <input type="radio" name="operator" value="AIRTEL" checked required class="absolute top-2 right-2 text-rose-600 focus:ring-rose-500">
+                            <span class="text-xs font-extrabold text-rose-600">AIRTEL</span>
+                            <span class="text-[9px] text-rose-700 dark:text-rose-300 font-medium">Lipa Namba</span>
+                        </label>
                         <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-red-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
                             <input type="radio" name="operator" value="MPESA" required class="absolute top-2 right-2 text-red-600 focus:ring-red-500">
                             <span class="text-xs font-bold text-red-600">M-PESA</span>
@@ -112,10 +142,6 @@
                         <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
                             <input type="radio" name="operator" value="TIGOPESA" required class="absolute top-2 right-2 text-blue-600 focus:ring-blue-500">
                             <span class="text-xs font-bold text-blue-600">TIGO PESA</span>
-                        </label>
-                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-rose-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
-                            <input type="radio" name="operator" value="AIRTEL" required class="absolute top-2 right-2 text-rose-600 focus:ring-rose-500">
-                            <span class="text-xs font-bold text-rose-600">AIRTEL</span>
                         </label>
                         <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-orange-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
                             <input type="radio" name="operator" value="HALOPESA" required class="absolute top-2 right-2 text-orange-600 focus:ring-orange-500">
@@ -126,12 +152,12 @@
 
                 <!-- Phone number -->
                 <div>
-                    <label for="id_phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Namba ya Simu ya Malipo" %}</label>
+                    <label for="id_phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Namba ya Simu ya Airtel Money / Malipo" %}</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <i class="fa-solid fa-phone text-xs"></i>
                         </div>
-                        <input type="text" name="phone" id="id_phone" required value="{{ user.phone|default:'' }}" placeholder="e.g. 0712345678" class="w-full pl-9 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition">
+                        <input type="text" name="phone" id="id_phone" required value="{{ user.phone|default:'' }}" placeholder="e.g. 0784123456" class="w-full pl-9 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition">
                     </div>
                 </div>
 
@@ -148,8 +174,8 @@
 
                 <!-- Action Button -->
                 <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold rounded-lg shadow transition duration-150 flex items-center justify-center gap-2 text-sm">
-                    <i class="fa-solid fa-credit-card"></i>
-                    {% translate "Fanya Malipo kupitia AzamPay" %}
+                    <i class="fa-solid fa-paper-plane"></i>
+                    {% translate "Fanya Malipo (Elekeza NMB Bank)" %}
                 </button>
             </form>
         </div>

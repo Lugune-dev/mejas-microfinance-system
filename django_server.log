@@ -1,9 +1,24 @@
 Watching for file changes with StatReloader
-[12/Aug/2026 15:55:32] "GET / HTTP/1.1" 302 0
-[12/Aug/2026 15:55:34] "GET /sw/ HTTP/1.1" 200 53566
-[12/Aug/2026 15:55:34] "GET /static/mej.jpeg HTTP/1.1" 200 61350
-[12/Aug/2026 15:55:34] "GET /static/logo.png HTTP/1.1" 200 350013
-[12/Aug/2026 15:55:37] "GET /login/ HTTP/1.1" 302 0
-[12/Aug/2026 15:55:37] "GET /sw/login/ HTTP/1.1" 200 12614
-[12/Aug/2026 15:55:39] "GET /password-reset/ HTTP/1.1" 302 0
-[12/Aug/2026 15:55:39] "GET /sw/password-reset/ HTTP/1.1" 200 10796
+[18/Aug/2026 12:47:19] "GET / HTTP/1.1" 302 0
+[18/Aug/2026 12:49:31] "GET /sw/login/ HTTP/1.1" 200 12614
+[18/Aug/2026 12:49:32] "GET /static/logo.png HTTP/1.1" 200 350013
+[18/Aug/2026 12:49:38] "POST /sw/login/ HTTP/1.1" 200 13057
+[18/Aug/2026 12:51:42] "GET /sw/login/ HTTP/1.1" 200 12614
+[18/Aug/2026 12:51:42] "GET /static/logo.png HTTP/1.1" 200 350013
+[18/Aug/2026 12:51:47] "POST /sw/login/ HTTP/1.1" 200 13056
+[18/Aug/2026 12:54:43] "GET /login/ HTTP/1.1" 302 0
+[18/Aug/2026 12:54:43] "GET /sw/login/ HTTP/1.1" 200 12614
+[18/Aug/2026 12:54:43] "GET /static/logo.png HTTP/1.1" 200 350013
+[18/Aug/2026 12:54:48] "POST /sw/login/ HTTP/1.1" 200 13056
+Not Found: /accounts/login/
+[18/Aug/2026 12:55:57] "GET /accounts/login/ HTTP/1.1" 404 2762
+Not Found: /accounts/login/
+[18/Aug/2026 12:57:04] "HEAD /accounts/login/ HTTP/1.1" 404 0
+Not Found: /sw/accounts/login/
+[18/Aug/2026 12:58:33] "GET /sw/accounts/login/ HTTP/1.1" 404 16296
+Not Found: /sw/accounts/login/
+[18/Aug/2026 13:00:14] "GET /sw/accounts/login/ HTTP/1.1" 404 16296
+[18/Aug/2026 13:01:38] "GET /sw/login/ HTTP/1.1" 200 12614
+[18/Aug/2026 13:01:38] "GET /static/logo.png HTTP/1.1" 200 350013
+[18/Aug/2026 13:01:45] "POST /sw/login/ HTTP/1.1" 302 0
+[18/Aug/2026 13:01:48] "GET /sw/dashboard/ HTTP/1.1" 200 62872

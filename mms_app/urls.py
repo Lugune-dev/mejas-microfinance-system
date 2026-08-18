@@ -14,8 +14,9 @@ urlpatterns = [
     path("password-change/", views.password_change_view, name="password_change"),
     path("verify-2fa/", views.verify_2fa_view, name="verify_2fa"),
 
-    # Dashboard
+    # Dashboard & Notifications
     path("dashboard/", views.dashboard_view, name="dashboard"),
+    path("notifications/read-all/", views.mark_notifications_read_view, name="mark_notifications_read"),
 
     # User Management
     path("users/", views.user_list_view, name="user_list"),

@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.utils import timezone
 from django.db.models import Sum, Q, Count
 from django.utils.translation import gettext as _
@@ -14,7 +14,7 @@ import openpyxl
 
 from .models import (
     Branch, User, ClientProfile, Loan, RepaymentSchedule,
-    Payment, CashFlow, DailyReconciliation, AuditLog
+    Payment, CashFlow, DailyReconciliation, AuditLog, Notification
 )
 from .forms import (
     MMSLoginForm, UserForm, ClientRegistrationForm, ClientProfileForm,
@@ -310,6 +310,20 @@ def dashboard_view(request):
         return render(request, "dashboard/client.html", context)
 
     return render(request, "dashboard/placeholder.html", context)
+
+
+@login_required
+def mark_notifications_read_view(request):
+    """
+    Marks all unread notifications for the logged in user as read
+    and returns a JSON status update.
+    """
+    if request.method == "POST" or request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("ajax"):
+        updated_count = Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({"status": "success", "marked_read": updated_count})
+
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    return redirect("dashboard")
 
 
 # --- USER ACCOUNT MANAGEMENT ---
@@ -681,6 +695,59 @@ def payment_record_view(request, pk):
 
             # Update Loan Balance
             loan.balance = max(Decimal("0.00"), loan.balance - amount_paid)
+
+            # Trigger Notifications for Manual Cashier/Officer Payment
+            from .utils import send_sms
+            from django.core.mail import send_mail
+            from .models import Notification
+
+            notif_text = _("Malipo ya TZS {} kwa ajili ya mkopo {} yamerekodiwa. Risiti: {}.").format(
+                amount_paid, loan.loan_id, payment.receipt_no
+            )
+
+            # In-app notification to client
+            Notification.objects.create(
+                user=loan.client,
+                title=_("Taarifa ya Malipo"),
+                message=notif_text
+            )
+
+            # SMS notification to client
+            client_sms = _("Habari {}, Tumepokea marejesho yako ya TZS {} kwa mkopo {}. Risiti: {}. Salio jipya: TZS {}.").format(
+                loan.client.get_full_name(), amount_paid, loan.loan_id, payment.receipt_no, loan.balance
+            )
+            send_sms(loan.client.phone, client_sms)
+
+            # In-app, SMS, Email to Admin/Managers
+            staff_users = User.objects.filter(role__in=[User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER])
+            if loan.branch:
+                staff_users = staff_users.filter(branch=loan.branch)
+
+            for admin_user in staff_users:
+                Notification.objects.create(
+                    user=admin_user,
+                    title=_("Marejesho ya Mkopo"),
+                    message=_("Mteja {} amelipa TZS {} kwa mkopo {}. Risiti: {}.").format(
+                        loan.client.get_full_name(), amount_paid, loan.loan_id, payment.receipt_no
+                    )
+                )
+                if admin_user.phone:
+                    send_sms(admin_user.phone, _("MMS ARIFA: Mteja {} amelipa TZS {} kwa mkopo {}. Risiti: {}.").format(
+                        loan.client.get_full_name(), amount_paid, loan.loan_id, payment.receipt_no
+                    ))
+
+            admin_emails = [s.email for s in staff_users if s.email]
+            if admin_emails:
+                try:
+                    send_mail(
+                        subject=_("MMS - Taarifa ya Marejesho ya Mkopo"),
+                        message=notif_text,
+                        from_email="noreply@mejas.co.tz",
+                        recipient_list=admin_emails,
+                        fail_silently=True
+                    )
+                except Exception as e:
+                    print(f"Failed to send email alert: {e}")
 
             # Allocate payment across schedules sequentially
             remaining_payment = amount_paid
