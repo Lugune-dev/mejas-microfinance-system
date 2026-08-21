@@ -377,7 +377,9 @@
                 {% block content %}{% endblock %}
 
                 <!-- Footer (no-print) -->
+                {% if not user.is_authenticated %}
                 {% include "partials/footer.html" %}
+                {% endif %}
 
             </main>
 

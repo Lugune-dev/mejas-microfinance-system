@@ -27,50 +27,50 @@
     <!-- Metrics Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Card 1: Total Disbursed -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
             <div class="space-y-2">
                 <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Mikopo Iliyotolewa (Disbursement)" %}</p>
-                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">TZS {{ total_disbursed|localize }}</h3>
+                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">TZS {{ total_disbursed|localize }}</h3>
                 <span class="text-xs text-brand-600 dark:text-brand-400 font-medium">{% translate "Principal accumulated" %}</span>
             </div>
-            <div class="p-4 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
-                <i class="fa-solid fa-hand-holding-dollar text-2xl"></i>
+            <div class="p-3.5 bg-brand-500/10 text-brand-500 border border-brand-500/20 rounded-xl">
+                <i class="fa-solid fa-hand-holding-dollar text-xl"></i>
             </div>
         </div>
 
         <!-- Card 2: Total Collection -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
             <div class="space-y-2">
                 <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Marejesho (Collections)" %}</p>
-                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">TZS {{ total_collections|localize }}</h3>
+                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">TZS {{ total_collections|localize }}</h3>
                 <span class="text-xs text-green-600 dark:text-green-400 font-medium">{% translate "Out of TZS " %}{{ total_repayments_expected|localize }}</span>
             </div>
-            <div class="p-4 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
-                <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
+            <div class="p-3.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl">
+                <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
             </div>
         </div>
 
         <!-- Card 3: Active Loans Count -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
             <div class="space-y-2">
                 <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Mikopo Hai (Active Loans)" %}</p>
-                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ active_loans_count }}</h3>
+                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">{{ active_loans_count }}</h3>
                 <span class="text-xs text-amber-600 dark:text-amber-400 font-medium">{% translate "Pending approval: " %}{{ pending_loans_count }}</span>
             </div>
-            <div class="p-4 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
-                <i class="fa-solid fa-percent text-2xl"></i>
+            <div class="p-3.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl">
+                <i class="fa-solid fa-percent text-xl"></i>
             </div>
         </div>
 
         <!-- Card 4: Overdue Loans Count -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
             <div class="space-y-2">
                 <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Iliyochelewa (Overdue)" %}</p>
-                <h3 class="text-2xl font-bold text-red-600 dark:text-red-400">{{ overdue_loans_count }}</h3>
+                <h3 class="text-2xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">{{ overdue_loans_count }}</h3>
                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">{% translate "Requires immediate attention" %}</span>
             </div>
-            <div class="p-4 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg">
-                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+            <div class="p-3.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
             </div>
         </div>
     </div>
