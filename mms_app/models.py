@@ -121,7 +121,7 @@ class Loan(models.Model):
         verbose_name=_("Branch"),
     )
     principal_amount = models.DecimalField(_("Principal Amount"), max_digits=12, decimal_places=2)
-    interest_rate = models.DecimalField(_("Interest Rate (%)"), max_digits=5, decimal_places=2)
+    interest_rate = models.DecimalField(_("Interest Rate (%)"), max_digits=5, decimal_places=2, default=Decimal("5.00"))
     duration = models.IntegerField(_("Duration (Installments Count)"))
     frequency = models.CharField(
         _("Repayment Frequency"),

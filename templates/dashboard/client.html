@@ -1,302 +1,364 @@
 {% extends 'base.html' %}
-{% load i18n l10n %}
+{% load i18n l10n static %}
 
-{% block title %}{% translate "Portal ya Mteja" %} - MMS{% endblock %}
+{% block title %}{% translate "Portal ya Mteja (Flowbite Client Dashboard)" %} - Mejas MMS{% endblock %}
+
+{% block extrastyle %}
+<!-- Flowbite CSS CDN -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+<style>
+    /* Flowbite Custom Theme Alignment for Mejas */
+    .flowbite-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .dark .flowbite-card {
+        background-color: #071915;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    .flowbite-card:hover {
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Header -->
-    <div>
-        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Habari, " %}{{ user.get_full_name }}</h2>
-        <p class="text-slate-500">{% translate "Hapa unaweza kuona salio lako la mkopo, ratiba ya marejesho, na historia ya malipo yako binafsi." %}</p>
+<div class="space-y-6 max-w-7xl mx-auto">
+    
+    <!-- ============================================================== -->
+    <!-- 1. FLOWBITE USER PROFILE & KYC HEADER -->
+    <!-- ============================================================== -->
+    <div class="flowbite-card p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="relative flex-shrink-0">
+                {% if user.photo %}
+                    <img src="{{ user.photo.url }}" class="h-14 w-14 rounded-2xl object-cover border-2 border-brand-500 shadow-sm" alt="avatar">
+                {% else %}
+                    <div class="h-14 w-14 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-sm">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+                <span class="bottom-0 left-10 absolute w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></span>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="font-heading text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                        {% translate "Habari, " %}{{ user.get_full_name|default:user.username }} 👋
+                    </h1>
+                    <!-- Flowbite Verified Badge -->
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full dark:bg-emerald-900/50 dark:text-emerald-300 inline-flex items-center gap-1 border border-emerald-500/20">
+                        <i class="fa-solid fa-circle-check text-[11px]"></i>
+                        {% translate "KYC Imethibitishwa" %}
+                    </span>
+                    <!-- Flowbite Credit Score Badge -->
+                    {% if credit_score %}
+                    <span class="{{ credit_score.badge_class }} text-xs font-semibold px-2.5 py-0.5 rounded-full border border-current/20 inline-flex items-center gap-1">
+                        <i class="fa-solid fa-shield-heart text-[11px]"></i>
+                        {% translate "Daraja:" %} <strong>{{ credit_score.score }}</strong> &bull; {{ credit_score.label }}
+                    </span>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {% translate "Karibu kwenye lango lako la mteja. Fuatilia salio la mkopo, ratiba ya marejesho na ufanye malipo ya simu moja kwa moja." %}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 self-start md:self-auto flex-wrap">
+            {% if active_loan %}
+            <a href="{% url 'loan_statement_pdf' active_loan.pk %}" 
+               class="text-white bg-[#0b2a25] hover:bg-[#114139] focus:ring-4 focus:ring-teal-300 font-bold rounded-xl text-xs px-4 py-2.5 dark:bg-brand-500 dark:text-slate-950 dark:hover:bg-brand-600 focus:outline-none transition inline-flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-file-pdf text-rose-500 dark:text-slate-950 text-sm"></i>
+                <span>{% translate "Pakua Statement (PDF)" %}</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'password_change' %}" 
+               class="text-slate-800 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:text-white dark:hover:bg-white/[0.14] font-bold rounded-xl text-xs px-3.5 py-2.5 transition inline-flex items-center gap-1.5 border border-slate-200 dark:border-white/10 shadow-sm"
+               title="{% translate 'Badili Password ya Akaunti' %}">
+                <i class="fa-solid fa-key text-brand-500"></i>
+                <span>{% translate "Badili Password" %}</span>
+            </a>
+        </div>
     </div>
 
-    <!-- Active Loan Check -->
+    <!-- ============================================================== -->
+    <!-- 2. ACTIVE LOAN FLOWBITE CARDS -->
+    <!-- ============================================================== -->
     {% if active_loan %}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Next payment alert card -->
-        <div class="md:col-span-1 p-6 bg-brand-900 text-white rounded-xl shadow-md border border-brand-800 flex flex-col justify-between">
-            <div class="space-y-4">
-                <p class="text-xs font-semibold uppercase tracking-widest text-brand-300">{% translate "Rejesho Linalofuata" %}</p>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        <!-- Next Payment Glowing Card (Left 5 Cols) -->
+        <div class="md:col-span-5 p-7 rounded-2xl text-slate-950 shadow-md flex flex-col justify-between space-y-6 relative overflow-hidden border border-brand-500/50" style="background: linear-gradient(135deg, #dfb13c 0%, #f3cf7a 50%, #c59b2b 100%);">
+            <div class="space-y-4 relative z-10">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-950/70">
+                        {% translate "Rejesho Linalofuata" %}
+                    </span>
+                    <span class="text-[10px] font-black uppercase tracking-wider bg-slate-950/15 text-slate-950 px-2.5 py-0.5 rounded-full">
+                        {{ active_loan.loan_id }}
+                    </span>
+                </div>
+                
                 {% if next_schedule %}
                 <div>
-                    <h3 class="text-3xl font-bold">TZS {{ next_schedule.installment_amount|localize }}</h3>
-                    <p class="text-xs text-brand-200 mt-1">{% translate "Mwisho wa Malipo (Due):" %} <span class="font-semibold">{{ next_schedule.due_date|date:"d M Y" }}</span></p>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-black tracking-tight text-slate-950">
+                        TZS {{ next_schedule.installment_amount|localize }}
+                    </h2>
+                    <p class="text-xs font-bold text-slate-950/80 mt-1 flex items-center gap-1.5">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>{% translate "Tarehe ya Mwisho:" %} <strong>{{ next_schedule.due_date|date:"d M Y" }}</strong></span>
+                    </p>
                 </div>
                 {% else %}
-                <h3 class="text-xl font-bold">{% translate "Ratiba zote zimelipwa kikamilifu!" %}</h3>
+                <div>
+                    <h3 class="font-heading text-xl font-black text-slate-950">{% translate "Hongera! Ratiba zote zimelipwa kikamilifu." %}</h3>
+                    <p class="text-xs font-medium text-slate-950/80 mt-1">{% translate "Huna rejesho linalosubiri kwa sasa." %}</p>
+                </div>
                 {% endif %}
             </div>
 
-            <div class="pt-4 mt-6 border-t border-brand-800 text-xs text-brand-200">
-                <p>{% translate "Loan ID:" %} <span class="font-semibold text-white">{{ active_loan.loan_id }}</span></p>
+            <div class="pt-4 border-t border-slate-950/15 flex items-center justify-between text-xs font-bold text-slate-950 relative z-10">
+                <span>Riba: {{ active_loan.interest_rate }}% (5% Rasmi)</span>
+                <span>Muda: {{ active_loan.duration }} Awamu</span>
             </div>
         </div>
 
-        <!-- Balance metrics cards -->
-        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="p-6 bg-white dark:bg-slate-800 rounded-xl hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between shadow-sm transition-all duration-300 hover:-translate-y-0.5">
-                <div class="space-y-1">
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{% translate "Salio la Mkopo sasa" %}</p>
-                    <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">TZS {{ active_loan.balance|localize }}</h3>
-                    <p class="text-xs text-slate-400">{% translate "Jumla ya Mkopo: TZS " %}{{ active_loan.total_repayable|localize }}</p>
+        <!-- Balance Metrics & Flowbite Progress (Right 7 Cols) -->
+        <div class="md:col-span-7 flex flex-col justify-between space-y-4">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flowbite-card p-6 flex flex-col justify-between space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                            {% translate "Salio Lililobaki" %}
+                        </span>
+                        <div class="w-9 h-9 rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-heading text-2xl font-black text-slate-900 dark:text-white">
+                            TZS {{ active_loan.balance|localize }}
+                        </h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Jumla ya mkopo: TZS {{ active_loan.total_repayable|localize }}</p>
+                    </div>
                 </div>
-                <div class="p-3.5 bg-brand-500/10 text-brand-500 border border-brand-500/20 rounded-xl">
-                    <i class="fa-solid fa-wallet text-lg"></i>
+
+                <div class="flowbite-card p-6 flex flex-col justify-between space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                            {% translate "Kiasi Kilicholipwa" %}
+                        </span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-heading text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                            TZS {{ total_paid|localize }}
+                        </h3>
+                        <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">Marejesho yaliyokamilika</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 bg-white dark:bg-slate-800 rounded-xl hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between shadow-sm transition-all duration-300 hover:-translate-y-0.5">
-                <div class="space-y-1">
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">{% translate "Kiasi Kilicholipwa (Paid)" %}</p>
-                    <h3 class="text-2xl font-extrabold text-green-600 tracking-tight">TZS {{ total_paid|localize }}</h3>
-                    <p class="text-xs text-slate-400">{% translate "Riba ya Mkopo: " %}{{ active_loan.interest_rate }}%</p>
+            <!-- Flowbite Repayment Progress Bar Card -->
+            <div class="flowbite-card p-5 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-[11px] flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-brand-500"></i>
+                        {% translate "Mwenendo wa Kulipa Mkopo" %}
+                    </span>
+                    <span class="font-extrabold text-brand-600 dark:text-brand-400">
+                        {{ progress_percent|default:"0" }}% {% translate "Imekamilika" %}
+                    </span>
                 </div>
-                <div class="p-3.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl">
-                    <i class="fa-solid fa-circle-check text-lg"></i>
+                <!-- Flowbite Progress Bar -->
+                <div class="w-full bg-slate-100 rounded-full h-3 dark:bg-white/[0.08] overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-500 via-brand-500 to-amber-500 h-3 rounded-full transition-all duration-700 ease-out" 
+                         style="width: {{ progress_percent|default:'0' }}%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                    <span>TZS 0</span>
+                    <span>Lengo: TZS {{ active_loan.total_repayable|localize }}</span>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- Pending AzamPay Transactions Alert -->
+    <!-- AzamPay / Mobile Money Pending Alert -->
     {% if pending_transactions %}
     <div class="space-y-3">
         {% for ptx in pending_transactions %}
-        <div class="flex items-start gap-4 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/60 rounded-xl">
-            <div class="flex-shrink-0 mt-0.5">
-                <span class="relative flex h-4 w-4">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-4 w-4 bg-amber-500 items-center justify-center">
-                        <i class="fa-solid fa-hourglass-half text-white text-[8px]"></i>
-                    </span>
-                </span>
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-amber-800 dark:text-amber-300">
-                    ⏳ {% translate "Malipo Yanasubiri Uthibitisho Wako" %}
+        <div class="flex items-start gap-4 p-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-800 dark:text-amber-200">
+            <span class="relative flex h-3 w-3 mt-1 flex-shrink-0">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+            </span>
+            <div class="flex-1 min-w-0 text-xs">
+                <p class="font-heading font-bold text-sm text-amber-800 dark:text-amber-300">
+                    ⏳ {% translate "Malipo Yanasubiri Uthibitisho wa PIN Yako" %}
                 </p>
-                <p class="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                    {% translate "Ombi la malipo ya TZS" %} <strong>{{ ptx.amount|localize }}</strong>
+                <p class="mt-1 leading-relaxed">
+                    {% translate "Ombi la TZS" %} <strong>{{ ptx.amount|localize }}</strong>
                     {% translate "kupitia" %} <strong>{{ ptx.operator }}</strong>
-                    {% translate "limetumwa kwenye" %} <strong>{{ ptx.phone_number }}</strong>.
-                    {% translate "Tafadhali ingiza PIN yako ya simu kukamilisha malipo. Akaunti itasasishwa moja kwa moja." %}
+                    {% translate "limetumwa kwenye namba" %} <strong>{{ ptx.phone_number }}</strong>.
+                    {% translate "Tafadhali kagua simu yako na uingize PIN ili kukamilisha malipo." %}
                 </p>
-                <p class="text-[10px] text-amber-600 dark:text-amber-500 mt-1 font-mono">
-                    Ref: {{ ptx.reference_id }} &nbsp;|&nbsp; {{ ptx.created_at|date:"d M Y, H:i" }}
-                </p>
-            </div>
-            <div class="flex-shrink-0">
-                <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
-                    <i class="fa-solid fa-clock text-[9px]"></i> PENDING
-                </span>
+                <p class="text-[10px] text-slate-400 mt-1 font-mono">Ref ID: {{ ptx.reference_id }}</p>
             </div>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Lipa Number & Bank Settlement Section -->
-    <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-        <!-- Target NMB Account Info Banner -->
-        <div class="p-4 bg-emerald-900/10 border border-emerald-500/30 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-3 bg-emerald-600 text-white rounded-lg">
-                    <i class="fa-solid fa-building-columns text-xl"></i>
-                </div>
-                <div>
-                    <h4 class="text-xs uppercase tracking-wider font-extrabold text-emerald-700 dark:text-emerald-400">{% translate "Akaunti Rasmi ya Banki (NMB Bank Settlement)" %}</h4>
-                    <p class="text-sm font-bold text-slate-800 dark:text-white mt-0.5">NMB Bank A/C: <span class="text-brand-600 font-extrabold">12345678901</span></p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">{% translate "Jina la Akaunti: " %}<span class="font-semibold text-slate-700 dark:text-slate-300">MEJAS ENTERPRISES MICROFINANCE</span></p>
+    <!-- ============================================================== -->
+    <!-- 3. FLOWBITE MOBILE MONEY CHECKOUT BOX -->
+    <!-- ============================================================== -->
+    <div class="flowbite-card p-6 sm:p-7 space-y-5">
+        <div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-mobile-screen-button text-brand-500 text-lg"></i>
+                <h3 class="font-heading text-lg font-black text-slate-900 dark:text-white">
+                    {% translate "Lipa Mkopo kwa Simu (Instant Mobile Money Checkout)" %}
+                </h3>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                {% translate "Lipa moja kwa moja kupitia Vodacom M-Pesa, Airtel Money, au Tigo Pesa kwa urahisi na usalama." %}
+            </p>
+        </div>
+
+        <form method="post" action="{% url 'payments:initiate_payment' active_loan.pk %}" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {% translate "Mtandao wa Simu" %}
+                </label>
+                <select name="operator" required 
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs font-bold rounded-xl focus:ring-brand-500 focus:border-brand-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-brand-500 dark:focus:border-brand-500">
+                    <option value="AIRTEL">Airtel Money</option>
+                    <option value="MPESA">Vodacom M-Pesa</option>
+                    <option value="TIGO">Tigo Pesa</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {% translate "Namba ya Simu ya Kulipia" %}
+                </label>
+                <input type="text" name="phone" value="{{ user.phone }}" required placeholder="07XXXXXXXX"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-xs font-bold rounded-xl focus:ring-brand-500 focus:border-brand-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-brand-500 dark:focus:border-brand-500">
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                    {% translate "Kiasi cha Kulipa (TZS)" %}
+                </label>
+                <div class="flex gap-2">
+                    <input type="number" name="amount" value="{{ next_schedule.installment_amount|default:active_loan.balance }}" required min="1000" max="{{ active_loan.balance }}"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-xs font-bold rounded-xl focus:ring-brand-500 focus:border-brand-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-brand-500 dark:focus:border-brand-500">
+                    <button type="submit" 
+                            class="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-black rounded-xl text-xs whitespace-nowrap shadow-sm hover:brightness-105 transition flex-shrink-0">
+                        <i class="fa-solid fa-paper-plane mr-1"></i>{% translate "Lipa Sasa" %}
+                    </button>
                 </div>
             </div>
-            <span class="text-xs font-semibold px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-full border border-emerald-200">
-                <i class="fa-solid fa-shield-halved text-[10px]"></i> {% translate "Akaunti Salama ya Taasisi" %}
+        </form>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 4. FLOWBITE REPAYMENT SCHEDULE TABLE -->
+    <!-- ============================================================== -->
+    <div class="flowbite-card p-6 sm:p-7 space-y-4 overflow-hidden">
+        <div class="flex justify-between items-center">
+            <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check text-brand-500"></i>
+                <span>{% translate "Ratiba Yako ya Marejesho (Repayment Schedule)" %}</span>
+            </h3>
+            <span class="text-xs text-slate-400 font-medium">
+                {{ schedules.count }} {% translate "awamu zimeratibiwa" %}
             </span>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-6 items-start">
-            <!-- Left Info Panel -->
-            <div class="lg:w-1/2 space-y-4">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-mobile-screen-button text-brand-500"></i>
-                    {% translate "Lipia Mkopo Kupitia Airtel Lipa Namba au Simu Yako" %}
-                </h3>
-                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {% translate "Tutatumia namba ya Lipa ya Airtel Money. Pia unaweza kutumia M-Pesa, Tigo Pesa, au Halopesa. Malipo yako yote yataenda moja kwa moja kwenye akaunti ya taasisi ya NMB Bank." %}
-                </p>
-
-                <!-- Airtel Money Lipa Number Guide Box -->
-                <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300 bg-rose-50/60 dark:bg-rose-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-900/50">
-                    <p class="font-extrabold text-rose-700 dark:text-rose-300 flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-phone-volume"></i>
-                        {% translate "Jinsi ya Kulipia kwa Airtel Money (*150*60#):" %}
-                    </p>
-                    <ol class="list-decimal list-inside space-y-1 text-slate-700 dark:text-slate-300">
-                        <li>{% translate "Piga <strong>*150*60#</strong> kwenye simu yako ya Airtel." %}</li>
-                        <li>{% translate "Chagua <strong>5: Lipa kwa Airtel Money</strong>." %}</li>
-                        <li>{% translate "Chagua <strong>1: Lipa Namba</strong>." %}</li>
-                        <li>{% translate "Weka Airtel Lipa Namba: <strong class='text-rose-600 font-extrabold'>55443322</strong> (MEJAS MMS)." %}</li>
-                        <li>{% translate "Weka Kiasi cha Kulipa na Weka PIN yako ya Airtel Money." %}</li>
-                        <li>{% translate "Pia unaweza kutumia fomu ya kulipia hapa chini kwa instant push prompt." %}</li>
-                    </ol>
-                </div>
-
-                <!-- Operator Badges with Icons -->
-                <div class="flex flex-wrap items-center gap-3 pt-1">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300">
-                        <i class="fa-solid fa-star text-rose-600 text-[10px]"></i> Airtel Lipa Namba (Inayopendekezwa)
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
-                        <i class="fa-solid fa-circle text-red-600 text-[8px]"></i> M-Pesa
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                        <i class="fa-solid fa-circle text-blue-600 text-[8px]"></i> Tigo Pesa
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200">
-                        <i class="fa-solid fa-circle text-orange-600 text-[8px]"></i> Halopesa
-                    </span>
-                </div>
-            </div>
-
-            <!-- Right Form Panel -->
-            <form action="{% url 'payments:initiate_payment' active_loan.pk %}" method="POST" class="lg:w-1/2 w-full space-y-4 bg-slate-50 dark:bg-slate-900/30 p-5 rounded-xl border border-slate-100 dark:border-slate-800">
-                {% csrf_token %}
-
-                <!-- Operator Selection -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Mtoa Huduma (Operator)" %}</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border-2 border-rose-300 dark:border-rose-800 hover:border-rose-500 cursor-pointer transition text-center bg-rose-50/50 dark:bg-slate-800">
-                            <input type="radio" name="operator" value="AIRTEL" checked required class="absolute top-2 right-2 text-rose-600 focus:ring-rose-500">
-                            <span class="text-xs font-extrabold text-rose-600">AIRTEL</span>
-                            <span class="text-[9px] text-rose-700 dark:text-rose-300 font-medium">Lipa Namba</span>
-                        </label>
-                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-red-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
-                            <input type="radio" name="operator" value="MPESA" required class="absolute top-2 right-2 text-red-600 focus:ring-red-500">
-                            <span class="text-xs font-bold text-red-600">M-PESA</span>
-                        </label>
-                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
-                            <input type="radio" name="operator" value="TIGOPESA" required class="absolute top-2 right-2 text-blue-600 focus:ring-blue-500">
-                            <span class="text-xs font-bold text-blue-600">TIGO PESA</span>
-                        </label>
-                        <label class="relative flex flex-col items-center justify-center p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-orange-500 cursor-pointer transition text-center bg-white dark:bg-slate-800">
-                            <input type="radio" name="operator" value="HALOPESA" required class="absolute top-2 right-2 text-orange-600 focus:ring-orange-500">
-                            <span class="text-xs font-bold text-orange-600">HALOPESA</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Phone number -->
-                <div>
-                    <label for="id_phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Namba ya Simu ya Airtel Money / Malipo" %}</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-phone text-xs"></i>
-                        </div>
-                        <input type="text" name="phone" id="id_phone" required value="{{ user.phone|default:'' }}" placeholder="e.g. 0784123456" class="w-full pl-9 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition">
-                    </div>
-                </div>
-
-                <!-- Amount -->
-                <div>
-                    <label for="id_amount" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{% translate "Kiasi cha Kulipia (TZS)" %}</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                            <span class="text-xs font-semibold">TZS</span>
-                        </div>
-                        <input type="number" name="amount" id="id_amount" required value="{% if next_schedule %}{{ next_schedule.installment_amount|unlocalize }}{% else %}{{ active_loan.balance|unlocalize }}{% endif %}" class="w-full pl-12 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none text-sm font-bold transition">
-                    </div>
-                </div>
-
-                <!-- Action Button with real payment flow guidance -->
-                <button type="submit" id="pay-submit-btn" class="w-full py-3 bg-brand-500 hover:bg-brand-600 active:scale-95 text-slate-900 font-bold rounded-lg shadow transition duration-150 flex items-center justify-center gap-2 text-sm">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    {% translate "Tuma Ombi la Malipo (AzamPay Push)" %}
-                </button>
-                <p class="text-[10px] text-slate-400 text-center leading-relaxed">
-                    <i class="fa-solid fa-circle-info text-brand-400"></i>
-                    {% translate "Baada ya kubonyeza, simu yako itapata push prompt. Ingiza PIN yako ya mtandao wa simu kukamilisha malipo. Risiti itatolewa kiotomatiki." %}
-                </p>
-            </form>
+        <div class="relative overflow-x-auto shadow-sm sm:rounded-xl border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-xs text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-[10px] text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300 font-extrabold">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">{% translate "Awamu" %}</th>
+                        <th scope="col" class="px-6 py-3">{% translate "Tarehe ya Mwisho (Due Date)" %}</th>
+                        <th scope="col" class="px-6 py-3">{% translate "Kiasi Kinachotakiwa" %}</th>
+                        <th scope="col" class="px-6 py-3">{% translate "Kiasi Kilicholipwa" %}</th>
+                        <th scope="col" class="px-6 py-3 text-right">{% translate "Hali ya Malipo" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for s in schedules %}
+                    <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        <th scope="row" class="px-6 py-4 font-bold text-gray-900 whitespace-nowrap dark:text-white">
+                            Awamu #{{ forloop.counter }}
+                        </th>
+                        <td class="px-6 py-4 font-semibold text-gray-600 dark:text-gray-300">
+                            {{ s.due_date|date:"d M Y" }}
+                        </td>
+                        <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">
+                            TZS {{ s.installment_amount|localize }}
+                        </td>
+                        <td class="px-6 py-4 font-bold text-emerald-600 dark:text-emerald-400">
+                            {% if s.paid_amount > 0 %}TZS {{ s.paid_amount|localize }}{% else %}-{% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            {% if s.status == 'PAID' %}
+                            <span class="inline-flex items-center bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full dark:bg-emerald-900/60 dark:text-emerald-300">
+                                <i class="fa-solid fa-check mr-1.5 text-xs"></i>{% translate "IMELIPWA" %}
+                            </span>
+                            {% elif s.paid_amount > 0 %}
+                            <span class="inline-flex items-center bg-amber-100 text-amber-800 text-[11px] font-bold px-3 py-1 rounded-full dark:bg-amber-900/60 dark:text-amber-300">
+                                <i class="fa-solid fa-hourglass-half mr-1.5 text-xs"></i>{% translate "SEHEMU" %}
+                            </span>
+                            {% elif s.status == 'OVERDUE' %}
+                            <span class="inline-flex items-center bg-rose-100 text-rose-800 text-[11px] font-bold px-3 py-1 rounded-full dark:bg-rose-900/60 dark:text-rose-300">
+                                <i class="fa-solid fa-triangle-exclamation mr-1.5 text-xs"></i>{% translate "IMECHELEWA" %}
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center bg-gray-100 text-gray-800 text-[11px] font-bold px-3 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300">
+                                <i class="fa-regular fa-clock mr-1.5 text-xs"></i>{% translate "INASUBIRI" %}
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                            {% translate "Hakuna ratiba iliyoundwa kwa sasa." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Repayment Schedule Table & Payment History -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Full Repayment Schedule -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Ratiba ya Marejesho (Repayment Schedule)" %}</h4>
-            <div class="overflow-y-auto max-h-96">
-                <table class="w-full text-left text-sm border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 dark:bg-slate-900 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                            <th class="p-2.5">{% translate "Installment" %}</th>
-                            <th class="p-2.5">{% translate "Due Date" %}</th>
-                            <th class="p-2.5">{% translate "Kiasi cha Kulipa" %}</th>
-                            <th class="p-2.5">{% translate "Kiasi Kilicholipwa" %}</th>
-                            <th class="p-2.5">{% translate "Hali" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                        {% for s in full_schedule %}
-                        <tr>
-                            <td class="p-2.5">{{ forloop.counter }}</td>
-                            <td class="p-2.5">{{ s.due_date|date:"d M Y" }}</td>
-                            <td class="p-2.5 font-semibold">TZS {{ s.installment_amount|localize }}</td>
-                            <td class="p-2.5">TZS {{ s.paid_amount|localize }}</td>
-                            <td class="p-2.5">
-                                <span class="px-2 py-0.5 text-xs font-semibold rounded {% if s.status == 'PAID' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300{% elif s.status == 'OVERDUE' %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300{% else %}bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300{% endif %}">
-                                    {{ s.get_status_display }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Past Payment History -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Historia ya Malipo Aliyofanya (Receipts history)" %}</h4>
-            <div class="overflow-y-auto max-h-96">
-                <table class="w-full text-left text-sm border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 dark:bg-slate-900 text-slate-500 border-b border-slate-200 dark:border-slate-700">
-                            <th class="p-2.5">{% translate "Risiti No" %}</th>
-                            <th class="p-2.5">{% translate "Kiasi Kilicholipwa" %}</th>
-                            <th class="p-2.5">{% translate "Tarehe ya Malipo" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                        {% for p in payment_history %}
-                        <tr>
-                            <td class="p-2.5 font-semibold text-brand-600">{{ p.receipt_no }}</td>
-                            <td class="p-2.5 font-bold text-green-600">TZS {{ p.amount_paid|localize }}</td>
-                            <td class="p-2.5">{{ p.payment_date|date:"d M Y, H:i" }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="p-6 text-center text-slate-400">{% translate "Hujafanya malipo yoyote bado." %}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
     {% else %}
-    <!-- Placeholder when client has no active loan -->
-    <div class="p-12 text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
-        <div class="text-slate-300 dark:text-slate-600">
-            <i class="fa-solid fa-folder-open text-6xl"></i>
+    <!-- No Active Loan Flowbite Empty State -->
+    <div class="flowbite-card p-12 text-center space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-3xl mx-auto font-bold">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
         </div>
-        <div class="space-y-1">
-            <h4 class="text-lg font-bold text-slate-800 dark:text-white">{% translate "Huna mkopo unaoendelea hivi sasa." %}</h4>
-            <p class="text-sm text-slate-500">{% translate "Ukihitaji mkopo, tafadhali wasiliana na Loan Officer wako kwa ajili ya usajili wa maombi." %}</p>
-        </div>
+        <h3 class="font-heading text-2xl font-extrabold text-slate-900 dark:text-white">
+            {% translate "Huna mkopo unaoendelea kwa sasa." %}
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            {% translate "Ikiwa unahitaji kukuza biashara yako, kufadhili mradi, au unahitaji mkopo wa dharura kwa riba nafuu ya 5%, unaweza kuwasiliana na ofisi yetu iliyo karibu nawe au afisa mikopo." %}
+        </p>
     </div>
     {% endif %}
+
 </div>
+
+<!-- Flowbite JS CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 {% endblock %}

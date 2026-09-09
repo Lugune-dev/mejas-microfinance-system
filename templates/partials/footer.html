@@ -1,118 +1,96 @@
 {% load i18n static %}
-<footer class="no-print mt-12 bg-slate-900 text-slate-300 border-t border-slate-800 dark:bg-slate-950 dark:border-slate-900 transition-colors duration-200">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-            <!-- Brand Column -->
-            <div class="space-y-4">
-                <div class="flex items-center gap-2">
-                    <img src="{% static 'logo.png' %}" class="h-10 w-10 rounded-full object-cover border border-brand-500 shadow-sm" alt="logo">
-                    <span class="font-extrabold text-lg text-white tracking-wider">MEJAS</span>
+<footer class="no-print mt-16 bg-[#0b2a25] text-slate-200 border-t-2 border-[#dfb13c] relative">
+    
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Main 3-Column Simple & Clear Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-white/10">
+            
+            <!-- 1. Taasisi & Leseni -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <img src="{% static 'logo.png' %}" class="h-10 w-10 rounded-full object-cover border-2 border-[#dfb13c]" alt="Mejas Logo">
+                    <div>
+                        <span class="font-heading font-black text-base text-white tracking-wider block">Mejas Enterprises Microfinance</span>
+                        <span class="text-[10px] uppercase font-bold text-[#dfb13c] tracking-widest block">Tanzania Platform</span>
+                    </div>
                 </div>
-                <p class="text-sm text-slate-400 leading-relaxed">
-                    {% translate "Taasisi inayotoa mikopo salama na ya haraka ili kukuza wajasiriamali wadogo na wa kati nchini Tanzania kwa kutumia mifumo ya kisasa ya kidigitali." %}
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Mfumo rasmi wa mikopo nafuu ya 5% kwa wajasiriamali na wafanyabiashara wadogo na wa kati (SMEs) kote Tanzania.
                 </p>
-                <div class="flex gap-4">
-                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="Facebook">
-                        <i class="fa-brands fa-facebook text-xl"></i>
-                    </a>
-                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="Instagram">
-                        <i class="fa-brands fa-instagram text-xl"></i>
-                    </a>
-                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="Twitter">
-                        <i class="fa-brands fa-x-twitter text-xl"></i>
-                    </a>
-                    <a href="#" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="LinkedIn">
-                        <i class="fa-brands fa-linkedin text-xl"></i>
-                    </a>
-                    <a href="https://wa.me/255712345678" class="text-slate-400 hover:text-brand-500 transform hover:scale-110 transition duration-200" aria-label="WhatsApp">
-                        <i class="fa-brands fa-whatsapp text-xl"></i>
-                    </a>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-[#dfb13c]/40 text-[11px] text-[#dfb13c] font-bold">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>BOT Tier 2 Regulated &bull; MSP2-TZ-2024-0084</span>
                 </div>
             </div>
 
-            <!-- Quick Links -->
-            <div>
-                <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4 border-b border-brand-500 pb-2 inline-block">
-                    {% translate "Kurasa za Haraka" %}
+            <!-- 2. Njia za Malipo ya Marejesho (Payment Tills) -->
+            <div class="space-y-3">
+                <h3 class="text-[#dfb13c] font-black text-xs uppercase tracking-wider">
+                    {% translate "Njia za Kulipa Marejesho (Tills)" %}
                 </h3>
-                <ul class="space-y-2.5 text-sm">
-                    <li>
-                        <a href="{% url 'home' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-                            {% translate "Nyumbani" %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'about' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-                            {% translate "Kuhusu Sisi" %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'contact' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-                            {% translate "Wasiliana Nasi" %}
-                        </a>
-                    </li>
-                    {% if not user.is_authenticated %}
-                    <li>
-                        <a href="{% url 'login' %}" class="hover:text-brand-500 transition duration-150 inline-block relative py-0.5 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-[1px] after:bottom-0 after:left-0 after:bg-brand-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-                            {% translate "Ingia Mfumoni (Login)" %}
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/10">
+                        <span class="font-bold text-rose-400">M-PESA LIPA TILL:</span>
+                        <span class="font-mono font-black text-white text-sm">5544332</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/10">
+                        <span class="font-bold text-red-400">AIRTEL MONEY:</span>
+                        <span class="font-mono font-black text-white text-sm">8822119</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/10">
+                        <span class="font-bold text-blue-400">TIGO PESA:</span>
+                        <span class="font-mono font-black text-white text-sm">4455661</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400">
+                    Marejesho yanathibitishwa papohapo kupitia ujumbe wa SMS.
+                </p>
             </div>
 
-            <!-- Contacts Info -->
-            <div>
-                <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4 border-b border-brand-500 pb-2 inline-block">
-                    {% translate "Wasiliana Nasi" %}
+            <!-- 3. Mawasiliano & Ofisi -->
+            <div class="space-y-3">
+                <h3 class="text-[#dfb13c] font-black text-xs uppercase tracking-wider">
+                    {% translate "Mawasiliano na Ofisi" %}
                 </h3>
-                <ul class="space-y-3 text-sm text-slate-400">
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-location-dot text-brand-500 mt-1"></i>
-                        <span>Dar es Salaam, Tanzania<br><span class="text-xs text-slate-500">Mbezi/Kimara Complex</span></span>
+                <ul class="space-y-2 text-xs text-slate-300">
+                    <li class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-phone text-[#dfb13c] w-4"></i>
+                        <a href="tel:+255712345678" class="hover:text-[#dfb13c] font-bold text-white transition">+255 712 345 678</a>
                     </li>
-                    <li class="flex items-center gap-3">
-                        <i class="fa-solid fa-phone text-brand-500"></i>
-                        <a href="tel:+255712345678" class="hover:text-brand-500 transition duration-150">+255 712 345 678</a>
+                    <li class="flex items-center gap-2.5">
+                        <i class="fa-brands fa-whatsapp text-emerald-400 w-4"></i>
+                        <a href="https://wa.me/255712345678" class="hover:text-[#dfb13c] font-bold text-white transition">WhatsApp: 0712 345 678</a>
                     </li>
-                    <li class="flex items-center gap-3">
-                        <i class="fa-solid fa-envelope text-brand-500"></i>
-                        <a href="mailto:info@mejas.co.tz" class="hover:text-brand-500 transition duration-150">info@mejas.co.tz</a>
+                    <li class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-envelope text-[#dfb13c] w-4"></i>
+                        <a href="mailto:huduma@mejas.co.tz" class="hover:text-[#dfb13c] transition">huduma@mejas.co.tz</a>
+                    </li>
+                    <li class="flex items-start gap-2.5 pt-1 text-slate-400 text-[11px]">
+                        <i class="fa-solid fa-location-dot text-[#dfb13c] w-4 mt-0.5"></i>
+                        <span>Makao Makuu: Kariakoo, Dar es Salaam (Matawi: Sinza, Arusha, Mwanza, Dodoma)</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Service Hours -->
-            <div>
-                <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4 border-b border-brand-500 pb-2 inline-block">
-                    {% translate "Muda wa Kazi" %}
-                </h3>
-                <ul class="space-y-2 text-sm text-slate-400">
-                    <li class="flex justify-between">
-                        <span>{% translate "Jumatatu - Ijumaa" %}:</span>
-                        <span class="text-white font-semibold">08:00 AM - 05:00 PM</span>
-                    </li>
-                    <li class="flex justify-between">
-                        <span>{% translate "Jumamosi" %}:</span>
-                        <span class="text-white font-semibold">09:00 AM - 01:00 PM</span>
-                    </li>
-                    <li class="flex justify-between">
-                        <span>{% translate "Jumapili & Sikukuu" %}:</span>
-                        <span class="text-red-400 font-semibold">{% translate "Tumefungwa" %}</span>
-                    </li>
-                </ul>
-            </div>
         </div>
 
-        <!-- Divider -->
-        <div class="border-t border-slate-800 dark:border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-600 gap-4">
-            <p>
-                &copy; 2026 Mejas Enterprises. All rights reserved.
-            </p>
-            <p class="flex items-center gap-1">
-                <span>Digitized by</span>
-                <span class="font-semibold text-brand-500">Mejas MMS Team</span>
+        <!-- Quick Links & Copyright Bar -->
+        <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <div class="flex flex-wrap items-center gap-5">
+                <a href="{% url 'home' %}" class="hover:text-[#dfb13c] transition">{% translate "Mwanzo" %}</a>
+                <a href="{% url 'home' %}#calculator" class="hover:text-[#dfb13c] transition">{% translate "Kikokotoo (5% Riba)" %}</a>
+                <a href="{% url 'about' %}" class="hover:text-[#dfb13c] transition">{% translate "Kuhusu Sisi" %}</a>
+                <a href="{% url 'contact' %}" class="hover:text-[#dfb13c] transition">{% translate "Mawasiliano" %}</a>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="text-[#dfb13c] font-bold hover:underline">{% translate "Ingia Mfumoni" %}</a>
+                {% endif %}
+            </div>
+
+            <p class="text-center sm:text-right text-[11px]">
+                &copy; 2026 Mejas Microfinance System &bull; BOT Tier 2 Microfinance Act 2018
             </p>
         </div>
+
     </div>
 </footer>

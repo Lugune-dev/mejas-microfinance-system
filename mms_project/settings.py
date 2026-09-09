@@ -25,6 +25,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -60,6 +61,9 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
             ],
+            "libraries": {
+                "admin_kpis": "mms_app.templatetags.admin_kpis",
+            },
         },
     },
 ]
@@ -186,3 +190,100 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # SECURE_HSTS_SECONDS = 31536000
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_PRELOAD = True
+
+# ==============================================================
+# JAZZMIN MODERN ADMIN SETTINGS (Mejas Microfinance System)
+# ==============================================================
+JAZZMIN_SETTINGS = {
+    "site_title": "Mejas MMS Admin",
+    "site_header": "Mejas Microfinance",
+    "site_brand": "MEJAS MMS",
+    "site_logo": "logo.png",
+    "site_logo_classes": "img-circle elevation-2",
+    "site_icon": "logo.png",
+    "welcome_sign": "Karibu kwenye Mfumo wa Mejas Microfinance",
+    "copyright": "Mejas Microfinance System Ltd",
+    "search_model": ["mms_app.ClientProfile", "mms_app.Loan"],
+    "user_avatar": "photo",
+    "topmenu_links": [
+        {"name": "Tovuti ya Mwanzo", "url": "home", "permissions": []},
+        {"name": "Ripoti za Kifedha", "url": "reports_menu", "permissions": ["mms_app.view_loan"]},
+        {"name": "Ufuatiliaji wa Leo", "url": "daily_repayment_tracking", "permissions": ["mms_app.view_payment"]},
+    ],
+    "usermenu_links": [
+        {"name": "Tovuti Kuu (Home)", "url": "home", "icon": "fas fa-globe"},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": [
+        "mms_app.ClientProfile",
+        "mms_app.Loan",
+        "mms_app.RepaymentSchedule",
+        "mms_app.Payment",
+        "mms_app.CashFlow",
+        "mms_app.DailyReconciliation",
+        "mms_app.Branch",
+        "mms_app.User",
+        "mms_app.AuditLog",
+    ],
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "mms_app.User": "fas fa-user-shield",
+        "mms_app.ClientProfile": "fas fa-address-card",
+        "mms_app.Loan": "fas fa-hand-holding-dollar",
+        "mms_app.Payment": "fas fa-receipt",
+        "mms_app.RepaymentSchedule": "fas fa-calendar-alt",
+        "mms_app.Branch": "fas fa-building",
+        "mms_app.CashFlow": "fas fa-money-bill-wave",
+        "mms_app.DailyReconciliation": "fas fa-scale-balanced",
+        "mms_app.AuditLog": "fas fa-history",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": True,
+    "custom_css": "admin_custom.css",
+    "custom_js": None,
+    "show_theme_chooser": True,
+    "show_ui_builder": True,
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "mms_app.loan": "horizontal_tabs",
+        "mms_app.clientprofile": "horizontal_tabs",
+    },
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-warning",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-warning",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",
+    "default_theme_mode": "auto",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}

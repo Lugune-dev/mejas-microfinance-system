@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MMS - Microfinance Management System{% endblock %}</title>
-    <!-- Tailwind CDN -->
+    <title>{% block title %}Mejas Microfinance Management System (MMS){% endblock %}</title>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -14,35 +15,93 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#f4fbf9',
+                            50:  '#f4fbf9',
                             100: '#e1f5f0',
-                            500: '#dfb13c', // Elegant Gold Accent
-                            600: '#c59b2b', // Medium Gold Accent
-                            700: '#114139', // Dark Teal / Forest Green
-                            800: '#0b2a25', // Deep Logo Forest Green/Teal
-                            900: '#061815', // Darker Teal
-                            950: '#030c0a', // Solid Blackish Teal
+                            200: '#c3ecdf',
+                            300: '#94ddc8',
+                            400: '#5fc5ab',
+                            500: '#dfb13c', // Champagne Gold
+                            600: '#c59b2b', // Deep Gold Accent
+                            700: '#114139', // Forest Teal
+                            800: '#0b2a25', // Deep Teal
+                            900: '#061815', // Dark Core Teal
+                            950: '#030c0a', // Rich Black-Teal
                         }
+                    },
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-gold': '0 0 25px -5px rgba(223, 177, 60, 0.4)',
+                        'glow-emerald': '0 0 30px -5px rgba(17, 65, 57, 0.5)',
+                        'card-soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03)',
+                        'card-hover': '0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.04)',
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome for Icons -->
+
+    <!-- FontAwesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: Outfit (headings & numbers) and Plus Jakarta Sans (UI body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: -0.01em;
+        }
+        h1, h2, h3, h4, h5, .font-heading, .kpi-num {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* Glassmorphism utilities */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .dark .glass-nav {
+            background: rgba(4, 16, 13, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(223, 177, 60, 0.25);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(223, 177, 60, 0.45);
+        }
+
         /* Printer styles for Reports */
         @media print {
             .no-print { display: none !important; }
             .print-full { width: 100% !important; margin: 0 !important; padding: 0 !important; }
         }
     </style>
+    {% block extrastyle %}{% endblock %}
+    {% block extrahead %}{% endblock %}
 </head>
-<body class="h-full bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 flex flex-col">
+<body class="h-full bg-slate-50 text-slate-900 dark:bg-[#061210] dark:text-slate-100 transition-colors duration-200 flex flex-col antialiased selection:bg-brand-500 selection:text-slate-950">
 
-    <!-- Language & Theme switcher (always top right or navbar) -->
+    <!-- Theme Preference Initialization -->
     <script>
-        // Check for saved theme preference or default to light
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -53,191 +112,297 @@
     <!-- Base Layout Wrapper -->
     <div class="flex h-screen overflow-hidden">
 
-        <!-- SIDEBAR (no-print) -->
-        {% if user.is_authenticated %}
-        <aside id="sidebar" class="no-print hidden md:flex flex-col w-64 bg-brand-900 text-slate-100 dark:bg-slate-950 flex-shrink-0 z-20">
-            <!-- Sidebar Header / Logo -->
-            <div class="h-16 flex items-center justify-between px-4 bg-brand-950 border-b border-brand-800 dark:border-slate-800">
-                <a href="{% url 'dashboard' %}" class="flex items-center gap-2">
-                    <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border border-brand-500" alt="logo">
-                    <span class="font-bold text-lg tracking-wider text-white">MEJAS MMS</span>
+        <!-- ============================================================== -->
+        <!-- AUTHENTICATED SIDEBAR (Only shown on app internal pages) -->
+        <!-- ============================================================== -->
+        {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
+        <aside id="sidebar" class="no-print hidden md:flex flex-col w-72 bg-[#04120f] border-r border-white/[0.07] text-slate-300 flex-shrink-0 z-20 shadow-2xl">
+            
+            <!-- Sidebar Header / Brand Emblem -->
+            <div class="h-20 flex items-center gap-3.5 px-5 bg-[#030d0b] border-b border-white/[0.07] flex-shrink-0">
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 group">
+                    <div class="relative">
+                        <div class="absolute -inset-1 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-500 blur opacity-40 group-hover:opacity-75 transition-opacity"></div>
+                        <img src="{% static 'logo.png' %}" class="relative h-10 w-10 rounded-full object-cover border border-brand-500 shadow-md" alt="Mejas Logo">
+                    </div>
+                    <div class="min-w-0">
+                        <span class="font-heading font-black text-lg text-white tracking-wider block leading-none group-hover:text-brand-400 transition-colors">
+                            MEJAS MMS
+                        </span>
+                        <span class="text-[9px] font-bold text-brand-400/80 tracking-widest uppercase block mt-1">
+                            Tier-2 Microfinance
+                        </span>
+                    </div>
                 </a>
+            </div>
+
+            <!-- Branch Status Pill -->
+            <div class="px-4 pt-3 pb-1">
+                <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-[11px]">
+                    <span class="flex items-center gap-2 text-slate-400 truncate">
+                        <i class="fa-solid fa-building-columns text-brand-500 text-xs flex-shrink-0"></i>
+                        <span class="truncate font-medium">{% if user.branch %}{{ user.branch.name }}{% else %}Makao Makuu (HQ){% endif %}</span>
+                    </span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse" title="Mfumo Upo Hewani"></span>
+                </div>
             </div>
 
             <!-- Navigation Links -->
-            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'dashboard' %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-chart-pie w-5"></i>
-                    <span>{% translate "Dashboard" %}</span>
-                </a>
+            <nav class="flex-1 px-3 py-3 space-y-5 overflow-y-auto">
 
-                {% if user.role != 'CLIENT' %}
-                <a href="{% url 'client_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'client' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-users w-5"></i>
-                    <span>{% translate "Wateja (Clients)" %}</span>
-                </a>
-                {% endif %}
-
-                <a href="{% url 'loan_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'loan' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-hand-holding-dollar w-5"></i>
-                    <span>{% translate "Mikopo (Loans)" %}</span>
-                </a>
-
-                {% if user.role != 'CLIENT' %}
-                <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'daily_repayment_tracking' %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-calendar-check w-5"></i>
-                    <span>{% translate "Ufuatiliaji wa Siku" %}</span>
-                </a>
-                {% endif %}
-
-                {% if user.role in 'CEO,MANAGER,CASHIER' %}
-                <a href="{% url 'cash_flow_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'cash_flow' in request.resolver_match.url_name or 'reconciliation' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-money-bill-transfer w-5"></i>
-                    <span>{% translate "Fedha & Hesabu" %}</span>
-                </a>
-                {% endif %}
-
-                {% if user.role in 'CEO,MANAGER' %}
-                <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'report' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-file-invoice-dollar w-5"></i>
-                    <span>{% translate "Ripoti (Reports)" %}</span>
-                </a>
-
-                <a href="{% url 'user_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if 'user_list' in request.resolver_match.url_name or 'user_create' in request.resolver_match.url_name %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-user-gear w-5"></i>
-                    <span>{% translate "Watumiaji (Users)" %}</span>
-                </a>
-
-                <a href="{% url 'audit_log_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'audit_log_list' %}bg-brand-800 text-white{% endif %}">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i>
-                    <span>{% translate "Audit/Activity Logs" %}</span>
-                </a>
-                {% endif %}
-
-                <div class="pt-4 mt-4 border-t border-brand-800 dark:border-slate-800">
-                    <a href="{% url 'password_change' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors {% if request.resolver_match.url_name == 'password_change' %}bg-brand-800 text-white{% endif %}">
-                        <i class="fa-solid fa-key w-5"></i>
-                        <span>{% translate "Badili Password" %}</span>
-                    </a>
-                    <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-950 transition-colors mt-1">
-                        <i class="fa-solid fa-right-from-bracket w-5"></i>
-                        <span>{% translate "Ondoka (Logout)" %}</span>
+                <!-- SECTION 1: KUU / MAIN -->
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Kuu (Core)" %}</p>
+                    
+                    <a href="{% url 'dashboard' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if request.resolver_match.url_name == 'dashboard' %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-chart-pie w-5 text-sm {% if request.resolver_match.url_name == 'dashboard' %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Dashibodi" %}</span>
                     </a>
                 </div>
+
+                <!-- SECTION 2: UENDESHAJI / OPERATIONS -->
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Uendeshaji (Operations)" %}</p>
+
+                    {% if user.role != 'CLIENT' %}
+                    <a href="{% url 'client_list' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'client' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-users w-5 text-sm {% if 'client' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Wateja (Clients)" %}</span>
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'loan_list' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'loan' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-hand-holding-dollar w-5 text-sm {% if 'loan' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Mikopo (Loans)" %}</span>
+                    </a>
+
+                    {% if user.role != 'CLIENT' %}
+                    <a href="{% url 'daily_repayment_tracking' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if request.resolver_match.url_name == 'daily_repayment_tracking' %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-calendar-check w-5 text-sm {% if request.resolver_match.url_name == 'daily_repayment_tracking' %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Ufuatiliaji wa Siku" %}</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- SECTION 3: FEDHA & MATAWI / TREASURY -->
+                {% if user.role in 'CEO,MANAGER,CASHIER' %}
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Fedha & Matawi" %}</p>
+
+                    <a href="{% url 'cash_flow_list' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'cash_flow' in request.resolver_match.url_name or 'reconciliation' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-money-bill-transfer w-5 text-sm {% if 'cash_flow' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Fedha & Hesabu" %}</span>
+                    </a>
+
+                    {% if user.role in 'CEO,MANAGER' %}
+                    <a href="{% url 'branch_list' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'branch' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-building-columns w-5 text-sm {% if 'branch' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Matawi (Branches)" %}</span>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- SECTION 4: TAARIFA & USIMAMIZI / MANAGEMENT & INSIGHTS -->
+                {% if user.role in 'CEO,MANAGER,ADMIN' or user.is_superuser %}
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Usimamizi & Ripoti" %}</p>
+
+                    <a href="{% url 'reports_menu' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'report' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-file-invoice-dollar w-5 text-sm {% if 'report' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Ripoti (Reports)" %}</span>
+                    </a>
+
+                    <a href="{% url 'user_list' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'user_list' in request.resolver_match.url_name or 'user_create' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-user-gear w-5 text-sm {% if 'user' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Watumiaji (Users)" %}</span>
+                    </a>
+
+                    <a href="{% url 'audit_log_list' %}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if request.resolver_match.url_name == 'audit_log_list' %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-sm {% if request.resolver_match.url_name == 'audit_log_list' %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
+                        <span>{% translate "Kumbukumbu (Audit)" %}</span>
+                    </a>
+
+                    {% if user.is_staff or user.is_superuser or user.role == 'ADMIN' %}
+                    <a href="{% url 'admin:index' %}" target="_blank"
+                       class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 transition-all border border-amber-500/30 shadow-sm">
+                        <i class="fa-solid fa-server w-5 text-sm text-amber-400"></i>
+                        <span>{% translate "Django Admin Console" %}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] ml-auto opacity-75"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
             </nav>
 
-            <!-- Sidebar Footer / User Identity -->
-            <div class="p-4 bg-brand-950 border-t border-brand-800 dark:border-slate-800 flex items-center gap-3">
-                {% if user.photo %}
-                    <img src="{{ user.photo.url }}" class="h-9 w-9 rounded-full object-cover border border-brand-500" alt="avatar">
-                {% else %}
-                    <div class="h-9 w-9 rounded-full bg-brand-500 flex items-center justify-center text-white font-bold">
-                        {{ user.username|slice:":1"|upper }}
+            <!-- Sidebar User Identity Card (Footer) -->
+            <div class="p-4 bg-[#030d0b] border-t border-white/[0.07] flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    {% if user.photo %}
+                        <img src="{{ user.photo.url }}" class="h-9 w-9 rounded-full object-cover border border-brand-500" alt="avatar">
+                    {% else %}
+                        <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-bold text-xs shadow">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                    {% endif %}
+                    <div class="truncate">
+                        <p class="text-xs font-bold text-white truncate">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="text-[10px] text-brand-400 truncate">{{ user.get_role_display }}</p>
                     </div>
-                {% endif %}
-                <div class="truncate">
-                    <p class="text-sm font-semibold text-white truncate">{{ user.get_full_name|default:user.username }}</p>
-                    <p class="text-xs text-brand-300 truncate">{{ user.get_role_display }}</p>
+                </div>
+
+                <div class="flex items-center gap-1">
+                    <a href="{% url 'password_change' %}" class="text-slate-400 hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-white/[0.05]" title="{% translate 'Badili Password ya Akaunti' %}">
+                        <i class="fa-solid fa-key text-xs"></i>
+                    </a>
+                    <a href="{% url 'logout' %}" class="text-slate-400 hover:text-rose-400 transition-colors p-1.5 rounded-lg hover:bg-white/[0.05]" title="{% translate 'Ondoka (Logout)' %}">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </a>
                 </div>
             </div>
+
         </aside>
         {% endif %}
 
+        <!-- ============================================================== -->
         <!-- MAIN VIEW WRAPPER -->
+        <!-- ============================================================== -->
         <div class="flex-1 flex flex-col overflow-hidden min-w-0">
 
             <!-- TOP NAVBAR (no-print) -->
-            <header class="no-print h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0 gap-4">
+            <header class="no-print h-16 glass-nav border-b border-slate-200/80 dark:border-white/[0.07] flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0 gap-4 shadow-sm">
 
-                <!-- ZONE 1: Brand (Left) -->
+                <!-- ZONE 1: Brand & Mobile Toggle -->
                 <div class="flex items-center gap-3 flex-shrink-0">
-                    {% if user.is_authenticated %}
-                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 dark:text-slate-400 focus:outline-none hover:text-brand-500">
-                        <i class="fa-solid fa-bars text-xl"></i>
+                    {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 dark:text-slate-400 hover:text-brand-500 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-bars text-lg"></i>
                     </button>
                     {% endif %}
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5 group">
-                        <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm group-hover:scale-105 transition-transform duration-200" alt="logo">
-                        <span class="hidden sm:block">
-                            <span class="text-base font-extrabold text-slate-800 dark:text-white tracking-tight">MEJAS</span>
-                            <span class="text-base font-light text-brand-500 tracking-tight"> MMS</span>
-                        </span>
+
+                    {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5 md:hidden">
+                        <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
+                        <span class="font-heading font-black text-slate-900 dark:text-white">MEJAS</span>
                     </a>
                     {% else %}
-                    <a href="{% url 'home' %}" class="flex items-center gap-2.5 group">
-                        <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm group-hover:scale-105 transition-transform duration-200" alt="logo">
-                        <span class="hidden sm:block">
-                            <span class="text-base font-extrabold text-slate-800 dark:text-white tracking-tight">MEJAS</span>
-                            <span class="text-base font-light text-brand-500 tracking-tight"> MMS</span>
-                        </span>
+                    <a href="{% url 'home' %}" class="flex items-center gap-3">
+                        <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm" alt="logo">
+                        <div>
+                            <span class="font-heading font-extrabold text-base text-slate-900 dark:text-white tracking-wider block leading-none">MEJAS</span>
+                            <span class="text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest block mt-0.5">Microfinance</span>
+                        </div>
                     </a>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                    <span class="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 px-3 py-1 rounded-full border border-brand-200 dark:border-brand-800">
-                        <i class="fa-solid fa-building-columns text-[10px]"></i>
-                        {% if user.branch %}{{ user.branch.name }}{% else %}Makao Makuu{% endif %}
-                    </span>
                     {% endif %}
                 </div>
 
-                <!-- ZONE 2: Center Navigation (Public pages only) -->
-                {% if not user.is_authenticated %}
-                <nav class="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-                    <a href="{% url 'home' %}" class="relative px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-400 transition-colors duration-200 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 after:content-[''] after:absolute after:w-[calc(100%-24px)] after:scale-x-0 after:h-[2px] after:bottom-0.5 after:left-3 after:bg-brand-500 after:origin-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left">{% translate "Nyumbani" %}</a>
-                    <a href="{% url 'about' %}" class="relative px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-400 transition-colors duration-200 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 after:content-[''] after:absolute after:w-[calc(100%-24px)] after:scale-x-0 after:h-[2px] after:bottom-0.5 after:left-3 after:bg-brand-500 after:origin-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left">{% translate "Kuhusu Sisi" %}</a>
-                    <a href="{% url 'contact' %}" class="relative px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-brand-500 dark:text-slate-300 dark:hover:text-brand-400 transition-colors duration-200 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 after:content-[''] after:absolute after:w-[calc(100%-24px)] after:scale-x-0 after:h-[2px] after:bottom-0.5 after:left-3 after:bg-brand-500 after:origin-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-left">{% translate "Wasiliana Nasi" %}</a>
+                <!-- ZONE 2: Center Navigation (Public Pages) / Quick Search (Authenticated App Pages) -->
+                {% if request.resolver_match.url_name in 'home about contact login password_reset password_change verify_2fa' or not user.is_authenticated %}
+                <nav class="hidden md:flex items-center gap-1.5">
+                    <a href="{% url 'home' %}" class="px-4 py-2 text-xs font-bold rounded-full transition-all {% if request.resolver_match.url_name == 'home' %}bg-brand-500/15 text-brand-600 dark:text-brand-400 font-extrabold{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-white/[0.04]{% endif %}">
+                        {% translate "Nyumbani" %}
+                    </a>
+                    <a href="{% url 'about' %}" class="px-4 py-2 text-xs font-bold rounded-full transition-all {% if request.resolver_match.url_name == 'about' %}bg-brand-500/15 text-brand-600 dark:text-brand-400 font-extrabold{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-white/[0.04]{% endif %}">
+                        {% translate "Kuhusu Sisi" %}
+                    </a>
+                    <a href="{% url 'contact' %}" class="px-4 py-2 text-xs font-bold rounded-full transition-all {% if request.resolver_match.url_name == 'contact' %}bg-brand-500/15 text-brand-600 dark:text-brand-400 font-extrabold{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-white/[0.04]{% endif %}">
+                        {% translate "Wasiliana Nasi" %}
+                    </a>
                 </nav>
                 {% else %}
-                <!-- Authenticated: spacer for layout balance -->
-                <div class="flex-1"></div>
+                <div class="hidden sm:flex items-center flex-1 max-w-md mx-4">
+                    <form action="{% url 'client_list' %}" method="get" class="w-full relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" name="q" placeholder="{% translate 'Tafuta mteja, mkopo ID, au NIDA... (Ctrl+K)' %}" 
+                               class="w-full pl-9 pr-4 py-1.5 text-xs rounded-full bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition">
+                    </form>
+                </div>
                 {% endif %}
 
-                <!-- ZONE 3: Right Utility Actions -->
-                <div class="flex items-center gap-2 flex-shrink-0">
+                <!-- ZONE 3: Right Action Controls -->
+                <div class="flex items-center gap-2.5 flex-shrink-0">
 
                     <!-- Modern Language Switcher -->
                     {% load i18n %}
                     {% get_current_language as CURRENT_LANG %}
-                    {% get_available_languages as ALL_LANGS %}
-                    <form action="/i18n/setlang/" method="post" class="relative inline-flex items-center">
-                        {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                        <div class="relative flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-full px-3 py-1.5 transition-colors duration-200 cursor-pointer">
-                            <i class="fa-solid fa-globe text-brand-500 text-xs"></i>
-                            <select name="language" onchange="this.form.submit()" class="appearance-none bg-transparent text-slate-700 dark:text-slate-200 border-none outline-none focus:ring-0 text-xs font-semibold cursor-pointer pr-3">
-                                {% for lang in ALL_LANGS %}
-                                    <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>{{ lang.1 }}</option>
-                                {% endfor %}
-                            </select>
-                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px] pointer-events-none absolute right-2.5"></i>
+                    <div class="relative" id="lang-dropdown-wrapper">
+                        <form id="lang-form" action="/i18n/setlang/" method="post" class="hidden">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                            <input name="language" id="lang-input" type="hidden" value="{{ CURRENT_LANG }}">
+                        </form>
+                        <button id="lang-menu-btn" type="button" class="flex items-center gap-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/[0.08] rounded-full px-3 py-1.5 transition-all text-xs font-bold text-slate-800 dark:text-white shadow-sm focus:outline-none cursor-pointer" aria-label="Change Language">
+                            <span class="text-sm leading-none">{% if CURRENT_LANG == 'en' %}🇬🇧{% else %}🇹🇿{% endif %}</span>
+                            <span class="tracking-wide uppercase font-black">{% if CURRENT_LANG == 'en' %}EN{% else %}SW{% endif %}</span>
+                            <i id="lang-chevron" class="fa-solid fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200"></i>
+                        </button>
+                        
+                        <!-- Floating Dropdown Popover -->
+                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-52 bg-white/95 dark:bg-[#08121a]/95 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1">
+                            <div class="px-3 py-1.5 border-b border-slate-100 dark:border-white/5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Chagua Lugha / Language</p>
+                            </div>
+                            <button type="button" onclick="submitLanguageChange('sw')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer {% if CURRENT_LANG == 'sw' %}bg-brand-500/15 text-brand-600 dark:text-brand-400 font-black{% else %}hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 font-medium{% endif %}">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base leading-none">🇹🇿</span>
+                                    <div>
+                                        <p class="text-xs font-bold leading-tight">Kiswahili</p>
+                                        <p class="text-[10px] text-slate-400 dark:text-slate-500">Lugha Rasmi</p>
+                                    </div>
+                                </div>
+                                {% if CURRENT_LANG == 'sw' %}
+                                <i class="fa-solid fa-circle-check text-xs text-brand-500"></i>
+                                {% endif %}
+                            </button>
+                            <button type="button" onclick="submitLanguageChange('en')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer {% if CURRENT_LANG == 'en' %}bg-brand-500/15 text-brand-600 dark:text-brand-400 font-black{% else %}hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 font-medium{% endif %}">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base leading-none">🇬🇧</span>
+                                    <div>
+                                        <p class="text-xs font-bold leading-tight">English</p>
+                                        <p class="text-[10px] text-slate-400 dark:text-slate-500">International</p>
+                                    </div>
+                                </div>
+                                {% if CURRENT_LANG == 'en' %}
+                                <i class="fa-solid fa-circle-check text-xs text-brand-500"></i>
+                                {% endif %}
+                            </button>
                         </div>
-                    </form>
+                    </div>
 
-                    <!-- In-app Notifications Dropdown -->
+                    <!-- Notifications (Authenticated only) -->
                     {% if user.is_authenticated %}
                     {% with unread_notifs=user.notifications.all %}
                     <div class="relative" id="notification-dropdown">
-                        <button id="notification-btn" type="button" class="relative text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none rounded-full text-sm p-2 transition-colors duration-200">
-                            <i class="fa-solid fa-bell text-base"></i>
-                            <!-- Dynamic Badge -->
-                            <span id="notif-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold leading-none text-white bg-red-600 rounded-full {% if not user.notifications.all %}hidden{% endif %}">
-                                {% for n in user.notifications.all %}{% if not n.is_read %}{% if forloop.first %}{{ user.notifications.all|length }}{% endif %}{% endif %}{% empty %}0{% endfor %}
+                        <button id="notification-btn" type="button" class="relative text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/[0.06] transition" aria-label="Notifications">
+                            <i class="fa-solid fa-bell text-sm"></i>
+                            <span id="notif-badge" class="absolute top-1 right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold text-slate-950 bg-brand-500 rounded-full {% if not user.notifications.all %}hidden{% endif %}">
+                                {{ user.notifications.all|length }}
                             </span>
                         </button>
-                        <!-- Dropdown panel -->
-                        <div id="notification-menu" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
-                            <div class="p-3 bg-brand-900 text-white font-bold text-xs tracking-wider flex items-center justify-between border-b border-brand-800">
-                                <span>{% translate "Arifa za Mfumo" %}</span>
-                                <span id="notif-header-count" class="bg-brand-500 text-slate-900 text-[10px] px-1.5 py-0.5 rounded-full font-extrabold">{{ user.notifications.all.count }}</span>
+                        
+                        <!-- Dropdown Panel -->
+                        <div id="notification-menu" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-[#071714] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl z-50 overflow-hidden">
+                            <div class="p-3.5 bg-[#030d0b] text-white flex items-center justify-between border-b border-white/[0.08]">
+                                <span class="font-heading font-bold text-xs tracking-wider">{% translate "Arifa za Mfumo" %}</span>
+                                <span class="bg-brand-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-extrabold">{{ user.notifications.all.count }}</span>
                             </div>
-                            <div class="divide-y divide-slate-100 dark:divide-slate-700 max-h-64 overflow-y-auto">
-                                {% for n in user.notifications.all|slice:":10" %}
-                                <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition {% if not n.is_read %}bg-brand-50/40 dark:bg-brand-900/10{% endif %}">
-                                    <div class="flex items-center justify-between gap-1">
+                            <div class="divide-y divide-slate-100 dark:divide-white/[0.05] max-h-64 overflow-y-auto">
+                                {% for n in user.notifications.all|slice:":8" %}
+                                <div class="p-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition {% if not n.is_read %}bg-brand-50/50 dark:bg-brand-500/[0.04]{% endif %}">
+                                    <div class="flex items-center justify-between">
                                         <p class="text-xs font-bold text-slate-800 dark:text-slate-100">{{ n.title }}</p>
                                         {% if not n.is_read %}
-                                        <span class="inline-block w-2 h-2 bg-brand-500 rounded-full"></span>
+                                        <span class="w-2 h-2 rounded-full bg-brand-500"></span>
                                         {% endif %}
                                     </div>
                                     <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{{ n.message }}</p>
@@ -246,7 +411,7 @@
                                     </p>
                                 </div>
                                 {% empty %}
-                                <div class="p-6 text-center text-slate-400 dark:text-slate-500 text-xs">
+                                <div class="p-6 text-center text-slate-400 text-xs">
                                     <i class="fa-solid fa-bell-slash text-xl mb-2 block"></i>
                                     {% translate "Hauna arifa yoyote hivi sasa." %}
                                 </div>
@@ -257,128 +422,127 @@
                     {% endwith %}
                     {% endif %}
 
-                    <!-- Dark/Light Mode Toggle -->
-                    <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none rounded-full text-sm p-2 transition-colors duration-200">
-                        <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon text-base"></i>
-                        <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun text-base"></i>
+                    <!-- Dark / Light Mode Toggle -->
+                    <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:text-brand-500 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/[0.06] transition" aria-label="Toggle Theme">
+                        <i id="theme-toggle-dark-icon" class="hidden fa-solid fa-moon text-sm"></i>
+                        <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun text-sm text-brand-400"></i>
                     </button>
 
-                    <!-- Login / Dashboard CTA Button (far right) -->
+                    <!-- Main CTA (Login or Dashboard & Password) -->
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="hidden md:inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 active:scale-95 text-slate-900 text-sm font-bold px-4 py-2 rounded-full shadow-sm transition-all duration-200">
+                        <a href="{% url 'password_change' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-700 dark:text-slate-200 transition" title="{% translate 'Badili Password ya Akaunti Yako' %}">
+                            <i class="fa-solid fa-key text-xs text-brand-500"></i>
+                            <span class="hidden md:inline">{% translate "Badili Password" %}</span>
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 text-xs font-extrabold px-4 py-2 rounded-full shadow-sm hover:brightness-105 transition">
                             <i class="fa-solid fa-gauge-high text-xs"></i>
                             <span>{% translate "Dashibodi" %}</span>
                         </a>
-                        <span class="md:hidden text-xs font-semibold px-2 py-1 rounded-full bg-brand-100 text-brand-800 dark:bg-slate-800 dark:text-brand-200">
-                            {{ user.get_role_display }}
-                        </span>
                     {% else %}
-                        <a href="{% url 'login' %}" class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 active:scale-95 text-slate-900 text-sm font-bold px-4 py-2 rounded-full shadow-sm transition-all duration-200">
+                        <a href="{% url 'login' %}" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 text-xs font-extrabold px-5 py-2 rounded-full shadow-md hover:brightness-105 transition">
                             <i class="fa-solid fa-right-to-bracket text-xs"></i>
-                            <span class="hidden sm:inline">{% translate "Ingia" %}</span>
+                            <span>{% translate "Ingia Mfumoni" %}</span>
                         </a>
                     {% endif %}
+
                 </div>
             </header>
 
-            <!-- MOBILE NAV OVERLAY -->
-            {% if user.is_authenticated %}
-            <div id="mobile-menu-overlay" class="no-print hidden fixed inset-0 bg-slate-900 bg-opacity-50 z-30 transition-opacity"></div>
-            <div id="mobile-sidebar" class="no-print hidden fixed inset-y-0 left-0 w-64 bg-brand-900 dark:bg-slate-950 text-slate-100 z-40 flex flex-col">
-                <div class="h-16 flex items-center justify-between px-4 bg-brand-950 border-b border-brand-800 dark:border-slate-800">
-                    <span class="font-bold text-lg text-white">MEJAS MMS</span>
-                    <button id="close-mobile-menu" class="text-slate-300 focus:outline-none">
-                        <i class="fa-solid fa-xmark text-xl"></i>
+            <!-- MOBILE SIDEBAR (Authenticated internal pages) -->
+            {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
+            <div id="mobile-menu-overlay" class="no-print hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-30 transition-opacity"></div>
+            <div id="mobile-sidebar" class="no-print hidden fixed inset-y-0 left-0 w-72 bg-[#04120f] border-r border-white/[0.08] text-slate-100 z-40 flex flex-col shadow-2xl">
+                <div class="h-16 flex items-center justify-between px-5 bg-[#030d0b] border-b border-white/[0.08]">
+                    <span class="font-heading font-black text-white tracking-wider">MEJAS MMS</span>
+                    <button id="close-mobile-menu" class="text-slate-400 hover:text-white p-1">
+                        <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
-                <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                    <!-- Same Nav as desktop -->
-                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-chart-pie w-5"></i>
+                <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-chart-pie w-5 text-brand-500"></i>
                         <span>{% translate "Dashboard" %}</span>
                     </a>
                     {% if user.role != 'CLIENT' %}
-                    <a href="{% url 'client_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-users w-5"></i>
-                        <span>{% translate "Wateja (Clients)" %}</span>
+                    <a href="{% url 'client_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-users w-5 text-brand-500"></i>
+                        <span>{% translate "Wateja" %}</span>
                     </a>
                     {% endif %}
-                    <a href="{% url 'loan_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-hand-holding-dollar w-5"></i>
-                        <span>{% translate "Mikopo (Loans)" %}</span>
+                    <a href="{% url 'loan_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-hand-holding-dollar w-5 text-brand-500"></i>
+                        <span>{% translate "Mikopo" %}</span>
                     </a>
                     {% if user.role != 'CLIENT' %}
-                    <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-calendar-check w-5"></i>
+                    <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-calendar-check w-5 text-brand-500"></i>
                         <span>{% translate "Ufuatiliaji wa Siku" %}</span>
                     </a>
                     {% endif %}
                     {% if user.role in 'CEO,MANAGER,CASHIER' %}
-                    <a href="{% url 'cash_flow_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                    <a href="{% url 'cash_flow_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-money-bill-transfer w-5 text-brand-500"></i>
                         <span>{% translate "Fedha & Hesabu" %}</span>
                     </a>
                     {% endif %}
                     {% if user.role in 'CEO,MANAGER' %}
-                    <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-file-invoice-dollar w-5"></i>
-                        <span>{% translate "Ripoti (Reports)" %}</span>
+                    <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-file-invoice-dollar w-5 text-brand-500"></i>
+                        <span>{% translate "Ripoti" %}</span>
                     </a>
-                    <a href="{% url 'user_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-user-gear w-5"></i>
-                        <span>{% translate "Watumiaji (Users)" %}</span>
-                    </a>
-                    <a href="{% url 'audit_log_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                        <i class="fa-solid fa-clock-rotate-left w-5"></i>
-                        <span>{% translate "Audit/Activity Logs" %}</span>
+                    <a href="{% url 'branch_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                        <i class="fa-solid fa-building-columns w-5 text-brand-500"></i>
+                        <span>{% translate "Matawi" %}</span>
                     </a>
                     {% endif %}
-                    <div class="pt-4 mt-4 border-t border-brand-800 dark:border-slate-800">
-                        <a href="{% url 'password_change' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-800 transition-colors">
-                            <i class="fa-solid fa-key w-5"></i>
-                            <span>{% translate "Badili Password" %}</span>
-                        </a>
-                        <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-300 hover:bg-red-950 transition-colors mt-1">
+                    <div class="pt-4 border-t border-white/[0.08] mt-4">
+                        <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-950/40">
                             <i class="fa-solid fa-right-from-bracket w-5"></i>
-                            <span>{% translate "Ondoka" %}</span>
+                            <span>{% translate "Ondoka (Logout)" %}</span>
                         </a>
                     </div>
                 </nav>
             </div>
             {% endif %}
 
+            <!-- ============================================================== -->
             <!-- MAIN SCROLLABLE CONTENT VIEW -->
-            <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 dark:bg-slate-900 print-full">
+            <!-- ============================================================== -->
+            <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#061210] print-full flex flex-col justify-between">
 
-                <!-- Toast Notifications / Messages -->
-                {% if messages %}
-                <div class="mb-6 no-print space-y-2">
-                    {% for message in messages %}
-                    <div class="p-4 rounded-lg flex items-center justify-between text-sm font-medium {% if message.tags == 'error' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% else %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% endif %}">
-                        <div class="flex items-center gap-2">
-                            {% if message.tags == 'error' %}
-                                <i class="fa-solid fa-circle-exclamation text-base"></i>
-                            {% elif message.tags == 'warning' %}
-                                <i class="fa-solid fa-triangle-exclamation text-base"></i>
-                            {% else %}
-                                <i class="fa-solid fa-circle-check text-base"></i>
-                            {% endif %}
-                            <span>{{ message }}</span>
+                <div class="{% if user.is_authenticated %}p-4 md:p-8{% else %}px-0 py-0{% endif %} flex-1 w-full">
+                    <!-- Alert Messages / Toasts -->
+                    {% if messages %}
+                    <div class="mb-6 p-4 md:p-8 no-print space-y-2.5 max-w-7xl mx-auto">
+                        {% for message in messages %}
+                        <div class="p-4 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm {% if message.tags == 'error' %}bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300{% elif message.tags == 'warning' %}bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300{% else %}bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300{% endif %}">
+                            <div class="flex items-center gap-2.5">
+                                {% if message.tags == 'error' %}
+                                    <i class="fa-solid fa-circle-exclamation text-base text-rose-500"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fa-solid fa-triangle-exclamation text-base text-amber-500"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-circle-check text-base text-emerald-500"></i>
+                                {% endif %}
+                                <span class="leading-relaxed">{{ message }}</span>
+                            </div>
+                            <button type="button" onclick="this.parentElement.style.display='none'" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
                         </div>
-                        <button type="button" onclick="this.parentElement.style.display='none'" class="hover:opacity-75 focus:outline-none">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    {% endif %}
+
+                    <!-- Content Slot -->
+                    {% block content %}{% endblock %}
                 </div>
-                {% endif %}
 
-                <!-- Main Content Slot -->
-                {% block content %}{% endblock %}
-
-                <!-- Footer (no-print) -->
-                {% if not user.is_authenticated %}
-                {% include "partials/footer.html" %}
+                <!-- Public Footer (Shown on public marketing pages or unauthenticated state) -->
+                {% if request.resolver_match.url_name in 'home about contact' or not user.is_authenticated %}
+                <div class="w-full">
+                    {% include "partials/footer.html" %}
+                </div>
                 {% endif %}
 
             </main>
@@ -392,7 +556,6 @@
         var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
         var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
-        // Change the icons inside the button based on previous settings
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             themeToggleLightIcon.classList.remove('hidden');
         } else {
@@ -401,30 +564,30 @@
 
         var themeToggleBtn = document.getElementById('theme-toggle');
 
-        themeToggleBtn.addEventListener('click', function() {
-            // toggle icons inside button
-            themeToggleDarkIcon.classList.toggle('hidden');
-            themeToggleLightIcon.classList.toggle('hidden');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function() {
+                themeToggleDarkIcon.classList.toggle('hidden');
+                themeToggleLightIcon.classList.toggle('hidden');
 
-            // if set via local storage previously
-            if (localStorage.getItem('color-theme')) {
-                if (localStorage.getItem('color-theme') === 'light') {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
                 } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
                 }
-            } else {
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                }
-            }
-        });
+            });
+        }
 
         // Mobile menu handling
         var mobileBtn = document.getElementById('mobile-menu-btn');
@@ -432,7 +595,7 @@
         var mobileSidebar = document.getElementById('mobile-sidebar');
         var closeMobileBtn = document.getElementById('close-mobile-menu');
 
-        if (mobileBtn) {
+        if (mobileBtn && mobileSidebar) {
             mobileBtn.addEventListener('click', function() {
                 mobileOverlay.classList.remove('hidden');
                 mobileSidebar.classList.remove('hidden');
@@ -443,11 +606,11 @@
                 mobileSidebar.classList.add('hidden');
             };
 
-            mobileOverlay.addEventListener('click', closeFn);
-            closeMobileBtn.addEventListener('click', closeFn);
+            if (mobileOverlay) mobileOverlay.addEventListener('click', closeFn);
+            if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeFn);
         }
 
-        // Notification dropdown toggle & Mark as Read endpoint call
+        // Notification dropdown toggle & Mark as Read endpoint
         var notifBtn = document.getElementById('notification-btn');
         var notifMenu = document.getElementById('notification-menu');
         var notifBadge = document.getElementById('notif-badge');
@@ -458,7 +621,6 @@
                 notifMenu.classList.toggle('hidden');
 
                 if (isOpening) {
-                    // Call backend endpoint to mark notifications as read
                     fetch("{% url 'mark_notifications_read' %}", {
                         method: 'POST',
                         headers: {
@@ -466,11 +628,9 @@
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     }).then(function(res) {
-                        if (res.ok) {
-                            if (notifBadge) {
-                                notifBadge.textContent = '0';
-                                notifBadge.classList.add('hidden');
-                            }
+                        if (res.ok && notifBadge) {
+                            notifBadge.textContent = '0';
+                            notifBadge.classList.add('hidden');
                         }
                     }).catch(function(err) {
                         console.log('Error marking notifications read:', err);
@@ -480,6 +640,35 @@
             document.addEventListener('click', function(e) {
                 if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
                     notifMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Modern Language Selector Script
+        function submitLanguageChange(lang) {
+            var form = document.getElementById('lang-form');
+            var input = document.getElementById('lang-input');
+            if (form && input) {
+                input.value = lang;
+                form.submit();
+            }
+        }
+        var langBtn = document.getElementById('lang-menu-btn');
+        var langMenu = document.getElementById('lang-dropdown-menu');
+        var langChevron = document.getElementById('lang-chevron');
+        if (langBtn && langMenu) {
+            langBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var isHidden = langMenu.classList.contains('hidden');
+                langMenu.classList.toggle('hidden');
+                if (langChevron) {
+                    langChevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            });
+            document.addEventListener('click', function(e) {
+                if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+                    langMenu.classList.add('hidden');
+                    if (langChevron) langChevron.style.transform = 'rotate(0deg)';
                 }
             });
         }

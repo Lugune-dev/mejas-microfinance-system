@@ -24,6 +24,12 @@ urlpatterns = [
     path("users/<int:pk>/edit/", views.user_update_view, name="user_update"),
     path("users/<int:pk>/toggle-status/", views.user_toggle_status_view, name="user_toggle_status"),
 
+    # Branch Management
+    path("branches/", views.branch_list_view, name="branch_list"),
+    path("branches/new/", views.branch_create_view, name="branch_create"),
+    path("branches/<int:pk>/edit/", views.branch_edit_view, name="branch_edit"),
+
+
     # Clients
     path("clients/", views.client_list_view, name="client_list"),
     path("clients/new/", views.client_register_view, name="client_register"),
@@ -34,6 +40,7 @@ urlpatterns = [
     path("loans/", views.loan_list_view, name="loan_list"),
     path("loans/apply/", views.loan_apply_view, name="loan_apply"),
     path("loans/<int:pk>/", views.loan_detail_view, name="loan_detail"),
+    path("loans/<int:pk>/statement-pdf/", views.loan_statement_pdf_view, name="loan_statement_pdf"),
     path("loans/<int:pk>/approve/", views.loan_approve_view, name="loan_approve"),
     path("loans/<int:pk>/disburse/", views.loan_disburse_view, name="loan_disburse"),
     path("loans/<int:pk>/record-payment/", views.payment_record_view, name="payment_record"),

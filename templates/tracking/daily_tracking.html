@@ -1,24 +1,124 @@
 {% extends 'base.html' %}
 {% load i18n l10n %}
 
-{% block title %}{% translate "Ufuatiliaji wa Marejesho ya Kila Siku" %} - MMS{% endblock %}
+{% block title %}{% translate "Ufuatiliaji wa Marejesho ya Kila Siku" %} - Mejas MMS{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<div class="space-y-8 max-w-7xl mx-auto">
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Ufuatiliaji wa Marejesho ya Kila Siku" %}</h2>
-            <p class="text-slate-500">{% translate "Orodha ya wateja wanaopaswa kurejesha leo na hali ya marejesho yao." %}</p>
+            <div class="flex items-center gap-2">
+                <h1 class="font-heading text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                    {% translate "Ufuatiliaji wa Marejesho ya Kila Siku" %}
+                </h1>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30">
+                    Daily Tracking Cockpit
+                </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                {% translate "Orodha ya wateja wanaopaswa kurejesha tarehe" %} <span class="font-bold text-slate-800 dark:text-white">{{ selected_date|date:"d M Y" }}</span> {% translate "na hali ya makusanyo yao." %}
+            </p>
+        </div>
+
+        <!-- Bulk Action: Send Reminders -->
+        {% if unpaid_count > 0 and user.role in 'CEO,MANAGER,OFFICER' %}
+        <form method="post" onsubmit="return confirm('{% translate 'Je, una uhakika unataka kutuma SMS za ukumbusho kwa wateja wote ambao hawajalipa leo?' %}');">
+            {% csrf_token %}
+            <button type="submit" name="send_reminders" value="1" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 active:scale-95 text-slate-950 font-black rounded-2xl text-xs transition shadow-md inline-flex items-center gap-2 hover:brightness-105">
+                <i class="fa-solid fa-paper-plane text-xs"></i>
+                <span>{% translate "Tuma Vikumbusho vya SMS kwa Wasiolipa (" %}{{ unpaid_count }})</span>
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- KPI Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Total Expected -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Inayotarajiwa Leo" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-xl font-black text-slate-900 dark:text-white">TZS {{ total_expected|localize }}</h3>
+            <p class="text-[11px] text-slate-400 font-medium">{{ schedules.count }} {% translate "wateja wameratibiwa" %}</p>
+        </div>
+
+        <!-- Total Collected -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Iliyokusanywa" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-xl font-black text-emerald-600 dark:text-emerald-400">TZS {{ total_collected|localize }}</h3>
+            <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">{{ collection_rate_percent }}% {% translate "ya lengo la siku" %}</p>
+        </div>
+
+        <!-- Paid Clients Count -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Waliolipa Kamili" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-check-double"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ paid_count }}</h3>
+            <p class="text-[11px] text-slate-400 font-medium">{{ partial_count }} {% translate "wamelipa sehemu" %}</p>
+        </div>
+
+        <!-- Unpaid Clients Count -->
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Wasiolipa (Pending)" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-2xl font-black {% if unpaid_count > 0 %}text-rose-600 dark:text-rose-400 animate-pulse{% else %}text-slate-700 dark:text-slate-300{% endif %}">
+                {{ unpaid_count }}
+            </h3>
+            <p class="text-[11px] text-rose-500 font-bold">{% translate "Wanahitaji ufuatiliaji" %}</p>
+        </div>
+
+    </div>
+
+    <!-- Collection Rate Progress Bar -->
+    <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-2">
+        <div class="flex items-center justify-between text-xs font-bold">
+            <span class="text-slate-700 dark:text-slate-300">{% translate "Asilimia ya Makusanyo ya Siku:" %}</span>
+            <span class="font-heading font-black text-brand-600 dark:text-brand-400 text-sm">{{ collection_rate_percent }}%</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-white/[0.05] rounded-full h-3 overflow-hidden">
+            <div class="bg-gradient-to-r from-brand-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: {{ collection_rate_percent }}%;"></div>
         </div>
     </div>
 
-    <!-- Filters Bar -->
-    <form method="get" class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Filters Bar (Date, Branch, Officer) -->
+    <form method="get" class="p-6 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        
+        <!-- Date filter -->
+        <div>
+            <label for="date" class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
+                <i class="fa-regular fa-calendar mr-1 text-brand-500"></i>{% translate "Tarehe ya Marejesho" %}
+            </label>
+            <input type="date" name="date" id="date" value="{{ selected_date|date:'Y-m-d' }}" 
+                   class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/[0.05] text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 text-xs font-bold focus:ring-2 focus:ring-brand-500/30 outline-none transition">
+        </div>
+
         <!-- Branch filter -->
         <div>
-            <label for="branch" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Tawi" %}</label>
-            <select name="branch" id="branch" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+            <label for="branch" class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
+                <i class="fa-solid fa-building-columns mr-1 text-brand-500"></i>{% translate "Tawi" %}
+            </label>
+            <select name="branch" id="branch" 
+                    class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/[0.05] text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 text-xs font-bold focus:ring-2 focus:ring-brand-500/30 outline-none transition cursor-pointer">
                 <option value="">{% translate "Matawi Yote" %}</option>
                 {% for b in branches %}
                 <option value="{{ b.id }}" {% if branch_id == b.id|stringformat:"i" %}selected{% endif %}>{{ b.name }}</option>
@@ -28,8 +128,11 @@
 
         <!-- Officer filter -->
         <div>
-            <label for="officer" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{% translate "Loan Officer" %}</label>
-            <select name="officer" id="officer" class="w-full px-3 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white border-slate-300 dark:border-slate-600">
+            <label for="officer" class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
+                <i class="fa-solid fa-user-tie mr-1 text-brand-500"></i>{% translate "Loan Officer" %}
+            </label>
+            <select name="officer" id="officer" 
+                    class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/[0.05] text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 text-xs font-bold focus:ring-2 focus:ring-brand-500/30 outline-none transition cursor-pointer">
                 <option value="">{% translate "Makamu Wote (All Officers)" %}</option>
                 {% for o in officers %}
                 <option value="{{ o.id }}" {% if officer_id == o.id|stringformat:"i" %}selected{% endif %}>{{ o.get_full_name }}</option>
@@ -39,68 +142,108 @@
 
         <!-- Action Button -->
         <div class="flex items-end">
-            <button type="submit" class="w-full px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
-                <i class="fa-solid fa-filter mr-2"></i>{% translate "Chuja (Apply Filters)" %}
+            <button type="submit" class="w-full px-4 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-black rounded-2xl text-xs transition shadow-sm inline-flex items-center justify-center gap-2 hover:brightness-105">
+                <i class="fa-solid fa-filter"></i>
+                <span>{% translate "Chuja Taarifa" %}</span>
             </button>
         </div>
     </form>
 
     <!-- Tracking List Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Marejesho ya Leo (Today's Scheduled Installments)" %}</h4>
-            <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full font-bold">
+    <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-4">
+        <div class="flex justify-between items-center">
+            <h4 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-brand-500"></i>
+                <span>{% translate "Orodha ya Wateja Walioratibiwa" %}</span>
+            </h4>
+            <span class="text-xs bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full font-bold">
                 {{ schedules.count }} {% translate "Wateja" %}
             </span>
         </div>
+
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm border-collapse">
+            <table class="w-full text-left text-xs border-collapse">
                 <thead>
-                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
-                        <th class="p-4">{% translate "Mteja" %}</th>
-                        <th class="p-4">{% translate "Loan ID" %}</th>
-                        <th class="p-4">{% translate "Officer" %}</th>
-                        <th class="p-4">{% translate "Kiasi cha Kulipa Leo" %}</th>
-                        <th class="p-4">{% translate "Kiasi Kilicholipwa" %}</th>
-                        <th class="p-4">{% translate "Hali (Status)" %}</th>
-                        <th class="p-4">{% translate "Vitendo" %}</th>
+                    <tr class="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.08] text-slate-400 font-extrabold uppercase tracking-wider text-[10px]">
+                        <th class="py-3 px-4 rounded-l-2xl">{% translate "Mteja & Simu" %}</th>
+                        <th class="py-3 px-4">{% translate "Loan ID" %}</th>
+                        <th class="py-3 px-4">{% translate "Tawi & Officer" %}</th>
+                        <th class="py-3 px-4">{% translate "Rejesho la Leo" %}</th>
+                        <th class="py-3 px-4">{% translate "Kilicholipwa" %}</th>
+                        <th class="py-3 px-4">{% translate "Hali (Status)" %}</th>
+                        <th class="py-3 px-4 text-right rounded-r-2xl">{% translate "Vitendo" %}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
                     {% for s in schedules %}
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-850">
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition">
                         <!-- Client name & phone -->
-                        <td class="p-4">
-                            <div class="font-semibold text-slate-800 dark:text-white">{{ s.loan.client.get_full_name }}</div>
-                            <div class="text-xs text-slate-500">{{ s.loan.client.phone|default:"-" }}</div>
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-slate-900 dark:text-white">
+                                <a href="{% url 'client_detail' s.loan.client.pk %}" class="hover:text-brand-500 transition">
+                                    {{ s.loan.client.get_full_name }}
+                                </a>
+                            </div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                                <i class="fa-solid fa-phone text-[9px] text-brand-500"></i> {{ s.loan.client.phone|default:"-" }}
+                            </div>
                         </td>
-                        <td class="p-4 font-semibold text-brand-600">{{ s.loan.loan_id }}</td>
-                        <td class="p-4 text-slate-600 dark:text-slate-300">{{ s.loan.officer.get_full_name|default:"-" }}</td>
-                        <td class="p-4 font-semibold text-slate-800 dark:text-slate-200">TZS {{ s.installment_amount|localize }}</td>
-                        <td class="p-4 font-medium text-slate-800 dark:text-slate-200">TZS {{ s.paid_amount|localize }}</td>
 
-                        <!-- Color status display (Green for paid today, Red for unpaid today) -->
-                        <td class="p-4">
+                        <!-- Loan ID -->
+                        <td class="py-3.5 px-4 font-mono font-bold text-brand-600 dark:text-brand-400">
+                            <a href="{% url 'loan_detail' s.loan.pk %}" class="hover:underline">
+                                {{ s.loan.loan_id }}
+                            </a>
+                        </td>
+
+                        <!-- Branch & Officer -->
+                        <td class="py-3.5 px-4">
+                            <div class="text-slate-900 dark:text-white font-semibold">{{ s.loan.branch.name }}</div>
+                            <div class="text-[10px] text-slate-400">{{ s.loan.officer.get_full_name|default:_("Unassigned") }}</div>
+                        </td>
+
+                        <!-- Installment amount -->
+                        <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">TZS {{ s.installment_amount|localize }}</td>
+
+                        <!-- Paid amount -->
+                        <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
+                            {% if s.paid_amount > 0 %}
+                            <span class="text-emerald-600 dark:text-emerald-400">TZS {{ s.paid_amount|localize }}</span>
+                            {% else %}
+                            <span class="text-slate-400">TZS 0.00</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Status Badge -->
+                        <td class="py-3.5 px-4">
                             {% if s.status == 'PAID' %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
-                                <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                                 {% translate "AMELIPA" %}
                             </span>
+                            {% elif s.paid_amount > 0 %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                                {% translate "SEHEMU (PARTIAL)" %}
+                            </span>
                             {% else %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300">
-                                <span class="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
-                                {% translate "HAJARIPA" %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30">
+                                <span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                {% translate "HAJALIPA" %}
                             </span>
                             {% endif %}
                         </td>
-                        <td class="p-4">
-                            <div class="flex items-center gap-2">
-                                <a href="{% url 'loan_detail' s.loan.pk %}" class="text-xs font-medium text-slate-600 hover:underline">
+
+                        <!-- Actions -->
+                        <td class="py-3.5 px-4 text-right">
+                            <div class="inline-flex items-center gap-2">
+                                <a href="{% url 'loan_detail' s.loan.pk %}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition">
                                     <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
                                 </a>
                                 {% if s.status != 'PAID' and user.role in 'CEO,MANAGER,CASHIER,OFFICER' %}
-                                <a href="{% url 'payment_record' s.loan.pk %}" class="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-semibold transition">
-                                    <i class="fa-solid fa-cash-register mr-1"></i>{% translate "Lipisha" %}
+                                <a href="{% url 'payment_record' s.loan.pk %}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-cash-register text-[10px]"></i>
+                                    <span>{% translate "Lipisha" %}</span>
                                 </a>
                                 {% endif %}
                             </div>
@@ -108,8 +251,9 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="p-8 text-center text-slate-400">
-                            {% translate "Hakuna marejesho yaliyopangwa kwa siku ya leo kulingana na vichujio vyako." %}
+                        <td colspan="7" class="p-12 text-center text-slate-400">
+                            <i class="fa-solid fa-calendar-xmark text-4xl mb-3 block text-slate-300 dark:text-slate-600"></i>
+                            <p class="font-semibold text-sm">{% translate "Hakuna marejesho yaliyopangwa kwa tarehe hii kulingana na vichujio vyako." %}</p>
                         </td>
                     </tr>
                     {% endfor %}
@@ -117,5 +261,6 @@
             </table>
         </div>
     </div>
+
 </div>
 {% endblock %}

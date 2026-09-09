@@ -82,16 +82,16 @@ class MMSCoreBusinessTests(TestCase):
             officer=self.officer,
             branch=self.branch,
             principal_amount=Decimal("100000.00"),
-            interest_rate=Decimal("10.00"), # 10%
+            interest_rate=Decimal("5.00"), # 5%
             duration=5, # 5 installments
             frequency=Loan.Frequency.DAILY
         )
 
         # Verify automatic calculation of total repayable and installment amounts
-        # 100,000 + 10,000 (10%) = 110,000
-        self.assertEqual(loan.total_repayable, Decimal("110000.00"))
-        # 110,000 / 5 installments = 22,000 each
-        self.assertEqual(loan.installment_amount, Decimal("22000.00"))
+        # 100,000 + 5,000 (5%) = 105,000
+        self.assertEqual(loan.total_repayable, Decimal("105000.00"))
+        # 105,000 / 5 installments = 21,000 each
+        self.assertEqual(loan.installment_amount, Decimal("21000.00"))
         self.assertEqual(loan.status, Loan.Status.PENDING)
 
         # Approve Loan by Manager
@@ -131,8 +131,8 @@ class MMSCoreBusinessTests(TestCase):
         self.assertEqual(loan.schedules.count(), 5)
         self.assertEqual(CashFlow.objects.filter(category=CashFlow.Category.DISBURSEMENT).count(), 1)
 
-        # Verify outstanding balance remains 110,000 initially
-        self.assertEqual(loan.balance, Decimal("110000.00"))
+        # Verify outstanding balance remains 105,000 initially
+        self.assertEqual(loan.balance, Decimal("105000.00"))
 
     def test_repayment_recording_and_allocation(self):
         """Test recording partial and full payments and sequential allocation across schedules."""
@@ -141,11 +141,11 @@ class MMSCoreBusinessTests(TestCase):
             officer=self.officer,
             branch=self.branch,
             principal_amount=Decimal("100000.00"),
-            interest_rate=Decimal("10.00"),
+            interest_rate=Decimal("5.00"),
             duration=5,
             frequency=Loan.Frequency.DAILY,
             status=Loan.Status.ACTIVE,
-            balance=Decimal("110000.00")
+            balance=Decimal("105000.00")
         )
 
         # Create 5 schedules
@@ -154,12 +154,12 @@ class MMSCoreBusinessTests(TestCase):
             RepaymentSchedule.objects.create(
                 loan=loan,
                 due_date=today + datetime.timedelta(days=i),
-                installment_amount=Decimal("22000.00"),
+                installment_amount=Decimal("21000.00"),
                 paid_amount=Decimal("0.00"),
                 status=RepaymentSchedule.Status.UNPAID
             )
 
-        # 1. Record partial payment of TZS 30,000 (covers 1st schedule fully [22,000] and 2nd schedule partially [8,000])
+        # 1. Record partial payment of TZS 30,000 (covers 1st schedule fully [21,000] and 2nd schedule partially [9,000])
         amount_paid = Decimal("30000.00")
         Payment.objects.create(
             loan=loan,
@@ -177,7 +177,7 @@ class MMSCoreBusinessTests(TestCase):
         # Update Loan Balance
         loan.balance = max(Decimal("0.00"), loan.balance - amount_paid)
         loan.save()
-        self.assertEqual(loan.balance, Decimal("80000.00"))
+        self.assertEqual(loan.balance, Decimal("75000.00"))
 
         # Allocate Payment sequentially
         remaining = amount_paid
@@ -199,12 +199,12 @@ class MMSCoreBusinessTests(TestCase):
         # Check first schedule status is PAID (Green)
         first_sched = loan.schedules.all().order_by("due_date")[0]
         self.assertEqual(first_sched.status, RepaymentSchedule.Status.PAID)
-        self.assertEqual(first_sched.paid_amount, Decimal("22000.00"))
+        self.assertEqual(first_sched.paid_amount, Decimal("21000.00"))
 
-        # Check second schedule status is UNPAID but has partial payment of 8,000
+        # Check second schedule status is UNPAID but has partial payment of 9,000
         second_sched = loan.schedules.all().order_by("due_date")[1]
         self.assertEqual(second_sched.status, RepaymentSchedule.Status.UNPAID)
-        self.assertEqual(second_sched.paid_amount, Decimal("8000.00"))
+        self.assertEqual(second_sched.paid_amount, Decimal("9000.00"))
 
     def test_daily_reconciliation(self):
         """Test daily reconciliation workflow, opening balance, discrepancy computation and manager approval."""
@@ -356,3 +356,173 @@ class MMSCoreBusinessTests(TestCase):
         res_restore = client.post(reverse("db_restore"), {"backup_file": backup_file}, follow=True)
         self.assertEqual(res_restore.status_code, 200)
         self.assertContains(res_restore, "imerejeshwa kikamilifu")
+
+    def test_branch_management_crud(self):
+        """Verify branch list, creation, and update."""
+        client = Client()
+        client.login(username="test_ceo", password="CEO_password123")
+
+        # List branches
+        res_list = client.get(reverse("branch_list"))
+        self.assertEqual(res_list.status_code, 200)
+        self.assertContains(res_list, "Arusha Branch")
+
+        # Create branch
+        res_create = client.post(reverse("branch_create"), {
+            "name": "Mwanza Branch",
+            "location": "Nyamagana, Mwanza"
+        }, follow=True)
+        self.assertEqual(res_create.status_code, 200)
+        self.assertTrue(Branch.objects.filter(name="Mwanza Branch").exists())
+
+    def test_sync_overdue_and_penalties(self):
+        """Verify overdue loan auto-flagging and penalty computation."""
+        from mms_app.utils import sync_overdue_loans_and_penalties
+        
+        # Create an active loan with past due date
+        loan = Loan.objects.create(
+            client=self.client_user,
+            branch=self.branch,
+            principal_amount=Decimal("200000.00"),
+            interest_rate=Decimal("5.00"),
+            penalty_rate=Decimal("5.00"),
+            duration=3,
+            status=Loan.Status.ACTIVE
+        )
+        past_date = timezone.now().date() - datetime.timedelta(days=10)
+        schedule = RepaymentSchedule.objects.create(
+            loan=loan,
+            due_date=past_date,
+            installment_amount=Decimal("70000.00"),
+            status=RepaymentSchedule.Status.UNPAID
+        )
+        
+        results = sync_overdue_loans_and_penalties()
+        schedule.refresh_from_db()
+        loan.refresh_from_db()
+        
+        self.assertEqual(schedule.status, RepaymentSchedule.Status.OVERDUE)
+        self.assertEqual(loan.status, Loan.Status.OVERDUE)
+        self.assertGreater(loan.penalty_accumulated, Decimal("0.00"))
+
+    def test_client_credit_score(self):
+        """Verify calculation of client credit scores."""
+        from mms_app.utils import calculate_client_credit_score
+        score_data = calculate_client_credit_score(self.client_user)
+        self.assertIn(score_data["rating"], ["A", "AAA", "AA", "C", "D"])
+
+    def test_daily_repayment_tracking(self):
+        """Verify daily repayment tracking view and reminder trigger."""
+        client = Client()
+        client.login(username="test_officer", password="Officer_password123")
+
+        today_str = timezone.now().date().strftime("%Y-%m-%d")
+        res = client.get(reverse("daily_repayment_tracking"), {"date": today_str})
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "Ufuatiliaji wa Marejesho ya Kila Siku")
+
+        # Test bulk reminders action
+        res_remind = client.post(reverse("daily_repayment_tracking"), {
+            "date": today_str,
+            "send_reminders": "1"
+        }, follow=True)
+        self.assertEqual(res_remind.status_code, 200)
+
+    def test_pdf_report_generation(self):
+        """Verify ReportLab PDF generation for reports."""
+        client = Client()
+        client.login(username="test_ceo", password="CEO_password123")
+
+        res_pdf = client.get(reverse("generate_report", kwargs={"report_type": "disbursement"}), {
+            "export": "pdf"
+        })
+        self.assertEqual(res_pdf.status_code, 200)
+        self.assertEqual(res_pdf["content-type"], "application/pdf")
+        self.assertIn("attachment; filename=", res_pdf["content-disposition"])
+
+    def test_client_dashboard_and_loan_statement_pdf(self):
+        """Verify client dashboard with active loan loads without NoReverseMatch and statement PDF works."""
+        # Create an active loan with schedule and payment for client_user
+        loan = Loan.objects.create(
+            client=self.client_user,
+            officer=self.officer,
+            branch=self.branch,
+            principal_amount=Decimal("50000.00"),
+            interest_rate=Decimal("5.00"),
+            duration=2,
+            frequency=Loan.Frequency.DAILY,
+            status=Loan.Status.ACTIVE,
+            disbursement_date=timezone.now().date()
+        )
+        RepaymentSchedule.objects.create(
+            loan=loan,
+            due_date=timezone.now().date(),
+            installment_amount=Decimal("26250.00"),
+            status=RepaymentSchedule.Status.UNPAID
+        )
+        Payment.objects.create(
+            loan=loan,
+            amount_paid=Decimal("10000.00"),
+            cashier_or_officer=self.officer
+        )
+
+        client = Client()
+        client.login(username="test_client", password="Client_password123")
+
+        # 1. Test Client Dashboard
+        res_dash = client.get(reverse("dashboard"))
+        self.assertEqual(res_dash.status_code, 200)
+        self.assertContains(res_dash, "Pakua Statement (PDF)")
+        self.assertContains(res_dash, reverse("loan_statement_pdf", kwargs={"pk": loan.pk}))
+
+        # 2. Test Loan Statement PDF Generation
+        res_pdf = client.get(reverse("loan_statement_pdf", kwargs={"pk": loan.pk}))
+        self.assertEqual(res_pdf.status_code, 200)
+        self.assertEqual(res_pdf["content-type"], "application/pdf")
+        self.assertIn(f'filename="loan_statement_{loan.loan_id}.pdf"', res_pdf["content-disposition"])
+        self.assertGreater(len(res_pdf.content), 500)
+
+        # 3. Test Permission: Another client cannot access this loan statement
+        other_client = User.objects.create_user(
+            username="other_client",
+            password="Other_password123",
+            role=User.Role.CLIENT,
+            branch=self.branch,
+            phone="+255888"
+        )
+        client.login(username="other_client", password="Other_password123")
+        res_unauthorized = client.get(reverse("loan_statement_pdf", kwargs={"pk": loan.pk}))
+        self.assertEqual(res_unauthorized.status_code, 404)
+
+        # 4. Test Staff (CEO/Officer) can access statement PDF
+        client.login(username="test_officer", password="Officer_password123")
+        res_officer = client.get(reverse("loan_statement_pdf", kwargs={"pk": loan.pk}))
+        self.assertEqual(res_officer.status_code, 200)
+        self.assertEqual(res_officer["content-type"], "application/pdf")
+
+    def test_admin_dashboard_metrics_and_bars(self):
+        """Verify the modernized Django admin dashboard renders financial metrics, spline charts, and recent activity."""
+        self.ceo.is_staff = True
+        self.ceo.is_superuser = True
+        self.ceo.save()
+
+        client = Client()
+        client.login(username="test_ceo", password="CEO_password123")
+
+        res_admin = client.get(reverse("admin:index"))
+        self.assertEqual(res_admin.status_code, 200)
+        self.assertContains(res_admin, "Dashboard")
+        self.assertContains(res_admin, "Total Active Portfolio")
+        self.assertContains(res_admin, "Yield on Portfolio")
+        self.assertContains(res_admin, "Revenue & Capital Flow")
+        self.assertContains(res_admin, "Portfolio Breakdown")
+        self.assertContains(res_admin, "Recent Loans")
+        self.assertContains(res_admin, "Recent Activity")
+        self.assertContains(res_admin, "mms-kpi-sparkline")
+        self.assertContains(res_admin, "mms-svg-chart")
+
+
+
+
+
+

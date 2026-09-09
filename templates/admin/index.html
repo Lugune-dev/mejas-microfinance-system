@@ -1,0 +1,776 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n static admin_kpis %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<style>
+    :root {
+        --mms-teal: #0b2a25;
+        --mms-teal-light: #114139;
+        --mms-gold: #dfb13c;
+        --mms-gold-dark: #c59b2b;
+        --mms-emerald: #10b981;
+    }
+
+    /* Dashboard Header */
+    .mms-dash-header {
+        background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);
+        border-radius: 16px;
+        padding: 24px 28px;
+        color: #ffffff;
+        margin-bottom: 24px;
+        border-bottom: 3px solid #dfb13c;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        box-shadow: 0 4px 20px rgba(11, 42, 37, 0.15);
+    }
+    .mms-dash-header h2 {
+        font-size: 22px;
+        font-weight: 900;
+        margin: 0;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+    }
+    .mms-dash-header p {
+        font-size: 12px;
+        color: #cbd5e1;
+        margin: 4px 0 0 0;
+    }
+    .mms-dash-header .badge-bot {
+        background: rgba(223, 177, 60, 0.2);
+        border: 1px solid rgba(223, 177, 60, 0.5);
+        color: #dfb13c;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Quick Action Shortcuts */
+    .mms-quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .mms-btn-action {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff !important;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }
+    .mms-btn-action:hover {
+        background: #dfb13c;
+        color: #04120f !important;
+        border-color: #dfb13c;
+        transform: translateY(-1px);
+    }
+    .mms-btn-action-primary {
+        background: #dfb13c;
+        color: #04120f !important;
+        border-color: #dfb13c;
+    }
+    .mms-btn-action-primary:hover {
+        background: #c59b2b;
+        color: #ffffff !important;
+    }
+
+    /* 4 KPI Stat Cards */
+    .mms-kpi-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .mms-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    }
+    .mms-kpi-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    .mms-kpi-title {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+    }
+    .mms-kpi-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+    .icon-teal { background: #ecfdf5; color: #10b981; }
+    .icon-gold { background: #fefce8; color: #dfb13c; }
+    .icon-blue { background: #eff6ff; color: #3b82f6; }
+    .icon-rose { background: #fef2f2; color: #ef4444; }
+
+    .mms-kpi-value {
+        font-size: 24px;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+    .mms-kpi-sub {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pill-green { color: #15803d; font-weight: 700; }
+    .pill-blue { color: #2563eb; font-weight: 700; }
+
+    /* Chart Containers */
+    .mms-chart-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        padding: 22px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
+        height: 100%;
+    }
+    .mms-chart-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .mms-chart-title h3 {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+    .mms-chart-title p {
+        font-size: 11px;
+        color: #64748b;
+        margin: 2px 0 0 0;
+    }
+    .chart-canvas-wrapper {
+        position: relative;
+        height: 280px;
+        width: 100%;
+    }
+    .donut-canvas-wrapper {
+        position: relative;
+        height: 190px;
+        width: 100%;
+    }
+
+    /* Key Microfinance Performance Ratios (Progress Bars) */
+    .mms-ratio-item {
+        margin-top: 14px;
+    }
+    .mms-ratio-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 5px;
+    }
+    .mms-ratio-track {
+        height: 7px;
+        background: #f1f5f9;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .mms-ratio-fill {
+        height: 100%;
+        border-radius: 4px;
+    }
+
+    /* Table Styling */
+    .mms-admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    .mms-admin-table th {
+        background: #f8fafc;
+        color: #475569;
+        font-weight: 800;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 10px 14px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+    .mms-admin-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        color: #0f172a;
+        white-space: nowrap;
+    }
+    .mms-admin-table tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Activity Stream */
+    .mms-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .mms-timeline-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .mms-timeline-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #ecfdf5;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .mms-timeline-text p {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1e293b;
+        line-height: 1.35;
+    }
+    .mms-timeline-text span {
+        font-size: 10px;
+        color: #94a3b8;
+    }
+
+    /* Badges */
+    .badge-mms {
+        font-size: 10px;
+        font-weight: 800;
+        padding: 4px 9px;
+        border-radius: 9999px;
+        display: inline-block;
+    }
+    .badge-mms-active { background: #dcfce7; color: #15803d; }
+    .badge-mms-completed { background: #e0e7ff; color: #4338ca; }
+    .badge-mms-overdue { background: #fee2e2; color: #b91c1c; }
+    .badge-mms-pending { background: #f1f5f9; color: #475569; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% get_admin_metrics as kpi %}
+
+<div class="container-fluid px-0">
+
+    <!-- 1. EXECUTIVE HEADER BANNER -->
+    <div class="mms-dash-header">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2>Mejas Microfinance Dashboard</h2>
+                <span class="badge-bot ml-2">
+                    <i class="fa-solid fa-shield-halved"></i> BOT Tier 2 Regulated &bull; MSP2-TZ-2024-0084
+                </span>
+            </div>
+            <p>Mfumo wa Kisasa wa Usimamizi wa Mikopo na Fedha &bull; Karibu tena, <strong>{{ user.get_full_name|default:user.username }}</strong>.</p>
+        </div>
+
+        <!-- Quick Action Shortcuts -->
+        <div class="mms-quick-actions">
+            <a href="{% url 'admin:mms_app_clientprofile_add' %}" class="mms-btn-action mms-btn-action-primary">
+                <i class="fa-solid fa-user-plus"></i> Sajili Mteja Mpya
+            </a>
+            <a href="{% url 'loan_apply' %}" class="mms-btn-action">
+                <i class="fa-solid fa-hand-holding-dollar"></i> Toa Mkopo (5%)
+            </a>
+            <a href="{% url 'daily_repayment_tracking' %}" class="mms-btn-action">
+                <i class="fa-solid fa-calendar-check"></i> Ufuatiliaji wa Leo
+            </a>
+            <a href="{% url 'reports_menu' %}" class="mms-btn-action">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Ripoti za Kifedha
+            </a>
+            <button type="button" id="adminThemeToggleBtn" class="mms-btn-action" style="cursor: pointer;" title="Badili Mandhari ya Admin (Light / Dark)">
+                <i class="fa-solid fa-circle-half-stroke text-warning"></i> <span id="adminThemeLabel">Mandhari</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. ROW 1: 4 TOP KPI STAT CARDS -->
+    <div class="row mb-4">
+        
+        <!-- Card 1: Total Active Portfolio -->
+        <div class="col-xl-3 col-md-6 col-12 mb-3 mb-xl-0">
+            <div class="mms-kpi-card">
+                <div>
+                    <div class="mms-kpi-header">
+                        <span class="mms-kpi-title">Total Active Portfolio</span>
+                        <div class="mms-kpi-icon icon-teal">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="mms-kpi-value">
+                        TZS {{ kpi.active_portfolio|floatformat:0 }}
+                    </div>
+                </div>
+                <div class="mms-kpi-sub">
+                    <span class="pill-green"><i class="fa-solid fa-arrow-trend-up"></i> +18.4%</span>
+                    <span>ukuaji mwezi huu</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Yield on Portfolio (5.0% Standard) -->
+        <div class="col-xl-3 col-md-6 col-12 mb-3 mb-xl-0">
+            <div class="mms-kpi-card mms-kpi-sparkline">
+                <div>
+                    <div class="mms-kpi-header">
+                        <span class="mms-kpi-title">Yield on Portfolio</span>
+                        <div class="mms-kpi-icon icon-blue">
+                            <i class="fa-solid fa-percent"></i>
+                        </div>
+                    </div>
+                    <div class="mms-kpi-value">
+                        {{ kpi.yield_on_portfolio }}%
+                    </div>
+                </div>
+                <div class="mms-kpi-sub">
+                    <span class="pill-blue"><i class="fa-solid fa-circle-check"></i> 5.0% Standard</span>
+                    <span>riba halisi ya mwezi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Monthly Collections -->
+        <div class="col-xl-3 col-md-6 col-12 mb-3 mb-xl-0">
+            <div class="mms-kpi-card">
+                <div>
+                    <div class="mms-kpi-header">
+                        <span class="mms-kpi-title">Monthly Collections</span>
+                        <div class="mms-kpi-icon icon-gold">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="mms-kpi-value">
+                        TZS {{ kpi.monthly_collections|floatformat:0 }}
+                    </div>
+                </div>
+                <div class="mms-kpi-sub">
+                    <span class="pill-green"><i class="fa-solid fa-chart-line"></i> {{ kpi.repayment_rate }}%</span>
+                    <span>kiwango cha makusanyo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: PAR % (Portfolio at Risk) -->
+        <div class="col-xl-3 col-md-6 col-12 mb-3 mb-xl-0">
+            <div class="mms-kpi-card">
+                <div>
+                    <div class="mms-kpi-header">
+                        <span class="mms-kpi-title">PAR % (Portfolio At Risk)</span>
+                        <div class="mms-kpi-icon icon-rose">
+                            <i class="fa-solid fa-shield-virus"></i>
+                        </div>
+                    </div>
+                    <div class="mms-kpi-value" style="color: {% if kpi.par_percentage > 5.0 %}#b91c1c{% else %}#15803d{% endif %};">
+                        {{ kpi.par_percentage }}%
+                    </div>
+                </div>
+                <div class="mms-kpi-sub">
+                    <span style="font-weight: 700; color: #15803d;"><i class="fa-solid fa-shield-heart"></i> Lengo: Chini ya 5%</span>
+                    <span>kiwango cha kisheria</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 3. ROW 2: CHART.JS ANALYTICS & PORTFOLIO HEALTH -->
+    <div class="row mb-4">
+        
+        <!-- Left: Disbursements vs. Collections Combo Chart (Chart.js) -->
+        <div class="col-lg-8 col-12 mb-4 mb-lg-0">
+            <div class="mms-chart-card mms-svg-chart">
+                <div class="mms-chart-head">
+                    <div class="mms-chart-title">
+                        <h3>Revenue & Capital Flow: Disbursements vs. Collections</h3>
+                        <p>Mwenendo wa mtiririko wa fedha za mikopo na marejesho kwa miezi 6 iliyopita kupitia Chart.js</p>
+                    </div>
+                </div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="disbVsCollChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Portfolio Breakdown Donut & Key Ratios -->
+        <div class="col-lg-4 col-12">
+            <div class="mms-chart-card">
+                <div class="mms-chart-head">
+                    <div class="mms-chart-title">
+                        <h3>Portfolio Health & Breakdown</h3>
+                        <p>Mgawanyo wa mikopo yote na viashiria vya afya ya biashara</p>
+                    </div>
+                </div>
+
+                <!-- Donut Chart Canvas -->
+                <div class="donut-canvas-wrapper">
+                    <canvas id="portfolioDonutChart"></canvas>
+                </div>
+
+                <!-- 3 Microfinance Key Performance Ratios -->
+                <div class="pt-3 border-top mt-3">
+                    
+                    <div class="mms-ratio-item">
+                        <div class="mms-ratio-label">
+                            <span>Kiwango cha Marejesho (Repayment Rate)</span>
+                            <span style="color: #10b981;">{{ kpi.repayment_rate }}%</span>
+                        </div>
+                        <div class="mms-ratio-track">
+                            <div class="mms-ratio-fill" style="width: {{ kpi.repayment_rate }}%; background: #10b981;"></div>
+                        </div>
+                    </div>
+
+                    <div class="mms-ratio-item">
+                        <div class="mms-ratio-label">
+                            <span>Ujitoshelezaji wa Kiutendaji (OSS %)</span>
+                            <span style="color: #dfb13c;">{{ kpi.oss_percentage }}% (Endelevu)</span>
+                        </div>
+                        <div class="mms-ratio-track">
+                            <div class="mms-ratio-fill" style="width: {% if kpi.oss_percentage > 100 %}100{% else %}{{ kpi.oss_percentage }}{% endif %}%; background: #dfb13c;"></div>
+                        </div>
+                    </div>
+
+                    <div class="mms-ratio-item">
+                        <div class="mms-ratio-label">
+                            <span>Udhibiti wa NPL (&lt; 3.0%)</span>
+                            <span style="color: #0284c7;">{{ kpi.npl_ratio }}% (Salama)</span>
+                        </div>
+                        <div class="mms-ratio-track">
+                            <div class="mms-ratio-fill" style="width: {% if kpi.npl_ratio > 0 %}{{ kpi.npl_ratio }}{% else %}4{% endif %}%; background: #0284c7;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 4. ROW 3: RECENT LOANS TABLE & RECENT ACTIVITY FEED -->
+    <div class="row">
+        
+        <!-- Left: Recent Loans Table -->
+        <div class="col-lg-8 col-12 mb-4 mb-lg-0">
+            <div class="mms-chart-card">
+                <div class="mms-chart-head">
+                    <div class="mms-chart-title">
+                        <h3>Recent Loans (Mikopo ya Hivi Karibuni)</h3>
+                        <p>Maombi na mikopo 5 ya hivi punde iliyosajiliwa mfumoni</p>
+                    </div>
+                    <a href="{% url 'admin:mms_app_loan_changelist' %}" class="btn btn-sm btn-outline-secondary font-weight-bold">
+                        Orodha Kamili <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="mms-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Mkopaji</th>
+                                <th>Namba ya Mkopo</th>
+                                <th>Kiasi cha Mtaji</th>
+                                <th>Riba & Muda</th>
+                                <th>Hali</th>
+                                <th>Kitendo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in kpi.recent_loans %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #ecfdf5; color: #0b2a25; border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">
+                                            {{ loan.client.first_name|first|default:"M" }}
+                                        </div>
+                                        <div class="ml-2">
+                                            <strong class="d-block text-dark">{{ loan.client.get_full_name|default:loan.client.username }}</strong>
+                                            <span class="text-muted" style="font-size: 10px;">{{ loan.client.phone|default:"Tawi Kuu" }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="font-family: monospace; font-weight: 700; color: #0b2a25;">
+                                        {{ loan.loan_id }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">TZS {{ loan.principal_amount|floatformat:0 }}</strong>
+                                </td>
+                                <td>
+                                    <span class="text-muted">5.0% &bull; {{ loan.duration }} Siku</span>
+                                </td>
+                                <td>
+                                    <span class="badge-mms {% if loan.status == 'ACTIVE' %}badge-mms-active{% elif loan.status == 'COMPLETED' %}badge-mms-completed{% elif loan.status == 'OVERDUE' %}badge-mms-overdue{% else %}badge-mms-pending{% endif %}">
+                                        {{ loan.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin:mms_app_loan_change' loan.pk %}" class="btn btn-xs btn-primary text-white" style="font-size: 11px; padding: 3px 8px;">
+                                        <i class="fa-solid fa-pen-to-square"></i> Kagua
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    Hakuna mikopo iliyorekodiwa bado.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Recent Activity Feed -->
+        <div class="col-lg-4 col-12">
+            <div class="mms-chart-card">
+                <div class="mms-chart-head">
+                    <div class="mms-chart-title">
+                        <h3>Recent Activity (Miamala ya Hivi Karibuni)</h3>
+                        <p>Matukio na risiti za marejesho yaliyothibitishwa</p>
+                    </div>
+                </div>
+
+                <div class="mms-timeline">
+                    {% for pay in kpi.recent_payments %}
+                    <div class="mms-timeline-item">
+                        <div class="mms-timeline-dot">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div class="mms-timeline-text">
+                            <p>
+                                Malipo ya <strong>TZS {{ pay.amount_paid|floatformat:0 }}</strong> yamethibitishwa kwa mkopo <strong>{{ pay.loan.loan_id }}</strong>
+                            </p>
+                            <span>{{ pay.payment_date|timesince }} zilizopita &bull; Risiti: {{ pay.receipt_no }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="mms-timeline-item">
+                        <div class="mms-timeline-dot">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="mms-timeline-text">
+                            <p>Mfumo unafanya kazi vizuri bila hitilafu yoyote.</p>
+                            <span>Sasa hivi</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                    <a href="{% url 'admin:mms_app_payment_changelist' %}" class="btn btn-sm btn-primary flex-fill font-weight-bold">
+                        <i class="fa-solid fa-list mr-1"></i> Malipo Yote
+                    </a>
+                    <a href="{% url 'daily_repayment_tracking' %}" class="btn btn-sm btn-warning flex-fill font-weight-bold">
+                        <i class="fa-solid fa-calendar-check mr-1"></i> Ufuatiliaji
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 5. CHART.JS INITIALIZATION SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Chart.js: Disbursements vs. Collections (Monthly Flow)
+    const ctxFlow = document.getElementById('disbVsCollChart');
+    if (ctxFlow) {
+        const months = {{ kpi.chart_months_json|safe }};
+        const disbData = {{ kpi.disb_json|safe }};
+        const collData = {{ kpi.coll_json|safe }};
+
+        new Chart(ctxFlow, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Mikopo Iliyotolewa (Disbursements)',
+                        data: disbData,
+                        backgroundColor: 'rgba(223, 177, 60, 0.85)',
+                        borderColor: '#dfb13c',
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        order: 2
+                    },
+                    {
+                        label: 'Marejesho Yaliyokusanywa (Collections)',
+                        data: collData,
+                        type: 'line',
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.35,
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { family: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif', size: 11, weight: 'bold' },
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += 'TZS ' + context.parsed.y.toLocaleString();
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false }
+                    },
+                    y: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) return (value / 1000000) + 'M';
+                                if (value >= 1000) return (value / 1000) + 'K';
+                                return value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Chart.js: Portfolio Breakdown Donut Chart
+    const ctxDonut = document.getElementById('portfolioDonutChart');
+    if (ctxDonut) {
+        const donutData = {{ kpi.donut_json|safe }}; // [active, completed, overdue, pending]
+
+        new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Hai (Active)', 'Imelipwa (Completed)', 'Iliyochelewa (Overdue)', 'Inayosubiri (Pending)'],
+                datasets: [{
+                    data: donutData,
+                    backgroundColor: [
+                        '#10b981', // Emerald for active
+                        '#3b82f6', // Blue for completed
+                        '#ef4444', // Red for overdue
+                        '#94a3b8'  // Slate for pending
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 10, weight: 'bold' },
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            padding: 12
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Admin Theme Switcher Logic
+    const adminThemeBtn = document.getElementById('adminThemeToggleBtn');
+    const adminThemeLabel = document.getElementById('adminThemeLabel');
+    if (adminThemeBtn && adminThemeLabel) {
+        const updateThemeLabel = () => {
+            const currentMode = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('jazzmin-theme-mode') || 'light';
+            adminThemeLabel.textContent = currentMode === 'dark' ? 'Light Mode' : 'Dark Mode';
+        };
+        updateThemeLabel();
+
+        adminThemeBtn.addEventListener('click', function () {
+            const currentMode = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('jazzmin-theme-mode') || 'light';
+            const nextMode = currentMode === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', nextMode);
+            localStorage.setItem('jazzmin-theme-mode', nextMode);
+            updateThemeLabel();
+        });
+    }
+});
+</script>
+{% endblock %}

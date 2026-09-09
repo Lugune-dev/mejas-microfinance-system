@@ -1,147 +1,226 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n l10n %}
 
-{% block title %}{% translate "Taarifa za Mteja" %} - MMS{% endblock %}
+{% block title %}{% translate "Taarifa za Mteja" %} - {{ client.get_full_name }} - Mejas MMS{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
+<div class="space-y-8 max-w-7xl mx-auto">
+
     <!-- Header Actions -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm">
         <div>
-            <a href="{% url 'client_list' %}" class="text-xs font-semibold text-brand-600 hover:underline inline-flex items-center gap-1 mb-1">
-                <i class="fa-solid fa-arrow-left"></i>{% translate "Rudi kwenye Orodha" %}
+            <a href="{% url 'client_list' %}" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1.5 mb-1.5">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                <span>{% translate "Rudi kwenye Orodha ya Wateja" %}</span>
             </a>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Profaili ya Mteja: " %}{{ client.get_full_name }}</h2>
+            <h1 class="font-heading text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                {% translate "Profaili ya Mteja: " %}{{ client.get_full_name|default:client.username }}
+            </h1>
         </div>
 
-        {% if user.role in 'CEO,MANAGER,OFFICER' %}
-        <a href="{% url 'client_edit' client.pk %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition inline-flex items-center gap-2">
-            <i class="fa-solid fa-user-pen"></i>{% translate "Hariri Taarifa za Mteja" %}
-        </a>
-        {% endif %}
+        <div class="flex items-center gap-2.5">
+            {% if user.role in 'CEO,MANAGER,OFFICER' %}
+            <a href="{% url 'loan_apply' %}?client={{ client.pk }}" class="px-4 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-extrabold rounded-2xl text-xs transition shadow-sm inline-flex items-center gap-1.5 hover:brightness-105">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>{% translate "Omba Mkopo Mpya" %}</span>
+            </a>
+            <a href="{% url 'client_edit' client.pk %}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] text-slate-800 dark:text-white font-bold rounded-2xl text-xs transition inline-flex items-center gap-1.5 border border-slate-200 dark:border-white/10">
+                <i class="fa-solid fa-user-pen text-xs"></i>
+                <span>{% translate "Hariri Taarifa" %}</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Client Standing Banner -->
+    <div class="p-6 rounded-3xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 {{ credit.badge_class }} shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white/25 flex items-center justify-center text-2xl flex-shrink-0">
+                <i class="fa-solid fa-shield-heart"></i>
+            </div>
+            <div>
+                <p class="text-[10px] uppercase font-extrabold tracking-widest opacity-80">{% translate "Kiwango cha Uaminifu wa Mteja (Credit Rating)" %}</p>
+                <h3 class="font-heading text-xl font-black mt-0.5">{{ credit.score }} — {{ credit.label }}</h3>
+                <p class="text-xs opacity-90 mt-0.5">{{ credit.description }}</p>
+            </div>
+        </div>
+        <span class="text-xs font-extrabold px-3.5 py-1.5 rounded-full bg-white/30 backdrop-blur-md">
+            {% translate "Tawi:" %} {{ client.branch.name|default:_("HQ") }}
+        </span>
+    </div>
+
+    <!-- Financial Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Jumla ya Mikopo" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-xl font-black text-slate-900 dark:text-white">TZS {{ total_borrowed|localize }}</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Principal yote ya mikopo ya mteja</p>
+        </div>
+
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Kiasi Kilichorejeshwa" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-xl font-black text-emerald-600 dark:text-emerald-400">TZS {{ total_repaid|localize }}</h3>
+            <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Marejesho yaliyothibitishwa</p>
+        </div>
+
+        <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Salio Lililobaki" %}</span>
+                <div class="w-8 h-8 rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+            </div>
+            <h3 class="font-heading text-xl font-black {% if outstanding_balance > 0 %}text-brand-600 dark:text-brand-400{% else %}text-slate-700 dark:text-slate-300{% endif %}">
+                TZS {{ outstanding_balance|localize }}
+            </h3>
+            <p class="text-[11px] text-slate-400 font-medium">Deni linaloendelea kulipwa</p>
+        </div>
     </div>
 
     <!-- Client Profile Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Left details panel -->
-        <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 space-y-6">
-            <!-- Client photo avatar -->
+        <!-- Left Details Panel (4 Cols) -->
+        <div class="lg:col-span-4 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] p-6 space-y-6 shadow-sm">
+            <!-- Avatar -->
             <div class="flex flex-col items-center text-center space-y-2">
                 {% if client.photo %}
-                <img src="{{ client.photo.url }}" class="h-32 w-32 rounded-full object-cover border-4 border-brand-500 shadow-md">
+                <img src="{{ client.photo.url }}" class="h-28 w-28 rounded-3xl object-cover border-4 border-brand-500 shadow-lg">
                 {% else %}
-                <div class="h-32 w-32 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center border-4 border-dashed border-slate-300">
-                    <i class="fa-solid fa-user text-5xl text-slate-400"></i>
+                <div class="h-28 w-28 rounded-3xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center border-2 border-brand-500/30 text-3xl font-black">
+                    {{ client.first_name|slice:":1"|upper|default:client.username|slice:":1"|upper }}
                 </div>
                 {% endif %}
-                <h3 class="font-bold text-lg text-slate-800 dark:text-white">{{ client.get_full_name }}</h3>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-                    {{ client.username }}
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 dark:text-white">{{ client.get_full_name|default:client.username }}</h3>
+                <span class="px-3 py-1 rounded-full text-xs font-bold font-mono bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-slate-300">
+                    @{{ client.username }}
                 </span>
             </div>
 
             <!-- Profile Info Items -->
-            <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700 text-sm">
+            <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-white/[0.06] text-xs">
                 <div>
-                    <span class="block text-xs text-slate-500 uppercase font-semibold">{% translate "Namba ya Simu" %}</span>
-                    <span class="font-semibold">{{ client.phone|default:"-" }}</span>
+                    <span class="block text-[10px] text-slate-400 uppercase font-extrabold">{% translate "Namba ya Simu" %}</span>
+                    <span class="font-semibold text-slate-900 dark:text-white text-sm">{{ client.phone|default:"-" }}</span>
                 </div>
                 <div>
-                    <span class="block text-xs text-slate-500 uppercase font-semibold">{% translate "NIDA ID" %}</span>
-                    <span class="font-semibold">{{ client.nida|default:"-" }}</span>
+                    <span class="block text-[10px] text-slate-400 uppercase font-extrabold">{% translate "NIDA ID" %}</span>
+                    <span class="font-mono text-slate-900 dark:text-white font-semibold">{{ client.nida|default:"-" }}</span>
                 </div>
                 <div>
-                    <span class="block text-xs text-slate-500 uppercase font-semibold">{% translate "Branch / Tawi" %}</span>
-                    <span class="font-semibold">{{ client.branch.name|default:"-" }}</span>
+                    <span class="block text-[10px] text-slate-400 uppercase font-extrabold">{% translate "Tawi / Branch" %}</span>
+                    <span class="font-semibold text-slate-900 dark:text-white">{{ client.branch.name|default:_("HQ") }}</span>
                 </div>
                 <div>
-                    <span class="block text-xs text-slate-500 uppercase font-semibold">{% translate "Anwani" %}</span>
-                    <span class="font-semibold">{{ client.client_profile.address|default:"-" }}</span>
+                    <span class="block text-[10px] text-slate-400 uppercase font-extrabold">{% translate "Anwani ya Makazi" %}</span>
+                    <span class="font-semibold text-slate-900 dark:text-white">{{ client.client_profile.address|default:"-" }}</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] text-slate-400 uppercase font-extrabold">{% translate "Tarehe ya Usajili" %}</span>
+                    <span class="font-semibold text-slate-900 dark:text-white">{{ client.date_joined|date:"d M Y" }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Right info panel: Guarantor Details & Loan History -->
-        <div class="lg:col-span-2 space-y-6">
+        <!-- Right Info Panel: Guarantor & Loan History (8 Cols) -->
+        <div class="lg:col-span-8 space-y-6">
 
             <!-- Guarantor Details Card -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 space-y-4">
-                <h4 class="font-bold text-sm text-brand-600 border-b pb-2 uppercase tracking-wide">
-                    <i class="fa-solid fa-shield-halved mr-2"></i>{% translate "Taarifa za Mdhamini (Guarantor details)" %}
+            <div class="rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] p-6 space-y-4 shadow-sm">
+                <h4 class="font-heading font-extrabold text-sm text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-white/[0.06] pb-3 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>{% translate "Taarifa za Mdhamini (Guarantor Details)" %}</span>
                 </h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
-                        <span class="block text-xs text-slate-500 uppercase">{% translate "Jina la Mdhamini" %}</span>
-                        <span class="font-semibold text-slate-800 dark:text-white">{{ client.client_profile.guarantor_name|default:"-" }}</span>
+                        <span class="block text-[10px] text-slate-400 uppercase font-bold">{% translate "Jina la Mdhamini" %}</span>
+                        <span class="font-bold text-slate-900 dark:text-white text-sm">{{ client.client_profile.guarantor_name|default:"-" }}</span>
                     </div>
                     <div>
-                        <span class="block text-xs text-slate-500 uppercase">{% translate "Namba ya Simu ya Mdhamini" %}</span>
-                        <span class="font-semibold text-slate-800 dark:text-white">{{ client.client_profile.guarantor_phone|default:"-" }}</span>
+                        <span class="block text-[10px] text-slate-400 uppercase font-bold">{% translate "Namba ya Simu ya Mdhamini" %}</span>
+                        <span class="font-bold text-slate-900 dark:text-white text-sm">{{ client.client_profile.guarantor_phone|default:"-" }}</span>
                     </div>
                     <div>
-                        <span class="block text-xs text-slate-500 uppercase">{% translate "NIDA ya Mdhamini" %}</span>
-                        <span class="font-semibold text-slate-800 dark:text-white">{{ client.client_profile.guarantor_nida|default:"-" }}</span>
+                        <span class="block text-[10px] text-slate-400 uppercase font-bold">{% translate "NIDA ya Mdhamini" %}</span>
+                        <span class="font-mono text-slate-900 dark:text-white font-semibold">{{ client.client_profile.guarantor_nida|default:"-" }}</span>
                     </div>
                     <div>
-                        <span class="block text-xs text-slate-500 uppercase">{% translate "Anwani ya Mdhamini" %}</span>
-                        <span class="font-semibold text-slate-800 dark:text-white">{{ client.client_profile.guarantor_address|default:"-" }}</span>
+                        <span class="block text-[10px] text-slate-400 uppercase font-bold">{% translate "Uhusiano (Relationship)" %}</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">{{ client.client_profile.guarantor_relationship|default:"-" }}</span>
                     </div>
-                    <div>
-                        <span class="block text-xs text-slate-500 uppercase">{% translate "Uhusiano (Relationship)" %}</span>
-                        <span class="font-semibold text-slate-800 dark:text-white">{{ client.client_profile.guarantor_relationship|default:"-" }}</span>
+                    <div class="sm:col-span-2">
+                        <span class="block text-[10px] text-slate-400 uppercase font-bold">{% translate "Anwani ya Mdhamini" %}</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">{{ client.client_profile.guarantor_address|default:"-" }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Loan History Panel -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
-                <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                    <h4 class="font-bold text-sm text-slate-800 dark:text-white uppercase tracking-wide">
-                        <i class="fa-solid fa-hand-holding-dollar mr-2 text-brand-600"></i>{% translate "Historia ya Mikopo ya Mteja" %}
+            <div class="rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] overflow-hidden shadow-sm">
+                <div class="px-6 py-4 border-b border-slate-200 dark:border-white/[0.08] flex justify-between items-center">
+                    <h4 class="font-heading font-extrabold text-sm text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-hand-holding-dollar text-brand-500"></i>
+                        <span>{% translate "Historia ya Mikopo ya Mteja" %}</span>
                     </h4>
+                    <span class="text-xs bg-slate-100 dark:bg-white/[0.06] px-3 py-1 rounded-full font-bold text-slate-600 dark:text-slate-300">
+                        {{ loans.count }} {% translate "Mikopo" %}
+                    </span>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm border-collapse">
+                    <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 dark:bg-slate-900 text-slate-500 border-b border-slate-200 dark:border-slate-700 font-bold">
-                                <th class="p-3">{% translate "Loan ID" %}</th>
-                                <th class="p-3">{% translate "Kiasi" %}</th>
-                                <th class="p-3">{% translate "Riba" %}</th>
-                                <th class="p-3">{% translate "Hali (Status)" %}</th>
-                                <th class="p-3">{% translate "Salio (Outstanding)" %}</th>
-                                <th class="p-3">{% translate "Tarehe" %}</th>
-                                <th class="p-3">{% translate "Vitendo" %}</th>
+                            <tr class="bg-slate-50 dark:bg-white/[0.03] text-slate-400 border-b border-slate-200 dark:border-white/[0.08] font-extrabold uppercase tracking-wider text-[10px]">
+                                <th class="p-3.5">{% translate "Loan ID" %}</th>
+                                <th class="p-3.5">{% translate "Kiasi" %}</th>
+                                <th class="p-3.5">{% translate "Riba" %}</th>
+                                <th class="p-3.5">{% translate "Hali" %}</th>
+                                <th class="p-3.5">{% translate "Salio Lililobaki" %}</th>
+                                <th class="p-3.5">{% translate "Tarehe" %}</th>
+                                <th class="p-3.5 text-right">{% translate "Kitendo" %}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
                             {% for loan in loans %}
-                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-850">
-                                <td class="p-3 font-semibold text-brand-600">{{ loan.loan_id }}</td>
-                                <td class="p-3 font-semibold">TZS {{ loan.principal_amount }}</td>
-                                <td class="p-3">{{ loan.interest_rate }}%</td>
-                                <td class="p-3">
-                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold
-                                        {% if loan.status == 'ACTIVE' %}bg-green-100 text-green-800
-                                        {% elif loan.status == 'COMPLETED' %}bg-blue-100 text-blue-800
-                                        {% elif loan.status == 'OVERDUE' %}bg-red-100 text-red-800
-                                        {% elif loan.status == 'PENDING' %}bg-amber-100 text-amber-800
-                                        {% else %}bg-slate-100 text-slate-800{% endif %}">
+                            <tr class="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition">
+                                <td class="p-3.5 font-bold text-brand-600 dark:text-brand-400 font-mono">{{ loan.loan_id }}</td>
+                                <td class="p-3.5 font-bold text-slate-900 dark:text-white">TZS {{ loan.principal_amount|localize }}</td>
+                                <td class="p-3.5 text-slate-600 dark:text-slate-300">{{ loan.interest_rate }}%</td>
+                                <td class="p-3.5">
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold
+                                        {% if loan.status == 'ACTIVE' %}bg-emerald-500/15 text-emerald-700 dark:text-emerald-300
+                                        {% elif loan.status == 'COMPLETED' %}bg-blue-500/15 text-blue-700 dark:text-blue-300
+                                        {% elif loan.status == 'OVERDUE' %}bg-rose-500/15 text-rose-700 dark:text-rose-300 animate-pulse
+                                        {% elif loan.status == 'DEFAULTED' %}bg-rose-500/25 text-rose-900 dark:text-rose-200
+                                        {% elif loan.status == 'PENDING' %}bg-amber-500/15 text-amber-700 dark:text-amber-300
+                                        {% else %}bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300{% endif %}">
                                         {{ loan.get_status_display }}
                                     </span>
                                 </td>
-                                <td class="p-3 font-bold text-slate-800 dark:text-slate-200">TZS {{ loan.balance }}</td>
-                                <td class="p-3 text-slate-500">{{ loan.application_date|date:"d M Y" }}</td>
-                                <td class="p-3">
-                                    <a href="{% url 'loan_detail' loan.pk %}" class="text-xs text-indigo-600 hover:underline">
-                                        <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
+                                <td class="p-3.5 font-black text-slate-900 dark:text-white">TZS {{ loan.balance|localize }}</td>
+                                <td class="p-3.5 text-slate-400">{{ loan.application_date|date:"d M Y" }}</td>
+                                <td class="p-3.5 text-right">
+                                    <a href="{% url 'loan_detail' loan.pk %}" class="px-3 py-1 bg-brand-50 hover:bg-brand-100 dark:bg-white/[0.06] text-brand-700 dark:text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                        <span>{% translate "Kagua" %}</span>
                                     </a>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="7" class="p-6 text-center text-slate-400">{% translate "Mteja hana mikopo bado." %}</td>
+                                <td colspan="7" class="p-8 text-center text-slate-400">
+                                    {% translate "Mteja hana mikopo iliyowahi kurekodiwa bado." %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -151,5 +230,6 @@
 
         </div>
     </div>
+
 </div>
 {% endblock %}

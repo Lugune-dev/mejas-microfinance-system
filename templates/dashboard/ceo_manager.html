@@ -1,22 +1,249 @@
 {% extends 'base.html' %}
-{% load i18n l10n %}
+{% load i18n l10n static %}
 
-{% block title %}{% translate "Dashboard ya Viongozi" %} - MMS{% endblock %}
+{% block title %}{% translate "Dashboard ya Uongozi (AdminLTE Executive)" %} - Mejas MMS{% endblock %}
+
+{% block extrastyle %}
+<style>
+    /* ==============================================================
+       ADMINLTE CORE STYLING FOR EXECUTIVE DASHBOARD
+       ============================================================== */
+    .small-box {
+        border-radius: 0.85rem;
+        position: relative;
+        display: block;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        color: #ffffff;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .small-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .small-box > .inner {
+        padding: 20px 18px 16px 20px;
+        position: relative;
+        z-index: 2;
+    }
+    .small-box h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0 0 6px 0;
+        white-space: nowrap;
+        padding: 0;
+        letter-spacing: -0.02em;
+    }
+    .small-box p {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 2px;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    .small-box .subtext {
+        font-size: 11px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.75);
+    }
+    .small-box .icon {
+        color: rgba(255, 255, 255, 0.18);
+        z-index: 1;
+        position: absolute;
+        right: 14px;
+        top: 14px;
+        transition: all 0.3s ease;
+        font-size: 64px;
+    }
+    .small-box:hover .icon {
+        transform: scale(1.1);
+        color: rgba(255, 255, 255, 0.28);
+    }
+    .small-box > .small-box-footer {
+        background-color: rgba(0, 0, 0, 0.15);
+        color: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 7px 0;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        z-index: 10;
+        font-size: 12px;
+        font-weight: 700;
+        transition: background-color 0.2s ease;
+    }
+    .small-box > .small-box-footer:hover {
+        background-color: rgba(0, 0, 0, 0.28);
+        color: #ffffff;
+    }
+
+    /* AdminLTE Info-box */
+    .info-box {
+        display: flex;
+        min-height: 80px;
+        background: #ffffff;
+        border-radius: 0.85rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+    .dark .info-box {
+        background: #071915;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    .info-box .info-box-icon {
+        border-top-left-radius: 0.85rem;
+        border-bottom-left-radius: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 26px;
+        width: 75px;
+        flex-shrink: 0;
+        color: #ffffff;
+    }
+    .info-box .info-box-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: 1.3;
+        flex: 1;
+        padding: 10px 16px;
+    }
+    .info-box .info-box-text {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+    }
+    .dark .info-box .info-box-text {
+        color: #94a3b8;
+    }
+    .info-box .info-box-number {
+        display: block;
+        font-weight: 800;
+        font-size: 18px;
+        font-family: 'Outfit', sans-serif;
+        color: #0f172a;
+    }
+    .dark .info-box .info-box-number {
+        color: #ffffff;
+    }
+
+    /* AdminLTE Card Outlines */
+    .card-outline-teal {
+        border-top: 4px solid #0b2a25 !important;
+    }
+    .card-outline-gold {
+        border-top: 4px solid #dfb13c !important;
+    }
+    .card-outline-emerald {
+        border-top: 4px solid #10b981 !important;
+    }
+    .card-outline-danger {
+        border-top: 4px solid #e11d48 !important;
+    }
+
+    /* AdminLTE Timeline Widget */
+    .adminlte-timeline {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .adminlte-timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 20px;
+        width: 2px;
+        background: #e2e8f0;
+    }
+    .dark .adminlte-timeline::before {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .adminlte-timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 50px;
+    }
+    .adminlte-timeline-icon {
+        position: absolute;
+        left: 8px;
+        top: 2px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Header Title & Filter -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <h2 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">{% translate "Dashibodi ya Uongozi (CEO / Manager)" %}</h2>
-            <p class="text-slate-500 dark:text-slate-400">{% translate "Karibu kwenye muhtasari wa utendaji wa taasisi yako ya microfinance." %}</p>
+<div class="space-y-6 max-w-7xl mx-auto">
+    
+    <!-- ============================================================== -->
+    <!-- 1. ADMINLTE EXECUTIVE WELCOME & BRANCH FILTER -->
+    <!-- ============================================================== -->
+    <div class="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="relative flex-shrink-0">
+                {% if user.photo %}
+                    <img src="{{ user.photo.url }}" class="h-14 w-14 rounded-2xl object-cover border-2 border-brand-500 shadow-md" alt="avatar">
+                {% else %}
+                    <div class="h-14 w-14 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+                <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-[#071915]"></span>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="font-heading text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                        {% translate "Habari" %}, {{ user.get_full_name|default:user.username }} 👋
+                    </h1>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30">
+                        AdminLTE &bull; {{ user.get_role_display }}
+                    </span>
+                    {% if user.is_staff or user.is_superuser %}
+                    <a href="{% url 'admin:index' %}" target="_blank" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/15 text-amber-500 border border-amber-500/30 hover:bg-amber-500/25 transition">
+                        <i class="fa-solid fa-server mr-1"></i>Django Admin &rarr;
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'password_change' %}" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-100 dark:bg-white/[0.08] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 hover:border-brand-500/50 transition">
+                        <i class="fa-solid fa-key mr-1 text-brand-500"></i>{% translate "Badili Password" %}
+                    </a>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {% translate "Dawati Kuu la Usimamizi wa Mikopo, Mtiririko wa Fedha, na Utendaji wa Matawi kwa Mtindo wa AdminLTE." %}
+                </p>
+            </div>
         </div>
 
-        <!-- Branch Selector Filter -->
-        <form method="get" class="flex items-center gap-2">
-            <label for="branch" class="text-sm font-semibold text-slate-700 dark:text-slate-300">{% translate "Chagua Tawi:" %}</label>
-            <select name="branch" id="branch" onchange="this.form.submit()" class="px-3 py-1.5 border rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-brand-500">
-                <option value="">{% translate "Matawi Yote (All Branches)" %}</option>
+        <!-- Branch Selector -->
+        <form method="get" class="flex items-center gap-2 self-start md:self-auto bg-slate-50 dark:bg-white/[0.03] p-1.5 rounded-xl border border-slate-200 dark:border-white/[0.06]">
+            <label for="branch" class="text-xs font-bold uppercase tracking-wider text-slate-400 pl-2">
+                <i class="fa-solid fa-building-columns text-brand-500 mr-1"></i>{% translate "Tawi:" %}
+            </label>
+            <select name="branch" id="branch" onchange="this.form.submit()" 
+                    class="px-3 py-1.5 rounded-lg bg-white dark:bg-[#071915] text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-white/[0.08] text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-500/30 cursor-pointer">
+                <option value="">{% translate "Matawi Yote (Taasisi Nzima)" %}</option>
                 {% for b in branches %}
                     <option value="{{ b.id }}" {% if selected_branch and selected_branch.id == b.id %}selected{% endif %}>{{ b.name }}</option>
                 {% endfor %}
@@ -24,199 +251,385 @@
         </form>
     </div>
 
-    <!-- Metrics Cards Grid -->
+    <!-- ============================================================== -->
+    <!-- 2. ADMINLTE 5 SIGNATURE SMALL BOXES -->
+    <!-- ============================================================== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        <!-- Small Box 1: Disbursed (Teal) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);">
+            <div class="inner">
+                <h3>TZS {{ total_disbursed|localize }}</h3>
+                <p>{% translate "Iliyotolewa" %}</p>
+                <div class="subtext">Principal Yote Iliyoidhinishwa</div>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <a href="{% url 'loan_list' %}" class="small-box-footer">
+                {% translate "Orodha ya Mikopo" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
+        </div>
+
+        <!-- Small Box 2: Collections (Emerald) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+            <div class="inner">
+                <h3>TZS {{ total_collections|localize }}</h3>
+                <p>{% translate "Makusanyo" %}</p>
+                <div class="subtext">Lengo: TZS {{ total_repayments_expected|localize }}</div>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-circle-dollar-to-slot"></i>
+            </div>
+            <a href="{% url 'daily_repayment_tracking' %}" class="small-box-footer">
+                {% translate "Fuatilia Marejesho" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
+        </div>
+
+        <!-- Small Box 3: Net Flow (Gold) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #c59b2b 0%, #dfb13c 100%); color: #04120f;">
+            <div class="inner">
+                <h3 style="color: #04120f;">TZS {{ net_cash_flow|localize }}</h3>
+                <p style="color: #04120f;">{% translate "Mtiririko Halisi (Net)" %}</p>
+                <div class="subtext" style="color: rgba(4, 18, 15, 0.85);">Makusanyo kutoa matoleo</div>
+            </div>
+            <div class="icon" style="color: rgba(4, 18, 15, 0.15);">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <a href="{% url 'cash_flow_list' %}" class="small-box-footer" style="color: #04120f; background-color: rgba(0,0,0,0.12);">
+                {% translate "Mtiririko wa Fedha" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
+        </div>
+
+        <!-- Small Box 4: Active Loans (Sky Blue) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);">
+            <div class="inner">
+                <h3>{{ active_loans_count }}</h3>
+                <p>{% translate "Mikopo Hai" %}</p>
+                <div class="subtext">Inasubiri Idhini: {{ pending_loans_count }}</div>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-file-signature"></i>
+            </div>
+            <a href="{% url 'loan_list' %}?status=ACTIVE" class="small-box-footer">
+                {% translate "Mikopo Inayotumika" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
+        </div>
+
+        <!-- Small Box 5: Overdue / NPL (Rose Red) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);">
+            <div class="inner">
+                <h3>{{ overdue_loans_count }}</h3>
+                <p>{% translate "Chechefu (NPL)" %}</p>
+                <div class="subtext">{{ defaulted_loans_count }} Wameacha Kulipa</div>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <a href="{% url 'loan_list' %}?status=OVERDUE" class="small-box-footer">
+                {% translate "Kagua Chechefu" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 3. ADMINLTE INFO BOXES (SECONDARY METRICS) -->
+    <!-- ============================================================== -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Card 1: Total Disbursed -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-2">
-                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Mikopo Iliyotolewa (Disbursement)" %}</p>
-                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">TZS {{ total_disbursed|localize }}</h3>
-                <span class="text-xs text-brand-600 dark:text-brand-400 font-medium">{% translate "Principal accumulated" %}</span>
-            </div>
-            <div class="p-3.5 bg-brand-500/10 text-brand-500 border border-brand-500/20 rounded-xl">
-                <i class="fa-solid fa-hand-holding-dollar text-xl"></i>
-            </div>
-        </div>
-
-        <!-- Card 2: Total Collection -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-2">
-                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Marejesho (Collections)" %}</p>
-                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">TZS {{ total_collections|localize }}</h3>
-                <span class="text-xs text-green-600 dark:text-green-400 font-medium">{% translate "Out of TZS " %}{{ total_repayments_expected|localize }}</span>
-            </div>
-            <div class="p-3.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl">
-                <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
+        
+        <div class="info-box">
+            <span class="info-box-icon" style="background-color: #0b2a25;">
+                <i class="fa-solid fa-users"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">{% translate "Jumla ya Wateja" %}</span>
+                <span class="info-box-number">{{ clients_count|default:"0" }}</span>
+                <span class="text-[11px] text-slate-400">Waliosajiliwa na kuhakikiwa</span>
             </div>
         </div>
 
-        <!-- Card 3: Active Loans Count -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-2">
-                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Mikopo Hai (Active Loans)" %}</p>
-                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">{{ active_loans_count }}</h3>
-                <span class="text-xs text-amber-600 dark:text-amber-400 font-medium">{% translate "Pending approval: " %}{{ pending_loans_count }}</span>
-            </div>
-            <div class="p-3.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl">
-                <i class="fa-solid fa-percent text-xl"></i>
+        <div class="info-box">
+            <span class="info-box-icon" style="background-color: #dfb13c; color: #04120f;">
+                <i class="fa-solid fa-building-columns"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">{% translate "Matawi ya Taasisi" %}</span>
+                <span class="info-box-number">{{ branches.count|default:"1" }}</span>
+                <span class="text-[11px] text-slate-400">Vituo vinavyofanya kazi</span>
             </div>
         </div>
 
-        <!-- Card 4: Overdue Loans Count -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-2">
-                <p class="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">{% translate "Iliyochelewa (Overdue)" %}</p>
-                <h3 class="text-2xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">{{ overdue_loans_count }}</h3>
-                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">{% translate "Requires immediate attention" %}</span>
-            </div>
-            <div class="p-3.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl">
-                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+        <div class="info-box">
+            <span class="info-box-icon" style="background-color: #10b981;">
+                <i class="fa-solid fa-chart-line"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">{% translate "Asilimia ya Riba" %}</span>
+                <span class="info-box-number">5% <span class="text-xs font-normal text-slate-400">/ Mwezi</span></span>
+                <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Kiwango Rasmi cha Mejas</span>
             </div>
         </div>
+
+        <div class="info-box">
+            <span class="info-box-icon" style="background-color: #e11d48;">
+                <i class="fa-solid fa-gavel"></i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">{% translate "Faini Zilizotozwa" %}</span>
+                <span class="info-box-number">TZS {{ total_penalty_accumulated|localize }}</span>
+                <span class="text-[11px] text-rose-500 font-medium">Kwa waliochelewesha rejesho</span>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Charts and Quick Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Monthly Trend Line/Bar Chart (Chart.js) -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2 space-y-4">
-            <h4 class="text-base font-bold text-slate-800 dark:text-white">{% translate "Mwenendo wa Kila Mwezi (Disbursements vs Collections)" %}</h4>
-            <div class="relative h-64">
-                <canvas id="monthlyTrendChart"></canvas>
+    <!-- ============================================================== -->
+    <!-- 4. ADMINLTE CARD WITH COMBO CHART & QUICK ACTIONS -->
+    <!-- ============================================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: 6-Month Analytics Chart (8 Cols) -->
+        <div class="lg:col-span-8 rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm card-outline-teal overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+                <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+                    <i class="fa-solid fa-chart-column text-brand-500"></i>
+                    <span>{% translate "Mwenendo wa Miezi 6: Disbursements dhidi ya Collections" %}</span>
+                </h3>
+                <span class="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-slate-300">
+                    AdminLTE Visuals
+                </span>
+            </div>
+            <div class="p-6">
+                <div class="relative h-72">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- Quick Access and Status Actions -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
-            <h4 class="text-base font-bold text-slate-800 dark:text-white">{% translate "Vitendo vya Haraka" %}</h4>
-            <div class="flex flex-col gap-3">
-                <a href="{% url 'client_register' %}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                    <div class="p-2 bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-md">
-                        <i class="fa-solid fa-user-plus text-sm"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold">{% translate "Sajili Mteja Mpya" %}</p>
-                        <p class="text-xs text-slate-500">{% translate "Ongeza taarifa za mteja na mdhamini" %}</p>
-                    </div>
-                </a>
+        <!-- Right: AdminLTE Quick Action Tiles (4 Cols) -->
+        <div class="lg:col-span-4 rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm card-outline-gold overflow-hidden flex flex-col justify-between">
+            <div>
+                <div class="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+                    <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-brand-500"></i>
+                        <span>{% translate "Vitendo vya Haraka" %}</span>
+                    </h3>
+                    <span class="text-[11px] font-bold text-slate-400">Quick Tools</span>
+                </div>
 
-                <a href="{% url 'loan_apply' %}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                    <div class="p-2 bg-brand-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400 rounded-md">
-                        <i class="fa-solid fa-file-contract text-sm"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold">{% translate "Omba Mkopo Mpya" %}</p>
-                        <p class="text-xs text-slate-500">{% translate "Tengeneza ombi jipya la mkopo" %}</p>
-                    </div>
-                </a>
+                <div class="p-5 space-y-3">
+                    <a href="{% url 'client_register' %}" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] hover:border-brand-500/50 hover:bg-brand-50/40 dark:hover:bg-brand-500/10 transition group">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-sm font-bold group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Sajili Mteja Mpya" %}</p>
+                            <p class="text-[10px] text-slate-400">Taarifa binafsi, NIDA na mdhamini</p>
+                        </div>
+                    </a>
 
-                <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                    <div class="p-2 bg-green-100 dark:bg-slate-700 text-green-600 dark:text-green-400 rounded-md">
-                        <i class="fa-solid fa-calendar-days text-sm"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold">{% translate "Ufuatiliaji wa Leo" %}</p>
-                        <p class="text-xs text-slate-500">{% translate "Waliolipa na wasiolipa leo" %}</p>
-                    </div>
+                    <a href="{% url 'loan_apply' %}" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] hover:border-blue-500/50 hover:bg-blue-50/40 dark:hover:bg-blue-500/10 transition group">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Omba Mkopo Mpya" %}</p>
+                            <p class="text-[10px] text-slate-400">Kikokotoo cha riba (5%) na awamu</p>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] hover:border-emerald-500/50 hover:bg-emerald-50/40 dark:hover:bg-emerald-500/10 transition group">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Ufuatiliaji wa Leo" %}</p>
+                            <p class="text-[10px] text-slate-400">Wateja waliolipa na wasiolipa</p>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'reports_menu' %}" class="flex items-center gap-3.5 p-3.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] hover:border-purple-500/50 hover:bg-purple-50/40 dark:hover:bg-purple-500/10 transition group">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm font-bold group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Ripoti 7 Rasmi za Taasisi" %}</p>
+                            <p class="text-[10px] text-slate-400">Pakua PDF na Excel kwa mbofyo 1</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            {% if user.role in 'CEO,ADMIN' %}
+            <div class="p-5 pt-0">
+                <a href="{% url 'branch_list' %}" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-800 dark:text-white text-xs font-bold rounded-xl transition text-center inline-flex items-center justify-center gap-2 border border-slate-200 dark:border-white/[0.08]">
+                    <i class="fa-solid fa-building-columns text-brand-500"></i>
+                    <span>{% translate "Simamia Matawi Yote" %} &rarr;</span>
                 </a>
             </div>
+            {% endif %}
         </div>
+
     </div>
 
-    <!-- Recent Audit Logs -->
-    <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <h4 class="text-base font-bold text-slate-800 dark:text-white mb-4">{% translate "Kumbukumbu za Matukio (Activity Audit Log)" %}</h4>
+    <!-- ============================================================== -->
+    <!-- 5. ADMINLTE BRANCH PERFORMANCE BREAKDOWN -->
+    <!-- ============================================================== -->
+    {% if branch_performance %}
+    <div class="rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm card-outline-emerald overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+            <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-network-wired text-emerald-500"></i>
+                <span>{% translate "Ulinganifu wa Utendaji wa Kila Tawi" %}</span>
+            </h3>
+            <a href="{% url 'branch_list' %}" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
+                {% translate "Tazama Matawi Yote" %} &rarr;
+            </a>
+        </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
+            <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-500">
-                        <th class="py-2.5">{% translate "Muda (Timestamp)" %}</th>
-                        <th class="py-2.5">{% translate "Mtumiaji" %}</th>
-                        <th class="py-2.5">{% translate "Kitendo (Action)" %}</th>
-                        <th class="py-2.5">{% translate "Maelezo (Description)" %}</th>
-                        <th class="py-2.5">{% translate "IP Address" %}</th>
+                    <tr class="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.08] text-slate-400 uppercase tracking-wider font-extrabold text-[10px]">
+                        <th class="py-3 px-6">{% translate "Jina la Tawi" %}</th>
+                        <th class="py-3 px-4">{% translate "Wateja" %}</th>
+                        <th class="py-3 px-4">{% translate "Mikopo Hai" %}</th>
+                        <th class="py-3 px-4">{% translate "Chechefu (NPL)" %}</th>
+                        <th class="py-3 px-4">{% translate "Principal Iliyotolewa" %}</th>
+                        <th class="py-3 px-4">{% translate "Iliyokusanywa" %}</th>
+                        <th class="py-3 px-6 text-right">{% translate "Hatua" %}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                    {% for log in recent_logs %}
-                    <tr>
-                        <td class="py-3">{{ log.timestamp|date:"d M Y, H:i" }}</td>
-                        <td class="py-3 font-semibold">{{ log.user.username|default:"System" }}</td>
-                        <td class="py-3">
-                            <span class="px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 dark:bg-slate-700">
-                                {{ log.action }}
-                            </span>
+                <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                    {% for bp in branch_performance %}
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition">
+                        <td class="py-3.5 px-6 font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-500"></span>
+                            {{ bp.branch.name }}
                         </td>
-                        <td class="py-3">{{ log.description }}</td>
-                        <td class="py-3 text-slate-500">{{ log.ip_address|default:"-" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="py-4 text-center text-slate-400">{% translate "Kumbukumbu hakuna bado." %}</td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-600 dark:text-slate-300">{{ bp.clients }}</td>
+                        <td class="py-3.5 px-4 font-bold text-emerald-600 dark:text-emerald-400">{{ bp.active_loans }}</td>
+                        <td class="py-3.5 px-4">
+                            {% if bp.overdue_loans > 0 %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                                {{ bp.overdue_loans }} Chechefu
+                            </span>
+                            {% else %}
+                            <span class="text-slate-400 font-semibold">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-700 dark:text-slate-200">TZS {{ bp.disbursed|localize }}</td>
+                        <td class="py-3.5 px-4 font-bold text-emerald-600 dark:text-emerald-400">TZS {{ bp.collected|localize }}</td>
+                        <td class="py-3.5 px-6 text-right">
+                            <a href="{% url 'dashboard' %}?branch={{ bp.branch.id }}" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 dark:bg-white/[0.06] text-brand-700 dark:text-brand-300 rounded-lg font-bold text-[11px] transition inline-flex items-center gap-1">
+                                <span>{% translate "Fungua Tawi" %}</span> &rarr;
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    {% endif %}
+
+    <!-- ============================================================== -->
+    <!-- 6. ADMINLTE TIMELINE (RECENT AUDIT LOGS) -->
+    <!-- ============================================================== -->
+    <div class="rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm card-outline-gold overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+            <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-brand-500"></i>
+                <span>{% translate "Mfuatano wa Matukio (AdminLTE Audit Timeline)" %}</span>
+            </h3>
+            {% if user.role in 'CEO,ADMIN' %}
+            <a href="{% url 'audit_log_list' %}" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
+                {% translate "Tazama Kumbukumbu Zote" %} &rarr;
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="p-6">
+            <ul class="adminlte-timeline">
+                {% for log in recent_audit_logs %}
+                <li class="adminlte-timeline-item">
+                    <span class="adminlte-timeline-icon bg-brand-500 text-slate-950 font-black">
+                        <i class="fa-solid fa-check text-[10px]"></i>
+                    </span>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                        <div>
+                            <span class="font-bold text-slate-900 dark:text-white">{{ log.user.get_full_name|default:log.user.username }}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 ml-1">
+                                {{ log.get_action_display }}
+                            </span>
+                            <p class="text-slate-500 dark:text-slate-400 mt-1 text-[11px]">{{ log.details }}</p>
+                        </div>
+                        <span class="text-[10px] text-slate-400 whitespace-nowrap self-start sm:self-auto font-medium">
+                            <i class="fa-regular fa-clock mr-1"></i>{{ log.timestamp|date:"d M Y, H:i" }}
+                        </span>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="py-4 text-center text-xs text-slate-400">
+                    {% translate "Hakuna matukio yaliyorekodiwa hivi karibuni." %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
 </div>
 
-<!-- ChartJS Script Integration -->
+<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
-
-    // Parse monthly trend data injected from view
-    const trendData = {{ monthly_data|safe }};
-    const labels = trendData.map(item => item.month);
-    const disbursementData = trendData.map(item => item.disbursement);
-    const collectionData = trendData.map(item => item.collection);
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: '{% translate "Mikopo Iliyotolewa" %}',
-                    data: disbursementData,
-                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
-                    borderColor: 'rgb(59, 130, 246)',
-                    borderWidth: 1
-                },
-                {
-                    label: '{% translate "Marejesho / Makusanyo" %}',
-                    data: collectionData,
-                    backgroundColor: 'rgba(34, 197, 94, 0.75)',
-                    borderColor: 'rgb(34, 197, 94)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(148, 163, 184, 0.1)'
+    const ctx = document.getElementById('monthlyTrendChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_months|safe }},
+                datasets: [
+                    {
+                        label: 'Mikopo Iliyotolewa (TZS)',
+                        data: {{ chart_disbursements|safe }},
+                        backgroundColor: 'rgba(223, 177, 60, 0.85)',
+                        borderRadius: 6,
+                        borderSkipped: false
+                    },
+                    {
+                        label: 'Marejesho Yaliyokusanywa (TZS)',
+                        data: {{ chart_collections|safe }},
+                        backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                        borderRadius: 6,
+                        borderSkipped: false
                     }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+                ]
             },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#0f172a'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#94a3b8',
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10 } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10 } }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 </script>
 {% endblock %}

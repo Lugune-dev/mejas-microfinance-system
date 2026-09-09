@@ -101,7 +101,13 @@
                         <td class="p-4 font-bold {% if f.flow_type == 'IN' %}text-green-600{% else %}text-red-600{% endif %}">
                             TZS {{ f.amount|localize }}
                         </td>
-                        <td class="p-4 text-xs text-slate-500">{{ f.recorded_by.get_full_name|default:f.recorded_by.username }}</td>
+                        <td class="p-4 text-xs text-slate-500">
+                            {% if f.recorded_by %}
+                                {{ f.recorded_by.get_full_name|default:f.recorded_by.username }}
+                            {% else %}
+                                <span class="italic text-slate-400">{% translate "Mfumo (System)" %}</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>

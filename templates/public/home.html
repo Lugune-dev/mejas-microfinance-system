@@ -1,727 +1,520 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block title %}{% translate "Mejas Microfinance - Nyumbani" %}{% endblock %}
+{% block title %}{% translate "Mejas Microfinance - Usimamizi wa Kisasa wa Mikopo" %}{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-16">
 
-    <!-- Hero Section -->
-    <div class="relative rounded-3xl overflow-hidden bg-brand-800 text-white shadow-2xl mb-12" style="background: linear-gradient(135deg, #061815 0%, #0b2a25 50%, #114139 100%);">
-        <!-- Layered ambient orbs -->
-        <div class="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20" style="background: radial-gradient(circle, #dfb13c 0%, transparent 70%); transform: translate(30%, -30%);"></div>
-        <div class="absolute bottom-0 left-0 w-80 h-80 rounded-full opacity-10" style="background: radial-gradient(circle, #dfb13c 0%, transparent 70%); transform: translate(-30%, 30%);"></div>
-        <div class="absolute top-1/2 left-1/2 w-[600px] h-[600px] rounded-full opacity-5" style="background: radial-gradient(circle, #114139 0%, transparent 70%); transform: translate(-50%, -50%);"></div>
-        <!-- Subtle grid overlay -->
-        <div class="absolute inset-0 opacity-[0.04]" style="background-image: linear-gradient(#dfb13c 1px, transparent 1px), linear-gradient(to right, #dfb13c 1px, transparent 1px); background-size: 48px 48px;"></div>
-
-        <div class="relative z-10 px-8 py-14 md:py-20 lg:py-24 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- 1. HERO SECTION: MODERN MICROFINANCE PLATFORM -->
+    <!-- ============================================================== -->
+    <section class="relative py-4 sm:py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             
-            <!-- Left Content Column -->
-            <div class="lg:col-span-7 space-y-7">
-                <!-- Brand pill with animated dot -->
-                <div class="inline-flex items-center gap-2.5 bg-white/8 backdrop-blur-sm px-4 py-2 rounded-full border border-brand-500/40">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+            <!-- Left Column: Authentic Microfinance Value Proposition -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Regulatory & Compliance Badge -->
+                <div class="inline-flex flex-wrap items-center gap-2.5 bg-slate-100 dark:bg-brand-900/60 px-4 py-2 rounded-full border border-brand-500/40 shadow-sm">
+                    <img src="{% static 'logo.png' %}" class="h-6 w-6 rounded-full object-cover border border-brand-500" alt="Mejas Logo">
+                    <span class="text-brand-800 dark:text-brand-400 font-extrabold text-xs tracking-wider uppercase">
+                        Mejas Microfinance Management System (MMS)
                     </span>
-                    <img src="{% static 'logo.png' %}" class="h-5 w-5 rounded-full object-cover" alt="logo">
-                    <span class="text-brand-400 font-semibold text-xs tracking-widest uppercase">Mejas Enterprises</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+                    <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                        BOT Tier 2 Regulated &bull; Leseni Na. MSP2-TZ-2024-0084
+                    </span>
                 </div>
 
-                <!-- Headline with gradient accent word -->
+                <!-- Headline -->
                 <div>
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
-                        <span class="block text-white">{% translate "Mfumo wa Kisasa" %}</span>
-                        <span class="block" style="background: linear-gradient(90deg, #dfb13c 0%, #f0c96e 50%, #c59b2b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                            {% translate "wa Microfinance" %}
+                    <h1 class="font-heading text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
+                        <span>{% translate "Mfumo wa Kisasa wa" %}</span>
+                        <span class="block text-brand-700 dark:text-brand-400 mt-1">
+                            {% translate "Usimamizi wa Mikopo Tanzania" %}
                         </span>
-                        <span class="block text-white/90 text-3xl md:text-4xl font-bold mt-1">{% translate "Tanzania" %}</span>
+                        <span class="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-brand-500 block mt-2">
+                            Riba Nafuu ya 5% &bull; Idhini ya Haraka Ndani ya Saa 2
+                        </span>
                     </h1>
                 </div>
 
-                <p class="text-base md:text-lg text-white/70 leading-relaxed max-w-xl">
-                    {% translate "Ufumbuzi thabiti kwa usimamizi rahisi wa wateja, mikopo, marejesho, na fedha za taasisi kwa uwazi na usalama wa hali ya juu." %}
+                <!-- Subtitle: Real Microfinance Context -->
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+                    {% translate "Taasisi rasmi inayowawezesha wajasiriamali wadogo, wa kati (SMEs), na wafanyabiashara kupata mikopo ya haraka na nafuu bila riba kandamizi, bila makato ya siri, kwa marejesho wazi ya kila siku au kila wiki kupitia M-Pesa, Airtel Money, na Tigo Pesa." %}
                 </p>
 
-                <!-- Feature pills row -->
-                <div class="flex flex-wrap gap-2">
-                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
-                        <i class="fa-solid fa-shield-halved text-brand-500 text-[10px]"></i> {% translate "Salama 100%" %}
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
-                        <i class="fa-solid fa-bolt text-brand-500 text-[10px]"></i> {% translate "Haraka & Rahisi" %}
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
-                        <i class="fa-solid fa-chart-line text-brand-500 text-[10px]"></i> {% translate "Ripoti za Muda Halisi" %}
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full">
-                        <i class="fa-solid fa-cloud text-brand-500 text-[10px]"></i> {% translate "Mtandaoni" %}
-                    </span>
+                <!-- Core Microfinance Pillars -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-brand-500/20">
+                        <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-700 dark:text-brand-400 flex items-center justify-center flex-shrink-0 text-xs font-black">
+                            5%
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Riba Rafiki ya 5% Tu" %}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Kiwango cha chini kinachokuacha na faida safi kwenye biashara yako.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-brand-500/20">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Idhini Ndani ya Saa 2" %}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Pesa inalipwa moja kwa moja kwenye simu au akaunti ya benki.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-brand-500/20">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Marejesho ya Kila Siku / Wiki" %}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Awamu ndogo ndogo zisizoleta msongo kwenye mtaji wako.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-brand-900/40 border border-slate-200 dark:border-brand-500/20">
+                        <div class="w-8 h-8 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0 text-xs">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white">{% translate "Mkataba na Risiti Rasmi" %}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Kila malipo yanathibitishwa kwa SMS na risiti ya PDF ya uhakika.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- CTA Buttons -->
-                <div class="flex flex-wrap gap-4 pt-1">
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-4 pt-2">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="group inline-flex items-center gap-2.5 font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-brand-500/30 hover:shadow-xl text-slate-900 text-sm" style="background: linear-gradient(135deg, #dfb13c 0%, #c59b2b 100%);">
-                            <i class="fa-solid fa-gauge text-xs group-hover:rotate-12 transition-transform duration-200"></i>
-                            <span>{% translate "Nenda Kwenye Dashibodi" %}</span>
+                        <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2.5 bg-brand-800 hover:bg-brand-700 text-brand-500 font-extrabold px-7 py-3.5 rounded-2xl shadow-lg hover:-translate-y-0.5 transition-all text-xs uppercase tracking-wider border border-brand-500">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <span>{% translate "Fungua Dashibodi Yako" %}</span>
                         </a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="group inline-flex items-center gap-2.5 font-bold px-8 py-3.5 rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-brand-500/30 hover:shadow-xl text-slate-900 text-sm" style="background: linear-gradient(135deg, #dfb13c 0%, #c59b2b 100%);">
-                            <i class="fa-solid fa-right-to-bracket text-xs group-hover:translate-x-0.5 transition-transform duration-200"></i>
-                            <span>{% translate "Ingia Mfumoni (Login)" %}</span>
+                        <a href="{% url 'login' %}" class="inline-flex items-center gap-2.5 bg-brand-800 hover:bg-brand-700 text-brand-500 font-extrabold px-7 py-3.5 rounded-2xl shadow-lg hover:-translate-y-0.5 transition-all text-xs uppercase tracking-wider border border-brand-500">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>{% translate "Ingia Mfumoni (Sign In)" %}</span>
                         </a>
                     {% endif %}
-                    <a href="{% url 'about' %}" class="inline-flex items-center gap-2.5 text-white font-semibold px-8 py-3.5 rounded-xl border border-white/25 hover:bg-white/10 hover:border-white/50 transition-all duration-200 text-sm backdrop-blur-sm">
-                        {% translate "Kuhusu Sisi" %}
-                        <i class="fa-solid fa-arrow-right text-xs text-brand-400"></i>
+
+                    <a href="#calculator" class="inline-flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-800 dark:text-white font-bold px-6 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 transition text-xs shadow-sm">
+                        <i class="fa-solid fa-calculator text-brand-600 dark:text-brand-400"></i>
+                        <span>{% translate "Hesabu Mkopo (5% Riba)" %}</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Simple, Clear Realistic Loan Showcase Card -->
+            <div class="lg:col-span-5">
+                <div class="rounded-3xl border-2 border-brand-500/40 bg-white dark:bg-[#071915] p-6 sm:p-7 shadow-xl space-y-4">
+                    
+                    <!-- Card Header -->
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-brand-500/20">
+                        <div class="flex items-center gap-2.5">
+                            <img src="{% static 'logo.png' %}" class="h-7 w-7 rounded-full object-cover border border-brand-500" alt="Logo">
+                            <span class="text-xs font-black tracking-wider text-brand-800 dark:text-brand-400">Mejas Enterprises Microfinance</span>
+                        </div>
+                        <span class="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-500/30">
+                            Riba 5% Tu
+                        </span>
+                    </div>
+
+                    <!-- Loan Product Detail -->
+                    <div>
+                        <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Mfano Halisi wa Mkopo</p>
+                        <h4 class="font-heading text-lg font-black text-slate-900 dark:text-white">Mkopo wa Biashara Ndogo (SME)</h4>
+                    </div>
+
+                    <!-- Breakdown Table -->
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#0b2a25]/50 border border-slate-200 dark:border-brand-500/20">
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Kiasi cha Mkopo:</span>
+                            <span class="font-black text-sm text-slate-900 dark:text-white">TZS 500,000</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#0b2a25]/50 border border-slate-200 dark:border-brand-500/20">
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Riba ya 5%:</span>
+                            <span class="font-black text-sm text-amber-600 dark:text-brand-400">TZS 25,000</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#0b2a25]/50 border border-slate-200 dark:border-brand-500/20">
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Muda wa Mkopo:</span>
+                            <span class="font-black text-sm text-slate-800 dark:text-slate-200">Siku 30 (Kila Siku)</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#0b2a25]/50 border border-slate-200 dark:border-brand-500/20">
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Rejesho kwa Siku:</span>
+                            <span class="font-black text-sm text-emerald-600 dark:text-emerald-400">TZS 17,500</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 pb-1 border-t border-slate-200 dark:border-brand-500/20 text-xs font-bold text-slate-700 dark:text-slate-300">
+                        <span>Jumla Kamili ya Marejesho:</span>
+                        <span class="font-heading text-base font-black text-brand-700 dark:text-brand-400">TZS 525,000</span>
+                    </div>
+
+                    <!-- Direct Payment Tills -->
+                    <div class="space-y-2 pt-1">
+                        <div class="flex items-center justify-between text-[10px] font-extrabold uppercase text-slate-500 dark:text-slate-400">
+                            <span>Lipa Marejesho Moja kwa Moja:</span>
+                            <span class="text-emerald-600 dark:text-emerald-400">Papohapo</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40">
+                                <p class="font-extrabold text-[10px] text-rose-700 dark:text-rose-400">M-PESA TILL</p>
+                                <p class="font-mono font-black text-xs text-slate-900 dark:text-white mt-0.5">5544332</p>
+                            </div>
+                            <div class="p-2 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40">
+                                <p class="font-extrabold text-[10px] text-red-700 dark:text-red-400">AIRTEL MONEY</p>
+                                <p class="font-mono font-black text-xs text-slate-900 dark:text-white mt-0.5">8822119</p>
+                            </div>
+                            <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
+                                <p class="font-extrabold text-[10px] text-blue-700 dark:text-blue-400">TIGO PESA</p>
+                                <p class="font-mono font-black text-xs text-slate-900 dark:text-white mt-0.5">4455661</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOT Guarantee -->
+                    <div class="p-2.5 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-500/30 flex items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                        <i class="fa-solid fa-shield-halved text-brand-600 dark:text-brand-400 text-sm flex-shrink-0"></i>
+                        <span class="text-[11px] leading-tight">
+                            <strong>Benki Kuu ya Tanzania (BOT):</strong> Imesajiliwa kisheria chini ya Sheria ya Microfinance 2018 (Tier 2).
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- 2. LIVE INSTITUTIONAL METRICS (STATS) -->
+    <!-- ============================================================== -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <div class="p-6 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{% translate "Wateja Waliosajiliwa" %}</p>
+                <h3 class="font-heading text-3xl font-black text-slate-900 dark:text-white mt-1">
+                    {{ stats.active_clients|default:"1,250" }}+
+                </h3>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Wajasiriamali na wafanyabiashara kote nchini</p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{% translate "Mikopo Iliyotolewa" %}</p>
+                <h3 class="font-heading text-3xl font-black text-slate-900 dark:text-white mt-1">
+                    {{ stats.disbursed_loans|default:"3,480" }}+
+                </h3>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Mikopo yenye mafanikio ya uendeshaji</p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{% translate "Matawi ya Huduma" %}</p>
+                <h3 class="font-heading text-3xl font-black text-slate-900 dark:text-white mt-1">
+                    {{ stats.branches_count|default:"4" }}
+                </h3>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Dar es Salaam, Arusha, Mwanza, Dodoma</p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-md transition space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{% translate "Muda wa Idhini" %}</p>
+                <h3 class="font-heading text-3xl font-black text-slate-900 dark:text-white mt-1">
+                    &lt; 24 Hrs
+                </h3>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Tathmini na idhini ya mkopo kwa haraka</p>
+        </div>
+
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- 3. INTERACTIVE LOAN CALCULATOR WIDGET -->
+    <!-- ============================================================== -->
+    <section id="calculator" class="rounded-3xl p-8 md:p-12 bg-white dark:bg-[#071915] border border-slate-200 dark:border-white/[0.08] shadow-lg relative overflow-hidden">
+        
+        <div class="max-w-3xl mx-auto text-center mb-10">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-extrabold bg-brand-500/15 text-brand-700 dark:text-brand-300 border border-brand-500/30 uppercase tracking-wider mb-3">
+                <i class="fa-solid fa-calculator"></i>
+                {% translate "Kikokotoo cha Mkopo (5% Riba)" %}
+            </span>
+            <h2 class="font-heading text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                {% translate "Hesabu Makadirio ya Marejesho Yako" %}
+            </h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                {% translate "Chagua kiasi unachotaka na muda wa marejesho ili uone rejesho la mwezi na jumla ya rejesho kiurahisi kwa kiwango cha riba nafuu cha 5%." %}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+            
+            <!-- Controls Column -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Amount Slider -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <label for="loan-amount-range" class="font-bold text-slate-700 dark:text-slate-300">{% translate "Kiasi cha Mkopo (TZS):" %}</label>
+                        <span id="amount-display" class="font-heading font-black text-xl text-brand-600 dark:text-brand-400">TZS 1,000,000</span>
+                    </div>
+                    <input type="range" id="loan-amount-range" min="100000" max="10000000" step="50000" value="1000000"
+                           class="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-500">
+                    <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                        <span>TZS 100,000</span>
+                        <span>TZS 5,000,000</span>
+                        <span>TZS 10,000,000</span>
+                    </div>
+                </div>
+
+                <!-- Duration Selector -->
+                <div class="space-y-2">
+                    <label class="font-bold text-slate-700 dark:text-slate-300 text-sm block">{% translate "Muda wa Marejesho (Miezi):" %}</label>
+                    <div class="grid grid-cols-4 gap-2.5" id="duration-buttons">
+                        <button type="button" data-months="1" class="calc-dur-btn py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-extrabold hover:border-brand-500 transition">1 Mwezi</button>
+                        <button type="button" data-months="3" class="calc-dur-btn active py-2.5 rounded-xl bg-brand-500 text-slate-950 border border-brand-500 text-xs font-extrabold transition">3 Miezi</button>
+                        <button type="button" data-months="6" class="calc-dur-btn py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-extrabold hover:border-brand-500 transition">6 Miezi</button>
+                        <button type="button" data-months="12" class="calc-dur-btn py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-extrabold hover:border-brand-500 transition">12 Miezi</button>
+                    </div>
+                </div>
+
+                <!-- Interest Rate Info -->
+                <div class="flex items-center gap-2 p-3 rounded-xl bg-brand-50 dark:bg-white/[0.04] text-xs text-slate-600 dark:text-slate-300 border border-brand-200/50 dark:border-white/10">
+                    <i class="fa-solid fa-circle-info text-brand-500 text-sm"></i>
+                    <span>Kiwango rasmi cha riba ni <strong>5%</strong> kwa mwezi kulingana na muundo wa mikopo ya Mejas Microfinance.</span>
+                </div>
+
+            </div>
+
+            <!-- Result Card Column -->
+            <div class="lg:col-span-5">
+                <div class="rounded-3xl p-7 text-white shadow-2xl space-y-5 border border-brand-500/40" style="background: linear-gradient(145deg, #0d1527 0%, #162238 100%);">
+                    <p class="text-xs font-bold uppercase tracking-wider text-brand-400">{% translate "Muhtasari wa Makadirio" %}</p>
+                    
+                    <div class="border-b border-white/10 pb-4">
+                        <p class="text-xs text-slate-300">Rejesho la Kila Mwezi:</p>
+                        <p id="monthly-installment-display" class="font-heading text-3xl font-black text-brand-400 mt-1">TZS 350,000</p>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-slate-300">
+                            <span>Kiasi cha Mkopo:</span>
+                            <span id="calc-principal-display" class="font-bold text-white">TZS 1,000,000</span>
+                        </div>
+                        <div class="flex justify-between text-slate-300">
+                            <span>Jumla ya Riba (5%):</span>
+                            <span id="calc-interest-display" class="font-bold text-amber-300">TZS 50,000</span>
+                        </div>
+                        <div class="border-t border-white/10 pt-2 flex justify-between font-bold text-sm">
+                            <span class="text-white">Jumla ya Kulipa:</span>
+                            <span id="calc-total-display" class="font-heading text-lg font-black text-brand-400">TZS 1,050,000</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'login' %}" class="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-extrabold text-xs shadow-md hover:brightness-105 transition">
+                        <span>{% translate "Omba Mkopo Huu Sasa" %}</span>
+                        <i class="fa-solid fa-arrow-right text-[11px]"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- Right Column: Interactive Dashboard Mockup & CEO Testimonial -->
-            <div class="lg:col-span-5 flex justify-center items-center">
-                <div class="relative w-full max-w-[420px] select-none">
-                    
-                    <!-- Glow background effects -->
-                    <div class="absolute -inset-4 bg-gradient-to-tr from-brand-500/20 to-emerald-500/10 rounded-[2.5rem] filter blur-2xl opacity-70"></div>
-                    
-                    <!-- Main Dashboard Frame -->
-                    <div class="relative rounded-2xl border border-slate-700/40 bg-slate-950/80 backdrop-blur-xl p-5 shadow-2xl overflow-hidden w-full transition-all duration-300 hover:border-brand-500/30">
-                        
-                        <!-- Top browser bar dots -->
-                        <div class="flex items-center gap-1.5 pb-4 border-b border-slate-800/60">
-                            <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
-                            <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
-                            <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
-                            <span class="text-[10px] text-slate-500 ml-2 font-mono">mejas-mms.co.tz/dashboard</span>
-                        </div>
-                        
-                        <!-- Mockup App Header -->
-                        <div class="flex justify-between items-center py-3">
-                            <div class="flex items-center gap-1.5">
-                                <div class="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-[10px] text-slate-900 font-extrabold">M</div>
-                                <span class="text-xs font-bold text-white tracking-wider">MEJAS MMS</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] text-emerald-400 font-bold flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SYSTEM ONLINE
-                            </span>
-                        </div>
-                        
-                        <!-- Main chart preview inside mock -->
-                        <div class="mt-2 bg-slate-900/60 rounded-xl p-3.5 border border-slate-800/80">
-                            <div class="flex justify-between items-center mb-2">
-                                <div>
-                                    <span class="text-[9px] text-slate-400 block uppercase font-bold tracking-wider">Marejesho (Collections)</span>
-                                    <span class="text-base font-extrabold text-white">TZS 18,450,000</span>
-                                </div>
-                                <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">+12.4%</span>
-                            </div>
-                            <!-- SVG Wave Line Chart -->
-                            <div class="h-20 w-full mt-3">
-                                <svg viewBox="0 0 100 25" class="w-full h-full overflow-visible">
-                                    <defs>
-                                        <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stop-color="#dfb13c" stop-opacity="0.3"/>
-                                            <stop offset="100%" stop-color="#dfb13c" stop-opacity="0"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M 0 20 Q 15 5, 30 15 T 60 8 T 90 2 L 100 5" fill="none" stroke="#dfb13c" stroke-width="1.8" stroke-linecap="round"></path>
-                                    <path d="M 0 20 Q 15 5, 30 15 T 60 8 T 90 2 L 100 5 L 100 25 L 0 25 Z" fill="url(#chart-grad)"></path>
-                                    <!-- Interactive pulses -->
-                                    <circle cx="90" cy="2" r="1.5" fill="#dfb13c" class="animate-ping"></circle>
-                                    <circle cx="90" cy="2" r="1" fill="#dfb13c"></circle>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <!-- Mini Cards Grid inside mock -->
-                        <div class="grid grid-cols-2 gap-3 mt-3">
-                            <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-800/80">
-                                <span class="text-[8px] text-slate-400 block uppercase font-bold tracking-wider">Mikopo Hai (Active)</span>
-                                <span class="text-sm font-extrabold text-white mt-1 block">142 Wateja</span>
-                            </div>
-                            <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-800/80">
-                                <span class="text-[8px] text-slate-400 block uppercase font-bold tracking-wider">Kiwango cha Urejeshaji</span>
-                                <span class="text-sm font-extrabold text-emerald-400 mt-1 block">98.2%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Floating Widget 1: New Loan Notification -->
-                    <div class="absolute -left-10 top-1/4 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700/60 flex items-center gap-3 animate-float duration-300 hover:scale-105 select-none">
-                        <div class="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-950/40 text-green-500 flex items-center justify-center">
-                            <i class="fa-solid fa-circle-check text-sm"></i>
-                        </div>
-                        <div>
-                            <span class="text-[9px] text-slate-400 dark:text-slate-400 block uppercase font-bold tracking-wider">Maombi Mapya</span>
-                            <span class="text-xs font-extrabold text-slate-800 dark:text-white">TZS 1,200,000 - Approved</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Floating Widget 2: CEO Testimonial (Interactive, triggers modal) -->
-                    <div id="ceo-card-trigger" class="absolute -right-6 -bottom-6 bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-md p-3.5 rounded-xl shadow-2xl border border-brand-500/40 hover:border-brand-500 flex items-center gap-3 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-brand-500/20 hover:shadow-xl group w-[260px]">
-                        <div class="relative flex-shrink-0">
-                            <img src="{% static 'mej.jpeg' %}" class="h-10 w-10 rounded-full object-cover border border-brand-500 shadow" alt="Meja S.">
-                            <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-brand-500 rounded-full flex items-center justify-center text-[9px] text-slate-900 font-bold">
-                                <i class="fa-solid fa-quote-right"></i>
-                            </span>
-                        </div>
-                        <div class="min-w-0">
-                            <span class="text-[9px] text-brand-400 block uppercase font-extrabold tracking-wider">Ujumbe wa CEO</span>
-                            <p class="text-[10.5px] italic text-slate-300 line-clamp-2 mt-0.5 leading-tight group-hover:text-white transition-colors">
-                                "Teknolojia thabiti kurahisisha na kukuza mikopo Tanzania..."
-                            </p>
-                            <span class="text-[9px] text-brand-300 font-bold block mt-1.5 flex items-center gap-1 group-hover:gap-1.5 transition-all duration-200">
-                                Soma Ujumbe wake <i class="fa-solid fa-arrow-right text-[8px] group-hover:translate-x-0.5 transition-transform duration-200"></i>
-                            </span>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-
         </div>
-    </div>
 
-    <!-- Quick Stats Section -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-md border-l-4 border-brand-500 flex items-center gap-6">
-            <div class="p-4 rounded-xl bg-brand-50 dark:bg-brand-900 text-brand-500 dark:text-brand-500">
-                <i class="fa-solid fa-users text-3xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 dark:text-slate-400 text-sm uppercase font-semibold tracking-wider">{% translate "Wateja Waliosajiliwa" %}</p>
-                <h3 class="text-3xl font-bold mt-1 text-slate-800 dark:text-white">{{ stats.active_clients }}+</h3>
-            </div>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-md border-l-4 border-brand-500 flex items-center gap-6">
-            <div class="p-4 rounded-xl bg-brand-50 dark:bg-brand-900 text-brand-500 dark:text-brand-500">
-                <i class="fa-solid fa-hand-holding-dollar text-3xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 dark:text-slate-400 text-sm uppercase font-semibold tracking-wider">{% translate "Mikopo Iliyotolewa" %}</p>
-                <h3 class="text-3xl font-bold mt-1 text-slate-800 dark:text-white">{{ stats.disbursed_loans }}+</h3>
-            </div>
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-md border-l-4 border-brand-500 flex items-center gap-6">
-            <div class="p-4 rounded-xl bg-brand-50 dark:bg-brand-900 text-brand-500 dark:text-brand-500">
-                <i class="fa-solid fa-network-wired text-3xl"></i>
-            </div>
-            <div>
-                <p class="text-slate-500 dark:text-slate-400 text-sm uppercase font-semibold tracking-wider">{% translate "Matawi ya Huduma" %}</p>
-                <h3 class="text-3xl font-bold mt-1 text-slate-800 dark:text-white">{{ stats.branches_count }}</h3>
-            </div>
-        </div>
-    </div>
+    </section>
 
-    <!-- Core Features Section -->
-    <div class="mb-16">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-4">
-                {% translate "Huduma na Vipengele vya MMS" %}
+    <!-- ============================================================== -->
+    <!-- 4. CORE FEATURES & MODULES -->
+    <!-- ============================================================== -->
+    <section class="space-y-10">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+            <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vipengele vya Kidigitali</span>
+            <h2 class="font-heading text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
+                {% translate "Huduma Zote za Microfinance Sehemu Moja" %}
             </h2>
-            <div class="h-1 w-20 bg-brand-500 mx-auto rounded-full"></div>
-            <p class="text-slate-600 dark:text-slate-400 mt-4 text-base">
-                {% translate "Mfumo wetu unajumuisha kila moduli unayohitaji kuendesha ofisi yako ya Microfinance kwa ufanisi wa hali ya juu." %}
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+                {% translate "Mfumo unashughulikia hatua zote kuanzia maombi, tathmini, utoaji, marejesho, hadi taarifa za kodi na wakaguzi." %}
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Feature 1 -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition">
-                <div class="w-12 h-12 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4 font-bold text-lg">
-                    <i class="fa-solid fa-id-card"></i>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div class="p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-lg transition space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-star-half-stroke"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{% translate "Usimamizi wa Wateja" %}</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                    {% translate "Sajili wateja wapya ukiwa na picha zao, vitambulisho vya NIDA, na maelezo ya wadhamini wao kwa haraka." %}
+                <h3 class="font-heading text-xl font-extrabold text-slate-900 dark:text-white">Ukadiriaji wa Wateja (Credit Score)</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Mfumo unachambua historia ya mteja na kutoa alama za kiotomatiki (AAA, AA, C, D) kusaidia maamuzi sahihi ya utoaji mikopo.
                 </p>
             </div>
 
-            <!-- Feature 2 -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition">
-                <div class="w-12 h-12 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4 font-bold text-lg">
-                    <i class="fa-solid fa-calculator"></i>
+            <div class="p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-lg transition space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-clock"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{% translate "Mahesabu ya Riba" %}</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                    {% translate "Hesabu kiotomatiki riba ya mikopo, ratiba ya marejesho kwa awamu, na toza faini kiotomatiki pale mteja anapochelewa kulipa." %}
+                <h3 class="font-heading text-xl font-extrabold text-slate-900 dark:text-white">Faini za Kuchelewa Kiotomatiki</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Injini ya hesabu inatambua rejesho lililopitiliza na kuongeza faini ya 5% papo hapo pamoja na arifa kwa maofisa.
                 </p>
             </div>
 
-            <!-- Feature 3 -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition">
-                <div class="w-12 h-12 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4 font-bold text-lg">
-                    <i class="fa-solid fa-chart-line"></i>
+            <div class="p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-lg transition space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-calendar-check"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{% translate "Ufuatiliaji wa Kila Siku" %}</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                    {% translate "Fuatilia waliolipa na wasiolipa leo kwa kutumia rangi maalum (kijani na nyekundu) kwenye dashibodi yako." %}
+                <h3 class="font-heading text-xl font-extrabold text-slate-900 dark:text-white">Ufuatiliaji wa Kila Siku & Bulk SMS</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Ufuatiliaji wa makusanyo kwa tarehe na uwezo wa kutuma ujumbe wa ukumbusho wa SMS kwa wateja wote kwa kubonyeza kitufe kimoja.
                 </p>
             </div>
 
-            <!-- Feature 4 -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition">
-                <div class="w-12 h-12 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4 font-bold text-lg">
-                    <i class="fa-solid fa-vault"></i>
+            <div class="p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-lg transition space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-building-columns"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{% translate "Mtiririko wa Fedha" %}</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                    {% translate "Rekodi fedha zinazoingia na kutoka (disbursements dhidi ya collections) kwa ajili ya usawa wa hesabu wa kila siku." %}
+                <h3 class="font-heading text-xl font-extrabold text-slate-900 dark:text-white">Usimamizi wa Matawi Mengi</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Unganisha matawi yote (Dar es Salaam, Arusha, Mwanza, Dodoma) kwenye mfumo mmoja wenye ripoti na uhasibu wa pamoja.
                 </p>
             </div>
 
-            <!-- Feature 5 -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition">
-                <div class="w-12 h-12 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4 font-bold text-lg">
+            <div class="p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-lg transition space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold">
                     <i class="fa-solid fa-file-pdf"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{% translate "Ripoti za Kina" %}</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                    {% translate "Zalisha na pakua ripoti za kifedha, utendaji wa maofisa, na mikopo chechefu kwa mifumo ya Excel au PDF." %}
+                <h3 class="font-heading text-xl font-extrabold text-slate-900 dark:text-white">Ripoti Rasmi za PDF & Excel</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Pakua ripoti 7 za kisheria (Mikopo, Marejesho, Defaulters, Mapato na Matumizi) zenye nembo na mihuri rasmi.
                 </p>
             </div>
 
-            <!-- Feature 6 -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition">
-                <div class="w-12 h-12 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-500 flex items-center justify-center mb-4 font-bold text-lg">
-                    <i class="fa-solid fa-shield-halved"></i>
+            <div class="p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-lg transition space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">{% translate "Ulinzi na Usalama" %}</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                    {% translate "Usimbaji wa password (hashing), udhibiti wa ngazi za watumiaji (role-based security) na activity log ya kina (audit trail)." %}
+                <h3 class="font-heading text-xl font-extrabold text-slate-900 dark:text-white">Ulinzi wa 2FA & Audit Logs</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Kila tendo la mtumiaji linarekodiwa kikamilifu kwenye Audit Log, pamoja na uthibitisho wa 2FA OTP kwa ajili ya usalama.
                 </p>
             </div>
-        </div>
-    </div>
-
-    <!-- Advanced Repayment Education Section -->
-    <div class="mb-16">
-        <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto mb-10">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-brand-100 text-brand-800 dark:bg-brand-900/40 dark:text-brand-300 border border-brand-200 dark:border-brand-800 mb-4">
-                <i class="fa-solid fa-graduation-cap"></i>
-                {% translate "Elimu ya Kifedha" %}
-            </span>
-            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-3">
-                {% translate "Elewa Muundo wa Marejesho Yako" %}
-            </h2>
-            <div class="h-1 w-20 bg-brand-500 mx-auto rounded-full mb-4"></div>
-            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                {% translate "Kabla ya kuomba mkopo, ni muhimu kuelewa jinsi muundo wa malipo unavyofanya kazi. Hapa chini tunaeleza kwa uwazi na urahisi." %}
-            </p>
-        </div>
-
-        <!-- Repayment Tier Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-
-            <!-- Tier 1: Daily (Kila Siku) -->
-            <div class="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-brand-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -translate-y-8 translate-x-8"></div>
-                <div class="relative z-10">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center">
-                            <i class="fa-solid fa-calendar-day text-xl"></i>
-                        </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400 px-2 py-0.5 rounded-full">{% translate "Kila Siku" %}</span>
-                    </div>
-                    <h4 class="text-lg font-extrabold text-slate-800 dark:text-white mb-1">{% translate "Rejesho la Kila Siku" %}</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
-                        {% translate "Unalipa kiasi kidogo kila siku ya kazi. Inafaa kwa biashara zenye mauzo ya kila siku kama maduka, mitumba, bodaboda." %}
-                    </p>
-
-                    <!-- Visual Example -->
-                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 space-y-2 border border-slate-100 dark:border-slate-800">
-                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{% translate "Mfano" %}</p>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-500">{% translate "Mkopo:" %}</span>
-                            <span class="font-bold text-slate-800 dark:text-white">TZS 500,000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-500">{% translate "Riba (5%):" %}</span>
-                            <span class="font-bold text-rose-600">TZS 25,000</span>
-                        </div>
-                        <div class="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between items-center text-xs">
-                            <span class="text-slate-500">{% translate "Kila siku (30 siku):" %}</span>
-                            <span class="font-extrabold text-brand-600 text-sm">≈ TZS 17,500</span>
-                        </div>
-                    </div>
-
-                    <!-- Progress-style bar -->
-                    <div class="mt-4">
-                        <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                            <span>{% translate "Mwanzo" %}</span>
-                            <span>{% translate "Siku 30 - Malipo Kamili" %}</span>
-                        </div>
-                        <div class="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div class="h-2 bg-gradient-to-r from-rose-400 to-brand-500 rounded-full animate-pulse" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tier 2: Weekly (Kila Wiki) — Featured -->
-            <div class="group relative rounded-2xl p-6 border-2 border-brand-500 shadow-2xl shadow-brand-500/20 overflow-hidden cursor-pointer" style="background: linear-gradient(135deg, #061815 0%, #0b2a25 100%);">
-                <!-- Glow orb -->
-                <div class="absolute top-0 right-0 w-40 h-40 rounded-full opacity-20" style="background: radial-gradient(circle, #dfb13c 0%, transparent 70%); transform: translate(20%, -20%);"></div>
-                <!-- Popular badge -->
-                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-0.5">
-                    <span class="inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-widest bg-brand-500 text-slate-900 px-3 py-1 rounded-b-lg">
-                        <i class="fa-solid fa-star text-[8px]"></i> {% translate "Inayopendekezwa" %}
-                    </span>
-                </div>
-                <div class="relative z-10 pt-3">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center justify-center">
-                            <i class="fa-solid fa-calendar-week text-xl"></i>
-                        </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded-full border border-brand-500/30">{% translate "Kila Wiki" %}</span>
-                    </div>
-                    <h4 class="text-lg font-extrabold text-white mb-1">{% translate "Rejesho la Kila Wiki" %}</h4>
-                    <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                        {% translate "Malipo makubwa kidogo kwa kila wiki. Inafaa kwa biashara za wiki kama masoko, kilimo, manunuzi ya jumla." %}
-                    </p>
-
-                    <!-- Visual Example -->
-                    <div class="bg-white/5 rounded-xl p-4 space-y-2 border border-white/10">
-                        <p class="text-[10px] font-bold uppercase tracking-wider text-brand-400">{% translate "Mfano" %}</p>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-400">{% translate "Mkopo:" %}</span>
-                            <span class="font-bold text-white">TZS 1,000,000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-400">{% translate "Riba (5%):" %}</span>
-                            <span class="font-bold text-rose-400">TZS 50,000</span>
-                        </div>
-                        <div class="border-t border-white/10 pt-2 flex justify-between items-center text-xs">
-                            <span class="text-slate-400">{% translate "Kila wiki (8 wiki):" %}</span>
-                            <span class="font-extrabold text-brand-400 text-sm">≈ TZS 131,250</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <div class="flex justify-between text-[10px] text-brand-400/60 mb-1">
-                            <span>{% translate "Wiki 1" %}</span>
-                            <span>{% translate "Wiki 8 - Malipo Kamili" %}</span>
-                        </div>
-                        <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div class="h-2 bg-gradient-to-r from-brand-500 to-yellow-400 rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tier 3: Monthly (Kila Mwezi) -->
-            <div class="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-brand-500 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-8 translate-x-8"></div>
-                <div class="relative z-10">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
-                            <i class="fa-solid fa-calendar-alt text-xl"></i>
-                        </div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 px-2 py-0.5 rounded-full">{% translate "Kila Mwezi" %}</span>
-                    </div>
-                    <h4 class="text-lg font-extrabold text-slate-800 dark:text-white mb-1">{% translate "Rejesho la Mwezi" %}</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
-                        {% translate "Malipo makubwa mara moja kwa mwezi. Inafaa kwa wafanyakazi wanaopata mishahara au biashara za mikataba ya muda mrefu." %}
-                    </p>
-
-                    <!-- Visual Example -->
-                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 space-y-2 border border-slate-100 dark:border-slate-800">
-                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{% translate "Mfano" %}</p>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-500">{% translate "Mkopo:" %}</span>
-                            <span class="font-bold text-slate-800 dark:text-white">TZS 2,000,000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-500">{% translate "Riba (5%):" %}</span>
-                            <span class="font-bold text-rose-600">TZS 100,000</span>
-                        </div>
-                        <div class="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between items-center text-xs">
-                            <span class="text-slate-500">{% translate "Kila mwezi (6 miezi):" %}</span>
-                            <span class="font-extrabold text-brand-600 text-sm">≈ TZS 350,000</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                            <span>{% translate "Mwezi 1" %}</span>
-                            <span>{% translate "Mwezi 6 - Malipo Kamili" %}</span>
-                        </div>
-                        <div class="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div class="h-2 bg-gradient-to-r from-blue-400 to-brand-500 rounded-full" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Repayment Lifecycle + Key Facts -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- Left: Step-by-step repayment lifecycle -->
-            <div class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h3 class="text-lg font-extrabold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-                    <i class="fa-solid fa-route text-brand-500"></i>
-                    {% translate "Safari ya Mkopo Wako: Hatua kwa Hatua" %}
-                </h3>
-                <div class="space-y-0">
-                    {% with steps="1234" %}
-                    <!-- Step 1 -->
-                    <div class="flex gap-4 group">
-                        <div class="flex flex-col items-center">
-                            <div class="w-9 h-9 rounded-full bg-brand-500 text-slate-900 font-extrabold flex items-center justify-center text-sm flex-shrink-0 shadow-md shadow-brand-500/30">1</div>
-                            <div class="w-0.5 h-full bg-slate-200 dark:bg-slate-700 mt-1 mb-1 min-h-[2rem]"></div>
-                        </div>
-                        <div class="pb-6">
-                            <h4 class="font-bold text-slate-800 dark:text-white text-sm">{% translate "Omba Mkopo" %}</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">
-                                {% translate "Wasiliana na Loan Officer wako au tembelea ofisi yetu. Jaza fomu ya maombi na wasilisha nyaraka zinazohitajika (kitambulisho, mdhamini)." %}
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Step 2 -->
-                    <div class="flex gap-4 group">
-                        <div class="flex flex-col items-center">
-                            <div class="w-9 h-9 rounded-full bg-amber-500 text-white font-extrabold flex items-center justify-center text-sm flex-shrink-0 shadow-md shadow-amber-500/30">2</div>
-                            <div class="w-0.5 h-full bg-slate-200 dark:bg-slate-700 mt-1 mb-1 min-h-[2rem]"></div>
-                        </div>
-                        <div class="pb-6">
-                            <h4 class="font-bold text-slate-800 dark:text-white text-sm">{% translate "Tathmini & Idhini" %}</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">
-                                {% translate "Mkopo wako utakaguliwa na timu yetu. Ukipitishwa, utaandikiwa ratiba yako kamili ya marejesho na kuarifiwa kuhusu tarehe yako ya kwanza ya malipo." %}
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Step 3 -->
-                    <div class="flex gap-4 group">
-                        <div class="flex flex-col items-center">
-                            <div class="w-9 h-9 rounded-full bg-green-500 text-white font-extrabold flex items-center justify-center text-sm flex-shrink-0 shadow-md shadow-green-500/30">3</div>
-                            <div class="w-0.5 h-full bg-slate-200 dark:bg-slate-700 mt-1 mb-1 min-h-[2rem]"></div>
-                        </div>
-                        <div class="pb-6">
-                            <h4 class="font-bold text-slate-800 dark:text-white text-sm">{% translate "Upokezi wa Fedha (Disbursement)" %}</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">
-                                {% translate "Fedha zitatolewa kupitia akaunti ya benki au mkoba wa simu (Airtel Money, M-Pesa, Tigo). Ratiba yako ya malipo itaanza siku hii au kulingana na makubaliano." %}
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Step 4 -->
-                    <div class="flex gap-4 group">
-                        <div class="flex flex-col items-center">
-                            <div class="w-9 h-9 rounded-full bg-blue-500 text-white font-extrabold flex items-center justify-center text-sm flex-shrink-0 shadow-md shadow-blue-500/30">4</div>
-                        </div>
-                        <div class="pb-2">
-                            <h4 class="font-bold text-slate-800 dark:text-white text-sm">{% translate "Malipo ya Awamu (Installments)" %}</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mt-1">
-                                {% translate "Fanya malipo kwa wakati kupitia Airtel Lipa Namba, M-Pesa, au kupitia mfumo wetu wa AzamPay. Risiti itatolewa moja kwa moja kwa kila malipo. Ukikamilisha malipo yote, mkopo wako utafungwa kiotomatiki." %}
-                            </p>
-                        </div>
-                    </div>
-                    {% endwith %}
-                </div>
-            </div>
-
-            <!-- Right: Key facts & payment formula visual -->
-            <div class="lg:col-span-5 space-y-5">
-
-                <!-- Formula breakdown card -->
-                <div class="bg-brand-900 text-white rounded-2xl p-6 border border-brand-800 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10" style="background: radial-gradient(circle, #dfb13c 0%, transparent 70%); transform: translate(30%, -30%);"></div>
-                    <div class="relative z-10">
-                        <h4 class="text-sm font-extrabold text-brand-300 uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-function"></i>
-                            {% translate "Jinsi Jumla Inavyohesabiwa" %}
-                        </h4>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-slate-300">{% translate "Principal (Mkopo)" %}</span>
-                                <span class="font-bold text-white font-mono">P</span>
-                            </div>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-slate-300">{% translate "Riba (Interest)" %}</span>
-                                <span class="font-bold text-brand-400 font-mono">P × R%</span>
-                            </div>
-                            <div class="border-t border-brand-800 pt-3 flex items-center justify-between">
-                                <span class="text-slate-300 text-sm">{% translate "Jumla ya Kurejesha" %}</span>
-                                <span class="font-extrabold text-brand-400 text-base font-mono">P + (P × R%)</span>
-                            </div>
-                            <div class="bg-brand-800/60 rounded-xl p-3 text-center mt-2">
-                                <p class="text-[10px] text-brand-300 uppercase tracking-widest font-bold">{% translate "Kila Awamu" %}</p>
-                                <p class="text-brand-400 font-extrabold text-lg font-mono mt-1">÷ N {% translate "Awamu" %}</p>
-                                <p class="text-[10px] text-slate-400 mt-0.5">{% translate "(N = idadi ya awamu za malipo)" %}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Important tips card -->
-                <div class="bg-amber-50 dark:bg-amber-950/20 rounded-2xl p-5 border border-amber-200 dark:border-amber-800/50">
-                    <h4 class="text-sm font-extrabold text-amber-800 dark:text-amber-300 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-lightbulb text-amber-500"></i>
-                        {% translate "Mambo Muhimu Kujua" %}
-                    </h4>
-                    <ul class="space-y-2">
-                        <li class="flex items-start gap-2 text-xs text-amber-800 dark:text-amber-400">
-                            <i class="fa-solid fa-circle-check text-amber-500 mt-0.5 flex-shrink-0"></i>
-                            <span>{% translate "Faini ya Ucheleweshaji (Penalty) inatumika kwa malipo yaliyochelewa. Lipa kwa wakati daima." %}</span>
-                        </li>
-                        <li class="flex items-start gap-2 text-xs text-amber-800 dark:text-amber-400">
-                            <i class="fa-solid fa-circle-check text-amber-500 mt-0.5 flex-shrink-0"></i>
-                            <span>{% translate "Unaweza kulipa zaidi ya kiasi kilichopangwa ili kupunguza mkopo wako haraka." %}</span>
-                        </li>
-                        <li class="flex items-start gap-2 text-xs text-amber-800 dark:text-amber-400">
-                            <i class="fa-solid fa-circle-check text-amber-500 mt-0.5 flex-shrink-0"></i>
-                            <span>{% translate "Historia nzuri ya malipo inakufanya ustahili mikopo mipya ya kiasi kikubwa zaidi." %}</span>
-                        </li>
-                        <li class="flex items-start gap-2 text-xs text-amber-800 dark:text-amber-400">
-                            <i class="fa-solid fa-circle-check text-amber-500 mt-0.5 flex-shrink-0"></i>
-                            <span>{% translate "Risiti ya kila malipo inatumwa moja kwa moja kwenye simu yako na inaonekana katika portal yako." %}</span>
-                        </li>
-                    </ul>
-                    <div class="mt-4 pt-3 border-t border-amber-200 dark:border-amber-800/50">
-                        <a href="{% url 'login' %}" class="inline-flex items-center gap-2 text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline">
-                            {% translate "Omba Mkopo Sasa" %}
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CTA Contact section -->
-    <div class="bg-slate-100 dark:bg-slate-800 rounded-3xl p-8 md:p-12 text-center">
-        <h3 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-4">
-            {% translate "Je, una maswali au unahitaji usaidizi wa kiufundi?" %}
-        </h3>
-        <p class="text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-8">
-            {% translate "Tupo hapa kukuhudumia. Unaweza kuwasiliana nasi kwa maswali yoyote kuhusu matumizi au usanidi wa mfumo." %}
-        </p>
-        <div class="flex justify-center gap-4">
-            <a href="{% url 'contact' %}" class="bg-brand-800 hover:bg-brand-700 text-white font-bold px-6 py-3 rounded-lg shadow transition">
-                {% translate "Wasiliana Nasi sasa" %}
-            </a>
-        </div>
-    </div>
-
-    <!-- CEO Message Modal (Ukurasa katika Page) -->
-    <div id="ceo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 hidden bg-slate-950/80 backdrop-blur-md transition-opacity duration-300 opacity-0">
-        <!-- Modal Container -->
-        <div id="ceo-modal-container" class="relative bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800 transition-all transform scale-90 duration-300 opacity-0 flex flex-col md:flex-row overflow-hidden">
-            
-            <!-- Close Button -->
-            <button id="close-ceo-modal" class="absolute top-4 right-4 z-10 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 p-2.5 rounded-full transition shadow-md" aria-label="Funga">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <!-- Modal Left: Image Column -->
-            <div class="md:w-2/5 bg-brand-900 relative min-h-[300px] md:min-h-full">
-                <img src="{% static 'mej.jpeg' %}" class="absolute inset-0 w-full h-full object-cover" alt="CEO Portrait">
-                <!-- Overlay gradient -->
-                <div class="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-900/40 to-transparent"></div>
-                <div class="absolute bottom-6 left-6 right-6">
-                    <span class="bg-brand-500 text-slate-950 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm mb-2 inline-block">
-                        {% translate "Ujumbe wa Mwanzilishi" %}
-                    </span>
-                    <h3 class="text-white text-2xl font-bold">Meja S.</h3>
-                    <p class="text-brand-300 text-xs mt-1">{% translate "Mwanzilishi & Mkurugenzi Mtendaji" %}</p>
-                </div>
-            </div>
-
-            <!-- Modal Right: Content Column -->
-            <div class="md:w-3/5 p-8 sm:p-10 overflow-y-auto flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center gap-2 mb-6">
-                        <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
-                        <span class="text-slate-400 dark:text-slate-500 text-sm font-semibold tracking-widest uppercase">Mejas Enterprises</span>
-                    </div>
-
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight border-b border-slate-100 dark:border-slate-800 pb-4">
-                        {% translate "Karibu Mejas Enterprises" %}
-                    </h2>
-
-                    <div class="text-slate-600 dark:text-slate-300 space-y-4 text-sm sm:text-base leading-relaxed">
-                        <p>
-                            {% translate "Nikiwa kama Mkurugenzi Mtendaji wa Mejas Enterprises, nina furaha kubwa kukukaribisha kwenye mfumo wetu mpya wa MMS (Microfinance Management System). Mfumo huu ni hatua kubwa katika safari yetu ya kuleta mapinduzi ya kidigitali katika sekta ya huduma ndogo za kifedha Tanzania." %}
-                        </p>
-                        <p>
-                            {% translate "Dira yetu tangu mwanzo imekuwa ni kuwawezesha kiuchumi wajasiriamali wadogo na wa kati ambao ni nguzo kuu ya uchumi wa jamii zetu. Tunatambua kwamba upatikanaji wa mikopo ya haraka, salama na yenye gharama nafuu ndiyo chachu ya mafanikio ya biashara zenu." %}
-                        </p>
-                        <p>
-                            {% translate "MMS inaleta uwazi, ufanisi wa hali ya juu na usalama wa taarifa zako zote. Sasa unaweza kufuatilia maombi ya mkopo, historia ya marejesho yako, na kuwasiliana na maafisa wetu kwa urahisi zaidi wakati wowote." %}
-                        </p>
-                        <p class="italic font-medium text-brand-600 dark:text-brand-500">
-                            {% translate "\"Malengo yetu ni mafanikio yako. Pamoja tutakuza biashara yako na kufikia malengo yako ya kifedha.\"" %}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Footer of modal -->
-                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-                    <div class="text-xs text-slate-400 dark:text-slate-500">
-                        <p>{% translate "Barua pepe" %}: <a href="mailto:meja@mejas.co.tz" class="hover:text-brand-500">meja@mejas.co.tz</a></p>
-                        <p>{% translate "Simu" %}: +255 712 345 678</p>
-                    </div>
-                    <button id="close-ceo-modal-btn" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-6 py-2.5 rounded-xl shadow transition duration-150 text-sm">
-                        {% translate "Funga Ukurasa" %}
-                    </button>
-                </div>
-            </div>
 
         </div>
-    </div>
+    </section>
 
-    <!-- Modal Control Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const trigger = document.getElementById('ceo-card-trigger');
-            const modal = document.getElementById('ceo-modal');
-            const container = document.getElementById('ceo-modal-container');
-            const closeBtn = document.getElementById('close-ceo-modal');
-            const closeBtnSecondary = document.getElementById('close-ceo-modal-btn');
+    <!-- ============================================================== -->
+    <!-- 5. BRANCH NETWORK SECTION -->
+    <!-- ============================================================== -->
+    <section class="space-y-8">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+            <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400">Mtandao wa Matawi</span>
+            <h2 class="font-heading text-3xl font-black text-slate-900 dark:text-white">Matawi Yetu Nchini Tanzania</h2>
+        </div>
 
-            function openModal() {
-                modal.classList.remove('hidden');
-                // Trigger reflow to apply transitions
-                void modal.offsetWidth;
-                modal.classList.remove('opacity-0');
-                modal.classList.add('opacity-100');
-                container.classList.remove('scale-90', 'opacity-0');
-                container.classList.add('scale-100', 'opacity-100');
-                // Prevent background scrolling
-                document.body.classList.add('overflow-hidden');
-            }
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200 dark:border-white/[0.08] space-y-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                <h4 class="font-heading font-extrabold text-base text-slate-900 dark:text-white">Dar es Salaam (Tawi Kuu)</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Mlimani City / Ubungo Plaza</p>
+                <p class="text-xs font-semibold text-brand-600 dark:text-brand-400">+255 700 111 001</p>
+            </div>
 
-            function closeModal() {
-                modal.classList.remove('opacity-100');
-                modal.classList.add('opacity-0');
-                container.classList.remove('scale-100', 'opacity-100');
-                container.classList.add('scale-90', 'opacity-0');
-                
-                // Wait for animation to finish
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden');
-                }, 300);
-            }
+            <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200 dark:border-white/[0.08] space-y-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                <h4 class="font-heading font-extrabold text-base text-slate-900 dark:text-white">Arusha Branch</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Kariakoo Road / Clocktower</p>
+                <p class="text-xs font-semibold text-brand-600 dark:text-brand-400">+255 700 111 002</p>
+            </div>
 
-            if (trigger) trigger.addEventListener('click', openModal);
-            if (closeBtn) closeBtn.addEventListener('click', closeModal);
-            if (closeBtnSecondary) closeBtnSecondary.addEventListener('click', closeModal);
+            <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200 dark:border-white/[0.08] space-y-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                <h4 class="font-heading font-extrabold text-base text-slate-900 dark:text-white">Mwanza Branch</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Nyamagana / Makoroboi</p>
+                <p class="text-xs font-semibold text-brand-600 dark:text-brand-400">+255 700 111 003</p>
+            </div>
 
-            // Close modal by clicking outside
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
-                        closeModal();
-                    }
-                });
-            }
-        });
-    </script>
+            <div class="p-5 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200 dark:border-white/[0.08] space-y-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                <h4 class="font-heading font-extrabold text-base text-slate-900 dark:text-white">Dodoma Branch</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Area D / City Mall</p>
+                <p class="text-xs font-semibold text-brand-600 dark:text-brand-400">+255 700 111 004</p>
+            </div>
+        </div>
+    </section>
 
 </div>
+
+<!-- CEO Modal Script & Calculator Script -->
+<script>
+    // Loan Calculator dynamic logic
+    const amountSlider = document.getElementById('loan-amount-range');
+    const amountDisplay = document.getElementById('amount-display');
+    const principalDisplay = document.getElementById('calc-principal-display');
+    const interestDisplay = document.getElementById('calc-interest-display');
+    const totalDisplay = document.getElementById('calc-total-display');
+    const monthlyDisplay = document.getElementById('monthly-installment-display');
+    const durBtns = document.querySelectorAll('.calc-dur-btn');
+
+    let currentMonths = 3;
+
+    function formatTZS(val) {
+        return 'TZS ' + Math.round(val).toLocaleString('en-US');
+    }
+
+    function recalculate() {
+        const principal = parseFloat(amountSlider.value) || 1000000;
+        amountDisplay.textContent = formatTZS(principal);
+        principalDisplay.textContent = formatTZS(principal);
+
+        // 5% flat interest
+        const interest = principal * 0.05;
+        const total = principal + interest;
+        const monthly = total / currentMonths;
+
+        interestDisplay.textContent = formatTZS(interest);
+        totalDisplay.textContent = formatTZS(total);
+        monthlyDisplay.textContent = formatTZS(monthly);
+    }
+
+    if (amountSlider) {
+        amountSlider.addEventListener('input', recalculate);
+    }
+
+    durBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            durBtns.forEach(b => {
+                b.classList.remove('bg-brand-500', 'text-slate-950', 'border-brand-500');
+                b.classList.add('border-slate-200', 'dark:border-white/10');
+            });
+            this.classList.add('bg-brand-500', 'text-slate-950', 'border-brand-500');
+            this.classList.remove('border-slate-200', 'dark:border-white/10');
+            currentMonths = parseInt(this.dataset.months) || 3;
+            recalculate();
+        });
+    });
+
+    recalculate();
+</script>
 {% endblock %}

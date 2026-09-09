@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% translate "Ingia Mfumoni" %} - MMS</title>
+    <title>{% translate "Ingia Mfumoni" %} - Mejas Microfinance</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -15,7 +16,7 @@
                         brand: {
                             50:  '#f4fbf9',
                             100: '#e1f5f0',
-                            500: '#dfb13c',
+                            500: '#dfb13c', // Champagne Gold
                             600: '#c59b2b',
                             700: '#114139',
                             800: '#0b2a25',
@@ -23,231 +24,313 @@
                             950: '#030c0a',
                         }
                     },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'float-slow': 'float 9s ease-in-out infinite',
-                        'fade-in': 'fadeIn 0.7s ease-out forwards',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-18px)' },
-                        },
-                        fadeIn: {
-                            from: { opacity: '0', transform: 'translateY(20px)' },
-                            to:   { opacity: '1', transform: 'translateY(0)' },
-                        }
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Outfit (headings) & Plus Jakarta Sans (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-heading { font-family: 'Outfit', sans-serif; }
 
-        /* Subtle animated mesh background */
-        .mesh-bg {
-            background-color: #061815;
+        /* Premium mesh background with ambient glow */
+        .auth-bg {
+            background-color: #04100d;
             background-image:
-                radial-gradient(ellipse 80% 60% at 20% 30%, rgba(17,65,57,0.7) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 50% at 80% 70%, rgba(11,42,37,0.9) 0%, transparent 55%),
-                radial-gradient(ellipse 40% 40% at 50% 0%, rgba(223,177,60,0.12) 0%, transparent 50%);
+                radial-gradient(ellipse 90% 70% at 15% 20%, rgba(17,65,57,0.75) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 60% at 85% 80%, rgba(11,42,37,0.85) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 50% at 50% 10%, rgba(223,177,60,0.14) 0%, transparent 50%),
+                linear-gradient(180deg, rgba(3,12,10,0.4) 0%, rgba(4,16,13,0.8) 100%);
         }
 
-        /* Glassmorphism card */
-        .glass-card {
-            background: rgba(255,255,255,0.07);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(223,177,60,0.18);
+        /* Glassmorphic card styling */
+        .glass-panel {
+            background: rgba(8, 27, 23, 0.72);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(223,177,60,0.22);
             box-shadow:
-                0 32px 64px rgba(0,0,0,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.08);
+                0 25px 60px -15px rgba(0,0,0,0.7),
+                0 0 0 1px rgba(255,255,255,0.06),
+                inset 0 1px 0 rgba(255,255,255,0.12);
         }
 
-        /* Input wrapper icon styling */
-        .input-icon-wrapper { position: relative; }
-        .input-icon-wrapper .icon-left {
+        /* Input styling with left icon */
+        .input-group {
+            position: relative;
+        }
+        .input-group .icon-slot {
             position: absolute;
-            left: 14px;
+            left: 1rem;
             top: 50%;
             transform: translateY(-50%);
             color: #dfb13c;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             pointer-events: none;
-            z-index: 1;
+            transition: color 0.2s;
         }
-        .input-icon-wrapper input {
-            padding-left: 2.6rem !important;
-            background: rgba(255,255,255,0.06) !important;
-            border: 1px solid rgba(223,177,60,0.25) !important;
-            color: #fff !important;
-            border-radius: 0.625rem !important;
+        .input-group input {
             width: 100% !important;
-            padding-top: 0.65rem !important;
-            padding-bottom: 0.65rem !important;
-            font-size: 0.9rem !important;
-            transition: border-color 0.2s, box-shadow 0.2s !important;
+            padding-left: 2.85rem !important;
+            padding-right: 2.85rem !important;
+            padding-top: 0.825rem !important;
+            padding-bottom: 0.825rem !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 0.875rem !important;
+            color: #ffffff !important;
+            font-size: 0.925rem !important;
+            transition: all 0.25s ease !important;
         }
-        .input-icon-wrapper input::placeholder { color: rgba(255,255,255,0.35) !important; }
-        .input-icon-wrapper input:focus {
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.35) !important;
+            font-size: 0.875rem !important;
+        }
+        .input-group input:focus {
             outline: none !important;
+            background: rgba(255, 255, 255, 0.09) !important;
             border-color: #dfb13c !important;
-            box-shadow: 0 0 0 3px rgba(223,177,60,0.18) !important;
-            background: rgba(255,255,255,0.10) !important;
+            box-shadow: 0 0 0 4px rgba(223, 177, 60, 0.18) !important;
         }
 
-        /* Brand gradient button */
-        .brand-btn {
+        /* Primary action button */
+        .btn-gold {
             background: linear-gradient(135deg, #dfb13c 0%, #c59b2b 100%);
-            color: #030c0a;
+            color: #04100d;
             font-weight: 800;
-            letter-spacing: 0.03em;
-            border-radius: 0.625rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 18px rgba(223,177,60,0.30);
+            letter-spacing: 0.02em;
+            border-radius: 0.875rem;
+            box-shadow: 0 6px 24px rgba(223, 177, 60, 0.35);
+            transition: all 0.25s ease;
         }
-        .brand-btn:hover {
+        .btn-gold:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 28px rgba(223,177,60,0.45);
-            filter: brightness(1.07);
+            box-shadow: 0 10px 32px rgba(223, 177, 60, 0.5);
+            filter: brightness(1.06);
         }
-        .brand-btn:active { transform: translateY(0); }
+        .btn-gold:active {
+            transform: translateY(0);
+        }
 
-        /* Floating orbs */
-        .orb {
+        /* Ambient floating subtle blur spheres */
+        .glow-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.18;
+            filter: blur(80px);
             pointer-events: none;
+            opacity: 0.2;
         }
     </style>
 </head>
-<body class="min-h-screen mesh-bg flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+<body class="min-h-screen auth-bg flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-x-hidden text-slate-100">
 
-    <!-- Floating ambient orbs -->
-    <div class="orb w-80 h-80 bg-brand-500 top-[-80px] right-[-60px] animate-float-slow"></div>
-    <div class="orb w-64 h-64 bg-brand-700 bottom-[-60px] left-[-40px] animate-float"></div>
-    <div class="orb w-48 h-48 bg-brand-500 bottom-[30%] right-[10%] animate-float-slow" style="animation-delay:3s;opacity:0.10;"></div>
+    <!-- Ambient Glowing Orbs -->
+    <div class="glow-orb w-96 h-96 bg-[#dfb13c] top-[-100px] left-[-100px]"></div>
+    <div class="glow-orb w-96 h-96 bg-[#114139] bottom-[-100px] right-[-100px]"></div>
 
-    <!-- Main Card -->
-    <div class="w-full max-w-md animate-fade-in my-auto">
-        <div class="glass-card rounded-2xl px-6 py-6 sm:px-8 sm:py-7">
+    <!-- Top Bar with Back Link and Language Selector -->
+    <div class="absolute top-4 left-4 right-4 sm:top-6 sm:left-8 sm:right-8 flex items-center justify-between z-20">
+        <a href="{% url 'home' %}" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-xs font-medium transition backdrop-blur-md">
+            <i class="fa-solid fa-arrow-left text-[11px] text-[#dfb13c]"></i>
+            <span>{% translate "Rudi Mwanzo" %}</span>
+        </a>
 
-            <!-- Logo & Brand -->
-            <div class="flex flex-col items-center mb-5">
-                <div class="relative mb-3">
-                    <div class="absolute -inset-1 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 blur-md opacity-60"></div>
-                    <img src="{% static 'logo.png' %}" class="relative h-14 w-14 rounded-full object-cover border-2 border-brand-500 shadow-xl" alt="logo">
-                </div>
-                <h1 class="text-xl font-extrabold tracking-tight text-white mt-1">MEJAS MICROFINANCE</h1>
-                <p class="mt-1 text-[10px] text-brand-300 tracking-widest uppercase font-medium text-center">
-                    {% translate "Mfumo wa Kidigitali wa Uendeshaji (MMS)" %}
-                </p>
-                <div class="h-px w-16 bg-gradient-to-r from-transparent via-brand-500 to-transparent mt-3"></div>
+        <!-- Modern Language Switcher -->
+        {% load i18n %}
+        {% get_current_language as CURRENT_LANG %}
+        {% get_available_languages as ALL_LANGS %}
+        <form action="/i18n/setlang/" method="post" class="relative inline-flex items-center">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+            <div class="relative flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/12 rounded-full px-3 py-1.5 transition backdrop-blur-md cursor-pointer">
+                <i class="fa-solid fa-globe text-[#dfb13c] text-xs"></i>
+                <select name="language" onchange="this.form.submit()" class="appearance-none bg-transparent text-white border-none outline-none focus:ring-0 text-xs font-semibold cursor-pointer pr-3">
+                    {% for lang in ALL_LANGS %}
+                        <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %} class="bg-[#0b2a25] text-white">
+                            {{ lang.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <i class="fa-solid fa-chevron-down text-white/40 text-[9px] pointer-events-none absolute right-2.5"></i>
             </div>
+        </form>
+    </div>
 
-            <!-- Error Messages -->
-            {% if messages %}
-            <div class="mb-4 space-y-2">
-                {% for message in messages %}
-                <div class="flex items-center gap-2 p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-semibold">
-                    <i class="fa-solid fa-circle-exclamation flex-shrink-0"></i>
-                    <span>{{ message }}</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+    <!-- Main Container: Split Screen on Large Displays -->
+    <div class="w-full max-w-5xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 pt-12 sm:pt-14 lg:pt-0">
 
-            <!-- Welcome label -->
-            <p class="text-slate-300 text-xs font-medium mb-4">{% translate "Karibu! Tafadhali ingiza taarifa zako:" %}</p>
-
-            <!-- Login Form -->
-            <form class="space-y-4" action="{% url 'login' %}" method="POST" id="login-form">
-                {% csrf_token %}
-
-                <!-- Username Field -->
-                <div>
-                    <label for="id_username" class="block text-[10px] font-semibold text-brand-300 uppercase tracking-wider mb-1.5">
-                        {{ form.username.label }}
-                    </label>
-                    <div class="input-icon-wrapper">
-                        <i class="fa-solid fa-user icon-left"></i>
-                        {{ form.username }}
-                    </div>
-                </div>
-
-                <!-- Password Field -->
-                <div>
-                    <label for="id_password" class="block text-[10px] font-semibold text-brand-300 uppercase tracking-wider mb-1.5">
-                        {{ form.password.label }}
-                    </label>
-                    <div class="input-icon-wrapper" id="password-wrapper">
-                        <i class="fa-solid fa-lock icon-left"></i>
-                        {{ form.password }}
-                        <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-400 transition-colors focus:outline-none text-xs z-10">
-                            <i class="fa-solid fa-eye" id="eye-icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Forgot password -->
-                <div class="flex justify-end">
-                    <a href="{% url 'password_reset' %}" class="text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition-colors">
-                        {% translate "Umesahau password?" %}
-                    </a>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="login-btn" class="brand-btn w-full flex items-center justify-center gap-2.5 py-2.5 px-4 text-xs font-extrabold mt-1">
-                    <i class="fa-solid fa-right-to-bracket text-xs"></i>
-                    {% translate "Ingia (Login)" %}
-                </button>
-
-            </form>
-
-            <!-- Divider -->
-            <div class="flex items-center gap-3 my-4">
-                <div class="flex-1 h-px bg-white/10"></div>
-                <span class="text-white/30 text-[10px]">{% translate "Mipangilio" %}</span>
-                <div class="flex-1 h-px bg-white/10"></div>
-            </div>
-
-            <!-- Modern Language Switcher -->
-            {% load i18n %}
-            {% get_current_language as CURRENT_LANG %}
-            {% get_available_languages as ALL_LANGS %}
-            <form action="/i18n/setlang/" method="post" class="flex items-center justify-between">
-                {% csrf_token %}
-                <span class="flex items-center gap-1.5 text-[11px] text-slate-400">
-                    <i class="fa-solid fa-globe text-brand-500 text-[11px]"></i>
-                    {% translate "Lugha / Language" %}
+        <!-- Left Showcase Side (Visible on lg and above) -->
+        <div class="hidden lg:flex lg:col-span-7 flex-col justify-center pr-6 space-y-6">
+            
+            <!-- Regulatory Badge -->
+            <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/5 border border-brand-500/30 w-fit backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                <span class="text-[11px] font-semibold tracking-wider text-brand-400 uppercase">
+                    Mejas Microfinance Management System (MMS)
                 </span>
-                <div class="relative flex items-center gap-1.5 bg-white/6 hover:bg-white/10 border border-white/12 hover:border-brand-500/40 rounded-full px-2.5 py-1 transition-all duration-200 cursor-pointer">
-                    <select name="language" onchange="this.form.submit()" class="appearance-none bg-transparent text-white border-none outline-none focus:ring-0 text-[11px] font-semibold cursor-pointer pr-4 py-0.5">
-                        {% for lang in ALL_LANGS %}
-                            <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %} class="bg-brand-900 text-white">
-                                {{ lang.1 }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                    <i class="fa-solid fa-chevron-down text-brand-500 text-[8px] pointer-events-none absolute right-2.5"></i>
+            </div>
+
+            <!-- Main Heading -->
+            <div>
+                <h1 class="font-heading text-4xl xl:text-5xl font-extrabold text-white leading-tight">
+                    Uendeshaji wa Kisasa wa
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-[#dfb13c] via-[#f5d070] to-[#c59b2b]">
+                        Mikopo na Fedha
+                    </span>
+                </h1>
+                <p class="text-sm xl:text-base text-slate-300/80 mt-3 leading-relaxed max-w-lg">
+                    Jukwaa la kidigitali lililothibitishwa kwa ajili ya usimamizi bora wa wateja, utoaji wa mikopo, ukusanyaji wa marejesho, na hesabu za kila siku kwa usalama wa kiwango cha juu.
+                </p>
+            </div>
+
+            <!-- Value Highlights -->
+            <div class="grid grid-cols-2 gap-3.5 pt-2">
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                    <div class="w-8 h-8 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-500 mb-2">
+                        <i class="fa-solid fa-shield-halved text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-white">Usalama wa Kibenki</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Ulinzi wa data kwa viwango vya SSL 256-Bit na 2FA OTP.</p>
                 </div>
-            </form>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                    <div class="w-8 h-8 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-500 mb-2">
+                        <i class="fa-solid fa-building-columns text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-white">Matawi Mengi (Multi-Branch)</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Usimamizi wa pamoja wa matawi yote nchini kwa wakati halisi.</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                    <div class="w-8 h-8 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-500 mb-2">
+                        <i class="fa-solid fa-mobile-screen-button text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-white">Malipo ya Kidigitali</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Ushirikiano wa AzamPay, M-Pesa, Airtel, Tigo, na Benki.</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                    <div class="w-8 h-8 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-500 mb-2">
+                        <i class="fa-solid fa-chart-line text-sm"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-white">Ripoti Rasmi (PDF/Excel)</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Utoaji wa ripoti 7 za kiutendaji na fedha kwa mbofyo mmoja.</p>
+                </div>
+            </div>
+
+            <!-- Trust Indicator -->
+            <div class="flex items-center gap-3 pt-2 text-xs text-slate-400">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                <span>Database ya wingu imeunganishwa moja kwa moja na <strong>Supabase Cloud PostgreSQL</strong></span>
+            </div>
 
         </div>
 
-        <!-- Footer note -->
-        <p class="text-center text-[10px] text-white/20 mt-4">
-            &copy; {% now "Y" %} Mejas Enterprises. {% translate "Haki zote zimehifadhiwa." %}
-        </p>
+        <!-- Right Side: The Pristine Login Form -->
+        <div class="lg:col-span-5 w-full max-w-md mx-auto">
+            <div class="glass-panel rounded-3xl p-7 sm:p-9 relative">
+
+                <!-- Header & Brand Emblem -->
+                <div class="flex flex-col items-center text-center mb-6">
+                    <div class="relative mb-3">
+                        <div class="absolute -inset-1 rounded-full bg-gradient-to-tr from-[#dfb13c] to-emerald-500 blur opacity-40"></div>
+                        <img src="{% static 'logo.png' %}" class="relative h-16 w-16 rounded-full object-cover border-2 border-brand-500 shadow-xl" alt="Mejas Logo">
+                    </div>
+                    <h2 class="font-heading text-2xl font-black text-white tracking-tight">
+                        {% translate "Karibu Mfumoni" %}
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">
+                        {% translate "Ingiza jina la mtumiaji na nenosiri lako ili kuendelea" %}
+                    </p>
+                </div>
+
+                <!-- Django Messages / Alerts -->
+                {% if messages %}
+                <div class="mb-5 space-y-2">
+                    {% for message in messages %}
+                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs font-medium">
+                        <i class="fa-solid fa-circle-exclamation flex-shrink-0 text-red-400"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Form -->
+                <form method="post" action="{% url 'login' %}" id="login-form" class="space-y-4">
+                    {% csrf_token %}
+
+                    <!-- Username / Email Field -->
+                    <div>
+                        <label for="id_username" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                            {% translate "Jina la Mtumiaji (Username)" %}
+                        </label>
+                        <div class="input-group">
+                            <span class="icon-slot">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" name="username" id="id_username" required autofocus autocomplete="username"
+                                   placeholder="{% translate 'Mfano: sheddy au mkurugenzi' %}">
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="id_password" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                                {% translate "Nenosiri (Password)" %}
+                            </label>
+                            <a href="{% url 'password_reset' %}" class="text-[11px] font-semibold text-brand-400 hover:text-brand-300 transition-colors">
+                                {% translate "Umesahau?" %}
+                            </a>
+                        </div>
+                        <div class="input-group">
+                            <span class="icon-slot">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input type="password" name="password" id="id_password" required autocomplete="current-password"
+                                   placeholder="••••••••">
+                            <button type="button" id="toggle-password" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-400 focus:outline-none transition-colors p-1">
+                                <i class="fa-regular fa-eye text-sm" id="eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="login-btn" class="btn-gold w-full flex items-center justify-center gap-2.5 py-3.5 px-5 text-sm font-extrabold mt-3">
+                        <i class="fa-solid fa-right-to-bracket text-sm"></i>
+                        <span>{% translate "Ingia Mfumoni (Sign In)" %}</span>
+                    </button>
+
+                </form>
+
+                <!-- Security Assurance Footer -->
+                <div class="mt-6 pt-5 border-t border-white/10 flex items-center justify-center gap-2 text-[11px] text-slate-400 text-center">
+                    <i class="fa-solid fa-lock text-emerald-400 text-xs"></i>
+                    <span>{% translate "Muunganisho salama wa SSL 256-bit" %}</span>
+                </div>
+
+            </div>
+
+            <!-- Copyright -->
+            <p class="text-center text-xs text-slate-400/60 mt-4">
+                &copy; {% now "Y" %} Mejas Enterprises Microfinance. {% translate "Haki zote zimehifadhiwa." %}
+            </p>
+        </div>
+
     </div>
 
+    <!-- Interactive Scripts -->
     <script>
         // Password visibility toggle
         const toggleBtn = document.getElementById('toggle-password');
@@ -263,15 +346,17 @@
             });
         }
 
-        // Add loading state on submit
+        // Loading state on submit
         const form    = document.getElementById('login-form');
         const loginBtn = document.getElementById('login-btn');
         if (form && loginBtn) {
             form.addEventListener('submit', function() {
-                loginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> {% translate "Inaingia..." %}';
+                loginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-sm"></i> <span>{% translate "Inathibitisha..." %}</span>';
                 loginBtn.disabled = true;
+                loginBtn.classList.add('opacity-80', 'cursor-wait');
             });
         }
     </script>
+
 </body>
 </html>

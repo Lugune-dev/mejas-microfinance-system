@@ -210,3 +210,20 @@ class PasswordResetForm(forms.Form):
             if not re.search(r"[A-Za-z]", password) or not re.search(r"[0-9]", password):
                 raise forms.ValidationError(_("Password must contain a mix of letters and numbers."))
         return password
+
+
+class BranchForm(forms.ModelForm):
+    class Meta:
+        model = Branch
+        fields = ["name", "location"]
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "w-full px-4 py-2 border rounded-lg bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600",
+                "placeholder": _("Mf. Tawi la Arusha, Dodoma, n.k.")
+            }),
+            "location": forms.TextInput(attrs={
+                "class": "w-full px-4 py-2 border rounded-lg bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600",
+                "placeholder": _("Mf. Barabara ya Sokoine, Arusha")
+            }),
+        }
+

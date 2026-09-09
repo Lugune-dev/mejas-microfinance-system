@@ -1,0 +1,201 @@
+/* ==============================================================
+   MEJAS MICROFINANCE SYSTEM - JAZZMIN ADMIN CUSTOM STYLES
+   Colors:
+   - Deep Forest Teal: #0b2a25
+   - Dark Slate Teal: #071f1b
+   - Highlight Teal: #114139
+   - Champagne Gold: #dfb13c
+   - Gold Hover: #c59b2b
+   - Emerald Green: #10b981
+   ============================================================== */
+
+/* Top Navbar */
+.main-header.navbar {
+    background-color: #0b2a25 !important;
+    border-bottom: 2px solid #dfb13c !important;
+}
+.main-header .navbar-nav .nav-link,
+.main-header .navbar-nav .nav-link i {
+    color: #f8fafc !important;
+}
+.main-header .navbar-nav .nav-link:hover,
+.main-header .navbar-nav .nav-link:hover i {
+    color: #dfb13c !important;
+}
+
+/* Brand Logo Bar */
+.brand-link,
+aside.main-sidebar .brand-link {
+    background-color: #041411 !important;
+    border-bottom: 2px solid #dfb13c !important;
+    padding: 12px 16px !important;
+}
+.brand-link .brand-text,
+aside.main-sidebar .brand-text {
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.04em !important;
+}
+.brand-link .brand-text span.gold {
+    color: #dfb13c !important;
+}
+
+/* ==============================================================
+   SIDEBAR - HIGH CONTRAST & CLEAR VISIBILITY
+   ============================================================== */
+.main-sidebar, 
+.main-sidebar .sidebar,
+aside.main-sidebar {
+    background-color: #071f1b !important;
+    border-right: 1px solid rgba(223, 177, 60, 0.25) !important;
+}
+
+/* User identity in sidebar */
+.sidebar .user-panel {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 12px 14px !important;
+    margin-bottom: 10px !important;
+}
+.sidebar .user-panel .info a {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+}
+
+/* Section / Module Headers */
+.sidebar .nav-header,
+[class*="sidebar-dark-"] .nav-header,
+.sidebar-dark-warning .nav-header {
+    color: #dfb13c !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    font-weight: 900 !important;
+    padding: 14px 14px 6px 14px !important;
+    margin-top: 6px !important;
+    border-bottom: 1px solid rgba(223, 177, 60, 0.18) !important;
+    background: transparent !important;
+}
+
+/* Nav Item Links */
+.nav-sidebar .nav-item > .nav-link,
+.nav-sidebar .nav-item > .nav-link p,
+[class*="sidebar-dark-"] .nav-sidebar > .nav-item > .nav-link,
+[class*="sidebar-dark-"] .nav-sidebar > .nav-item > .nav-link p {
+    color: #ffffff !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    margin: 2px 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Nav Link Icons */
+.nav-sidebar .nav-link i,
+.nav-sidebar .nav-link .nav-icon,
+[class*="sidebar-dark-"] .nav-sidebar .nav-link i,
+[class*="sidebar-dark-"] .nav-sidebar .nav-link .nav-icon {
+    color: #dfb13c !important;
+    font-size: 15px !important;
+    margin-right: 10px !important;
+}
+
+/* Active Nav Item */
+.nav-sidebar .nav-item > .nav-link.active,
+.nav-sidebar .nav-item > .nav-link.active p,
+[class*="sidebar-dark-"] .nav-sidebar > .nav-item > .nav-link.active,
+[class*="sidebar-dark-"] .nav-sidebar > .nav-item > .nav-link.active p {
+    background-color: #114139 !important;
+    color: #dfb13c !important;
+    border-left: 4px solid #dfb13c !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+.nav-sidebar .nav-item > .nav-link.active i,
+.nav-sidebar .nav-item > .nav-link.active .nav-icon {
+    color: #dfb13c !important;
+}
+
+/* Hover Nav Item */
+.nav-sidebar .nav-link:hover,
+.nav-sidebar .nav-link:hover p,
+[class*="sidebar-dark-"] .nav-sidebar .nav-link:hover,
+[class*="sidebar-dark-"] .nav-sidebar .nav-link:hover p {
+    background-color: rgba(223, 177, 60, 0.16) !important;
+    color: #dfb13c !important;
+}
+.nav-sidebar .nav-link:hover i,
+.nav-sidebar .nav-link:hover .nav-icon {
+    color: #ffffff !important;
+}
+
+/* Submenus (Treeview) */
+.nav-sidebar .nav-treeview {
+    background-color: rgba(0, 0, 0, 0.18) !important;
+    border-radius: 8px !important;
+    margin: 2px 8px !important;
+    padding: 4px 0 !important;
+}
+.nav-sidebar .nav-treeview .nav-link,
+.nav-sidebar .nav-treeview .nav-link p {
+    color: #e2e8f0 !important;
+    font-size: 12.5px !important;
+    padding-left: 28px !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #114139 !important;
+    border-color: #0b2a25 !important;
+    color: #ffffff !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #0b2a25 !important;
+    border-color: #dfb13c !important;
+    color: #dfb13c !important;
+}
+.btn-warning {
+    background-color: #dfb13c !important;
+    border-color: #c59b2b !important;
+    color: #04120f !important;
+    font-weight: 700 !important;
+}
+.btn-warning:hover {
+    background-color: #c59b2b !important;
+    color: #ffffff !important;
+}
+.btn-success {
+    background-color: #10b981 !important;
+    border-color: #059669 !important;
+    color: #ffffff !important;
+}
+
+/* Cards & Tables in Data Management */
+.card {
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.card-primary.card-outline {
+    border-top: 3px solid #dfb13c !important;
+}
+.table thead th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+.table td {
+    vertical-align: middle !important;
+    font-size: 13px !important;
+}
+
+/* Action Checkbox & Pagination */
+.pagination .page-item.active .page-link {
+    background-color: #0b2a25 !important;
+    border-color: #0b2a25 !important;
+    color: #dfb13c !important;
+}

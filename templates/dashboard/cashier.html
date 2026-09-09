@@ -1,136 +1,353 @@
 {% extends 'base.html' %}
-{% load i18n l10n %}
+{% load i18n l10n static %}
 
-{% block title %}{% translate "Dashibodi ya Mhazini (Cashier)" %} - MMS{% endblock %}
+{% block title %}{% translate "Dawati la Mhazini (AdminLTE Cashier)" %} - Mejas MMS{% endblock %}
+
+{% block extrastyle %}
+<style>
+    /* ==============================================================
+       ADMINLTE STYLING FOR CASHIER TERMINAL
+       ============================================================== */
+    .small-box {
+        border-radius: 0.85rem;
+        position: relative;
+        display: block;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        color: #ffffff;
+        overflow: hidden;
+        transition: transform 0.25s ease;
+    }
+    .small-box:hover {
+        transform: translateY(-3px);
+    }
+    .small-box > .inner {
+        padding: 18px;
+        position: relative;
+        z-index: 2;
+    }
+    .small-box h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+    }
+    .small-box p {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 2px;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    .small-box .subtext {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.75);
+    }
+    .small-box .icon {
+        color: rgba(255, 255, 255, 0.18);
+        z-index: 1;
+        position: absolute;
+        right: 14px;
+        top: 14px;
+        font-size: 60px;
+        transition: all 0.3s ease;
+    }
+    .small-box:hover .icon {
+        transform: scale(1.1);
+    }
+    .small-box > .small-box-footer {
+        background-color: rgba(0, 0, 0, 0.15);
+        color: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 6px 0;
+        text-align: center;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .small-box > .small-box-footer:hover {
+        background-color: rgba(0, 0, 0, 0.28);
+        color: #ffffff;
+    }
+
+    .card-outline-teal {
+        border-top: 4px solid #0b2a25 !important;
+    }
+    .card-outline-gold {
+        border-top: 4px solid #dfb13c !important;
+    }
+    .card-outline-emerald {
+        border-top: 4px solid #10b981 !important;
+    }
+
+    .callout {
+        border-radius: 0.75rem;
+        margin: 0 0 1rem 0;
+        padding: 1rem 1.25rem;
+        border-left: 5px solid;
+    }
+    .callout-success {
+        border-color: #10b981;
+        background: rgba(16, 185, 129, 0.08);
+    }
+    .callout-warning {
+        border-color: #dfb13c;
+        background: rgba(223, 177, 60, 0.08);
+    }
+    .callout-danger {
+        border-color: #e11d48;
+        background: rgba(225, 29, 72, 0.08);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="space-y-6 max-w-7xl mx-auto">
+
+    <!-- ============================================================== -->
+    <!-- 1. ADMINLTE CASHIER DESK HEADER -->
+    <!-- ============================================================== -->
+    <div class="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white">{% translate "Dashibodi ya Mhazini (Cashier)" %}</h2>
-            <p class="text-slate-500">{% translate "Dhibiti mapokezi ya marejesho, funga hesabu za kila siku, na uhakiki salio." %}</p>
+            <div class="flex items-center gap-2 flex-wrap">
+                <h1 class="font-heading text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                    {% translate "Dawati la Mhazini" %} (Cashier Terminal) 💰
+                </h1>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                    AdminLTE Live Teller Desk
+                </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                {% translate "Tawi:" %} <b class="text-slate-800 dark:text-white">{{ user.branch.name|default:_("Makao Makuu (HQ)") }}</b> &nbsp;|&nbsp;
+                {% translate "Kutoa mikopo iliyoidhinishwa, kupokea marejesho ya wateja, na kufunga hesabu za siku (EOD Reconciliation)." %}
+            </p>
         </div>
 
-        <div class="flex gap-2">
-            <a href="{% url 'record_office_cash_flow' %}" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold rounded-lg text-sm transition">
-                <i class="fa-solid fa-plus-minus mr-2"></i>{% translate "Mtiririko wa Fedha za Ofisi" %}
+        <div class="flex flex-wrap gap-2.5">
+            <a href="{% url 'record_office_cash_flow' %}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] text-slate-800 dark:text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-2 border border-slate-200 dark:border-white/[0.08]">
+                <i class="fa-solid fa-plus-minus text-brand-500"></i>
+                <span>{% translate "Matumizi / Mapato ya Ofisi" %}</span>
             </a>
-            <a href="{% url 'daily_reconciliation' %}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg text-sm transition">
-                <i class="fa-solid fa-lock-open mr-2"></i>{% translate "Funga Hesabu (Close Day)" %}
+            <a href="{% url 'daily_reconciliation' %}" class="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-black rounded-xl text-xs transition shadow-sm inline-flex items-center gap-2 hover:brightness-105">
+                <i class="fa-solid fa-lock text-xs"></i>
+                <span>{% translate "Funga Hesabu (Close Day EOD)" %}</span>
+            </a>
+            <a href="{% url 'password_change' %}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] text-slate-800 dark:text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-2 border border-slate-200 dark:border-white/[0.08]" title="{% translate 'Badili Password' %}">
+                <i class="fa-solid fa-key text-brand-500"></i>
+                <span>{% translate "Badili Password" %}</span>
             </a>
         </div>
     </div>
 
-    <!-- Summary Box -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Card 1: Today Cash In -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-1">
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{% translate "Leo Cash In (Collections)" %}</p>
-                <h3 class="text-xl font-extrabold text-green-600 dark:text-green-400 tracking-tight">TZS {{ today_cash_in|localize }}</h3>
+    <!-- ============================================================== -->
+    <!-- 2. ADMINLTE 4 CASH DRAWER SMALL BOXES -->
+    <!-- ============================================================== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Opening Balance (Teal) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);">
+            <div class="inner">
+                <h3>TZS {{ opening_balance|localize }}</h3>
+                <p>{% translate "Salio la Kuanzia (Opening)" %}</p>
+                <div class="subtext">Kutoka funga hesabu ya jana</div>
             </div>
-            <div class="p-3.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl">
-                <i class="fa-solid fa-arrow-turn-down text-lg"></i>
+            <div class="icon">
+                <i class="fa-solid fa-vault"></i>
             </div>
+            <a href="{% url 'cash_flow_list' %}" class="small-box-footer">
+                {% translate "Tazama Historia" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
         </div>
 
-        <!-- Card 2: Today Cash Out -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-1">
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{% translate "Leo Cash Out (Disbursments)" %}</p>
-                <h3 class="text-xl font-extrabold text-red-600 dark:text-red-400 tracking-tight">TZS {{ today_cash_out|localize }}</h3>
+        <!-- Cash In (Emerald) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+            <div class="inner">
+                <h3>TZS {{ today_cash_in|localize }}</h3>
+                <p>{% translate "Leo Cash In (Collections)" %}</p>
+                <div class="subtext">{{ today_payments.count }} {% translate "risiti zilizokusanywa" %}</div>
             </div>
-            <div class="p-3.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl">
-                <i class="fa-solid fa-arrow-turn-up text-lg"></i>
+            <div class="icon">
+                <i class="fa-solid fa-circle-arrow-down"></i>
             </div>
+            <a href="#today-receipts" class="small-box-footer">
+                {% translate "Orodha ya Risiti" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
         </div>
 
-        <!-- Card 3: Ending calculated balance -->
-        <div class="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 hover:border-brand-500/30 flex items-center justify-between transition-all duration-300 hover:-translate-y-0.5">
-            <div class="space-y-1">
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{% translate "Salio Lililokadiriwa (Calculated)" %}</p>
-                <h3 class="text-xl font-extrabold text-slate-800 dark:text-white tracking-tight">TZS {{ calculated_closing|localize }}</h3>
-                <p class="text-xs text-slate-400">{% translate "Opening: TZS " %}{{ opening_balance|localize }}</p>
+        <!-- Cash Out (Rose) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);">
+            <div class="inner">
+                <h3>TZS {{ today_cash_out|localize }}</h3>
+                <p>{% translate "Leo Cash Out (Disbursed)" %}</p>
+                <div class="subtext">{{ pending_disbursements.count }} {% translate "mikopo inasubiri fedha" %}</div>
             </div>
-            <div class="p-3.5 bg-brand-500/10 text-brand-500 border border-brand-500/20 rounded-xl">
-                <i class="fa-solid fa-calculator text-lg"></i>
+            <div class="icon">
+                <i class="fa-solid fa-circle-arrow-up"></i>
             </div>
+            <a href="#pending-disbursements" class="small-box-footer">
+                {% translate "Mikopo Inayosubiri" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
         </div>
+
+        <!-- Calculated Drawer Balance (Gold) -->
+        <div class="small-box" style="background: linear-gradient(135deg, #c59b2b 0%, #dfb13c 100%); color: #04120f;">
+            <div class="inner">
+                <h3 style="color: #04120f;">TZS {{ calculated_closing|localize }}</h3>
+                <p style="color: #04120f;">{% translate "Salio Lililopo Droo (Drawer)" %}</p>
+                <div class="subtext" style="color: rgba(4, 18, 15, 0.85);">Opening + In - Out</div>
+            </div>
+            <div class="icon" style="color: rgba(4, 18, 15, 0.15);">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+            <a href="{% url 'daily_reconciliation' %}" class="small-box-footer" style="color: #04120f; background-color: rgba(0,0,0,0.12);">
+                {% translate "Linganisha na Pesa ya Droo" %} <i class="fa-solid fa-arrow-circle-right"></i>
+            </a>
+        </div>
+
     </div>
 
-    <!-- Daily Reconciliation Status alert -->
+    <!-- ============================================================== -->
+    <!-- 3. DAILY RECONCILIATION STATUS CALLOUT -->
+    <!-- ============================================================== -->
     {% if recon %}
-    <div class="p-4 rounded-xl border flex items-center justify-between {% if recon.status == 'CONFIRMED' %}bg-green-50 border-green-200 text-green-800 dark:bg-green-950/30 dark:border-green-800 dark:text-green-200{% elif recon.status == 'REJECTED' %}bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-800 dark:text-red-200{% else %}bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200{% endif %}">
+    <div class="callout {% if recon.status == 'CONFIRMED' %}callout-success text-emerald-900 dark:text-emerald-100{% elif recon.status == 'REJECTED' %}callout-danger text-rose-900 dark:text-rose-100{% else %}callout-warning text-amber-900 dark:text-amber-100{% endif %} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-            <i class="fa-solid {% if recon.status == 'CONFIRMED' %}fa-circle-check{% elif recon.status == 'REJECTED' %}fa-circle-xmark{% else %}fa-circle-notch fa-spin{% endif %} text-xl"></i>
+            <i class="fa-solid {% if recon.status == 'CONFIRMED' %}fa-circle-check text-emerald-500{% elif recon.status == 'REJECTED' %}fa-circle-xmark text-rose-500{% else %}fa-clock text-amber-500{% endif %} text-2xl"></i>
             <div>
-                <p class="font-bold">{% translate "Hesabu ya Siku ya Leo imefungwa!" %}</p>
-                <p class="text-xs">
-                    {% translate "Physical Cash:" %} TZS {{ recon.actual_cash|localize }} | {% translate "Difference:" %} TZS {{ recon.difference|localize }}
+                <h5 class="text-sm font-bold">{% translate "Funga Hesabu ya Siku ya Leo Imewasilishwa!" %}</h5>
+                <p class="text-xs mt-0.5">
+                    {% translate "Pesa Halisi ya Droo (Physical Cash):" %} <b>TZS {{ recon.actual_cash|localize }}</b> &bull;
+                    {% translate "Tofauti (Difference):" %} <b>TZS {{ recon.difference|localize }}</b>
                 </p>
             </div>
         </div>
-        <div class="text-right">
-            <span class="px-3 py-1 rounded-full text-xs font-semibold {% if recon.status == 'CONFIRMED' %}bg-green-100 text-green-800{% elif recon.status == 'REJECTED' %}bg-red-100 text-red-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+        <div>
+            <span class="px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider {% if recon.status == 'CONFIRMED' %}bg-emerald-500 text-slate-950{% elif recon.status == 'REJECTED' %}bg-rose-500 text-white{% else %}bg-amber-500 text-slate-950{% endif %}">
                 {{ recon.get_status_display }}
             </span>
         </div>
     </div>
     {% else %}
-    <div class="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl flex items-center justify-between text-amber-800 dark:text-amber-200">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span class="text-sm font-semibold">{% translate "Haujawasilisha hesabu ya siku ya leo bado. Tafadhali kumbuka kuifunga kabla ya kuondoka." %}</span>
+    <div class="callout callout-warning text-amber-900 dark:text-amber-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-2xl"></i>
+            <div>
+                <h5 class="text-sm font-bold">{% translate "Haujawasilisha hesabu ya siku ya leo bado." %}</h5>
+                <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                    {% translate "Kagua fedha za drooni na uwasilishe Funga Hesabu (EOD) kabla ya kufunga duka/ofisi." %}
+                </p>
+            </div>
         </div>
-        <a href="{% url 'daily_reconciliation' %}" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-bold transition">
-            {% translate "Funga Sasa" %}
+        <a href="{% url 'daily_reconciliation' %}" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-black transition shadow-sm inline-flex items-center gap-2">
+            <i class="fa-solid fa-lock"></i>
+            <span>{% translate "Funga Hesabu Sasa" %}</span>
         </a>
     </div>
     {% endif %}
 
-    <!-- Today payments list -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <h4 class="font-bold text-slate-800 dark:text-white">{% translate "Malipo Yaliyopokelewa Leo (Today's Receipts)" %}</h4>
-            <span class="text-xs bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded font-semibold text-slate-500">
-                {{ today_payments.count }} {% translate "mizunguko ya malipo" %}
+    <!-- ============================================================== -->
+    <!-- 4. PENDING DISBURSEMENTS CARD -->
+    <!-- ============================================================== -->
+    {% if pending_disbursements %}
+    <div id="pending-disbursements" class="rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm card-outline-gold overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+            <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-hand-holding-dollar text-brand-500"></i>
+                <span>{% translate "Mikopo Iliyoidhinishwa Inayosubiri Kutoa Fedha" %}</span>
+            </h3>
+            <span class="text-xs bg-brand-500 text-slate-950 px-3 py-1 rounded-full font-black">
+                {{ pending_disbursements.count }} {% translate "inasubiri" %}
             </span>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm border-collapse">
+            <table class="w-full text-left text-xs border-collapse">
                 <thead>
-                    <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
-                        <th class="p-3">{% translate "Receipt No" %}</th>
-                        <th class="p-3">{% translate "Mteja" %}</th>
-                        <th class="p-3">{% translate "Namba ya Mkopo" %}</th>
-                        <th class="p-3">{% translate "Kiasi Kilicholipwa" %}</th>
-                        <th class="p-3">{% translate "Muda wa Malipo" %}</th>
-                        <th class="p-3">{% translate "Vitendo" %}</th>
+                    <tr class="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.08] text-slate-400 font-extrabold uppercase tracking-wider text-[10px]">
+                        <th class="py-3 px-6">{% translate "Loan ID" %}</th>
+                        <th class="py-3 px-4">{% translate "Mteja" %}</th>
+                        <th class="py-3 px-4">{% translate "Kiasi cha Mkopo (TZS)" %}</th>
+                        <th class="py-3 px-4">{% translate "Tarehe ya Idhini" %}</th>
+                        <th class="py-3 px-6 text-right">{% translate "Hatua" %}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                    {% for p in today_payments %}
-                    <tr>
-                        <td class="p-3 font-semibold text-brand-600">{{ p.receipt_no }}</td>
-                        <td class="p-3">{{ p.loan.client.get_full_name }}</td>
-                        <td class="p-3 font-medium">{{ p.loan.loan_id }}</td>
-                        <td class="p-3 font-bold text-green-600">TZS {{ p.amount_paid|localize }}</td>
-                        <td class="p-3 text-slate-500">{{ p.payment_date|date:"H:i" }}</td>
-                        <td class="p-3">
-                            <a href="{% url 'loan_detail' p.loan.pk %}" class="text-xs text-indigo-600 hover:underline">
-                                <i class="fa-solid fa-eye mr-1"></i>{% translate "Kagua" %}
+                <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                    {% for l in pending_disbursements %}
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition">
+                        <td class="py-3.5 px-6 font-bold text-brand-600 dark:text-brand-400 font-mono">{{ l.loan_id }}</td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-900 dark:text-white">{{ l.client.get_full_name }}</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">TZS {{ l.principal_amount|localize }}</td>
+                        <td class="py-3.5 px-4 text-slate-400">{{ l.approval_date|date:"d M Y" }}</td>
+                        <td class="py-3.5 px-6 text-right">
+                            <a href="{% url 'loan_disburse' l.pk %}" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-money-bill-wave text-[11px]"></i>
+                                <span>{% translate "Toa Fedha" %}</span> &rarr;
                             </a>
                         </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="p-6 text-center text-slate-400">{% translate "Hakuna malipo yaliyorekodiwa leo bado." %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    {% endif %}
+
+    <!-- ============================================================== -->
+    <!-- 5. TODAY'S RECEIPTS CARD -->
+    <!-- ============================================================== -->
+    <div id="today-receipts" class="rounded-2xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm card-outline-emerald overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+            <h3 class="font-heading text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-emerald-500"></i>
+                <span>{% translate "Marejesho Yaliyopokelewa Leo (Today's Receipts)" %}</span>
+            </h3>
+            <span class="text-xs bg-slate-100 dark:bg-white/[0.06] px-3 py-1 rounded-full font-bold text-slate-600 dark:text-slate-300">
+                {{ today_payments.count }} {% translate "malipo yaliyofanyika" %}
+            </span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.08] text-slate-400 font-extrabold uppercase tracking-wider text-[10px]">
+                        <th class="py-3 px-6">{% translate "Risiti No." %}</th>
+                        <th class="py-3 px-4">{% translate "Mteja" %}</th>
+                        <th class="py-3 px-4">{% translate "Namba ya Mkopo" %}</th>
+                        <th class="py-3 px-4">{% translate "Kiasi Kilicholipwa" %}</th>
+                        <th class="py-3 px-4">{% translate "Muda wa Malipo" %}</th>
+                        <th class="py-3 px-6 text-right">{% translate "Kagua" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                    {% for p in today_payments %}
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition">
+                        <td class="py-3.5 px-6 font-mono font-bold text-brand-600 dark:text-brand-400 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            {{ p.receipt_no }}
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-900 dark:text-white">{{ p.loan.client.get_full_name }}</td>
+                        <td class="py-3.5 px-4 font-mono text-slate-500">{{ p.loan.loan_id }}</td>
+                        <td class="py-3.5 px-4 font-bold text-emerald-600 dark:text-emerald-400">TZS {{ p.amount_paid|localize }}</td>
+                        <td class="py-3.5 px-4 text-slate-400">{{ p.payment_date|date:"H:i" }}</td>
+                        <td class="py-3.5 px-6 text-right">
+                            <a href="{% url 'loan_detail' p.loan.pk %}" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] text-slate-700 dark:text-slate-200 rounded-lg font-bold transition inline-flex items-center gap-1">
+                                <i class="fa-solid fa-eye text-xs"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-slate-400">
+                            <i class="fa-solid fa-inbox text-slate-300 dark:text-slate-600 text-3xl mb-2 block"></i>
+                            {% translate "Hakuna malipo yaliyorekodiwa kwa siku ya leo bado." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ title }} - Mejas Microfinance{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6 animate-fade-in">
+    <!-- Breadcrumb & Title -->
+    <div>
+        <a href="{% url 'branch_list' %}" class="inline-flex items-center gap-2 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-500 mb-3 transition-colors">
+            <i class="fa-solid fa-arrow-left text-3xs"></i>
+            <span>{% translate "Rudi kwenye Orodha ya Matawi" %}</span>
+        </a>
+        <h2 class="font-display text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ title }}</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{% translate "Jaza taarifa za tawi la Mejas Microfinance ili kuruhusu usimamizi uliotenganishwa na ripoti mahsusi." %}</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="p-8 bg-white/80 dark:bg-[#071915]/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-white/5 shadow-xl shadow-brand-500/5">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                    {% translate "Jina la Tawi (Branch Name)" %} <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-building-columns text-sm"></i>
+                    </span>
+                    <input type="text" name="{{ form.name.html_name }}" id="{{ form.name.id_for_label }}" value="{{ form.name.value|default:'' }}" required placeholder="mf. Tawi Kuu Dodoma" class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-[#04120f]/60 border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 text-sm transition">
+                </div>
+                {% if form.name.errors %}
+                <p class="text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation text-3xs"></i> {{ form.name.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.location.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                    {% translate "Mahali / Anwani ya Tawi (Location)" %}
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-location-dot text-sm"></i>
+                    </span>
+                    <input type="text" name="{{ form.location.html_name }}" id="{{ form.location.id_for_label }}" value="{{ form.location.value|default:'' }}" placeholder="mf. Mtaa wa Bahi, Dodoma Mjini" class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-[#04120f]/60 border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 text-sm transition">
+                </div>
+                {% if form.location.errors %}
+                <p class="text-xs text-rose-500 mt-1.5 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation text-3xs"></i> {{ form.location.errors.0 }}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Action buttons -->
+            <div class="pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-end gap-3">
+                <a href="{% url 'branch_list' %}" class="px-5 py-2.5 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 text-sm font-semibold transition">
+                    {% translate "Ghairi (Cancel)" %}
+                </a>
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-brand-500 to-amber-500 hover:from-brand-600 hover:to-amber-600 active:scale-95 text-slate-950 font-bold rounded-2xl text-sm transition shadow-lg shadow-brand-500/20 inline-flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                    <span>{% translate "Hifadhi Tawi" %}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

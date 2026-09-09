@@ -1,0 +1,424 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en-us' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% translate "Ingia" %} | Mejas MMS Admin</title>
+    
+    <link rel="shortcut icon" href="{% static 'logo.png' %}" type="image/png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0b2a25;
+            --primary-light: #114139;
+            --accent: #dfb13c;
+            --accent-hover: #c59b2b;
+            --bg-page: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --error-bg: #fef2f2;
+            --error-border: #f87171;
+            --error-text: #991b1b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Top Django Admin Bar */
+        #header {
+            background-color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        #branding {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #branding img {
+            height: 42px;
+            width: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #branding h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #branding h1 span.gold {
+            color: var(--accent);
+        }
+
+        #branding h1 span.sub {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: rgba(223, 177, 60, 0.15);
+            color: var(--accent);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(223, 177, 60, 0.3);
+            margin-left: 6px;
+        }
+
+        .header-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .header-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Centered Content Container */
+        #container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid rgba(11, 42, 37, 0.12);
+            box-shadow: 0 10px 25px -5px rgba(11, 42, 37, 0.1), 0 8px 10px -6px rgba(11, 42, 37, 0.05);
+            overflow: hidden;
+        }
+
+        .card-top {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 24px 28px;
+            text-align: center;
+            color: #ffffff;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .card-top h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        .card-top p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 4px;
+        }
+
+        .card-body {
+            padding: 28px;
+        }
+
+        /* Error Box */
+        .errornote {
+            background-color: var(--error-bg);
+            border-left: 4px solid var(--error-border);
+            color: var(--error-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .errornote i {
+            font-size: 16px;
+            color: #ef4444;
+        }
+
+        .form-row {
+            margin-bottom: 18px;
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i.field-icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(11, 42, 37, 0.12);
+        }
+
+        .field-error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .submit-row {
+            margin-top: 24px;
+        }
+
+        .submit-row input[type="submit"] {
+            width: 100%;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: 2px solid var(--primary);
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(11, 42, 37, 0.2);
+            letter-spacing: 0.02em;
+        }
+
+        .submit-row input[type="submit"]:hover {
+            background-color: var(--primary-light);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 4px 10px rgba(11, 42, 37, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .submit-row input[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* Card Footer */
+        .card-footer {
+            padding: 16px 28px;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card-footer a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .card-footer a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* Bottom Copyright */
+        #footer-bar {
+            text-align: center;
+            padding: 18px 20px;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
+        #footer-bar strong {
+            color: var(--primary);
+        }
+
+        @media (max-width: 640px) {
+            #header {
+                padding: 12px 16px;
+            }
+            #branding h1 span.sub {
+                display: none;
+            }
+            .login-card {
+                border-radius: 12px;
+            }
+            .card-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Admin Header -->
+    <header id="header">
+        <div id="branding">
+            <img src="{% static 'logo.png' %}" alt="Mejas Microfinance Logo">
+            <h1>
+                MEJAS <span class="gold">MMS</span>
+                <span class="sub">Django Admin</span>
+            </h1>
+        </div>
+        <div class="header-links">
+            <a href="/">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>{% translate "Rudi Tovuti Kuu" %}</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container with Centered Login Form -->
+    <main id="container">
+        <div class="login-card">
+            
+            <div class="card-top">
+                <h2>{% translate "Usimamizi wa Mfumo" %}</h2>
+                <p>{% translate "Ingiza taarifa zako za utawala ili kufungua mfumo" %}</p>
+            </div>
+
+            <div class="card-body">
+                
+                {% if form.errors and not form.non_field_errors %}
+                <div class="errornote">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>{% translate "Tafadhali sahihisha makosa yaliyoainishwa hapa chini." %}</div>
+                </div>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                <div class="errornote">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div>{{ error }}</div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <div class="errornote">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <div>
+                        {% blocktranslate trimmed %}
+                        Umeingia kama <strong>{{ username }}</strong>, lakini hauna ruhusa ya kufikia ukurasa huu wa utawala. Tafadhali ingia kwa akaunti nyingine yenye hadhi ya Admin.
+                        {% endblocktranslate %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <form action="{{ app_path }}" method="post" id="login-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <label for="id_username">{% translate "Jina la Mtumiaji (Username)" %}</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user field-icon"></i>
+                            <input type="text" name="username" autofocus required id="id_username" 
+                                   placeholder="{% translate 'Ingiza username' %}" value="{{ form.username.value|default:'' }}">
+                        </div>
+                        {% if form.username.errors %}
+                        <div class="field-error">{{ form.username.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row">
+                        <label for="id_password">{% translate "Nenosiri (Password)" %}</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock field-icon"></i>
+                            <input type="password" name="password" required id="id_password" 
+                                   placeholder="{% translate 'Ingiza nenosiri' %}">
+                        </div>
+                        {% if form.password.errors %}
+                        <div class="field-error">{{ form.password.errors|join:", " }}</div>
+                        {% endif %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                    </div>
+
+                    <div class="submit-row">
+                        <input type="submit" value="{% translate 'Ingia kwenye Mfumo (Log In)' %}">
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="card-footer">
+                <span>{% translate "Je, wewe ni Mteja au Mfanyakazi wa tawi?" %}</span>
+                <br>
+                <a href="{% url 'login' %}">{% translate "Tumia Portal ya Watumiaji Hapa &rarr;" %}</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Page Footer -->
+    <footer id="footer-bar">
+        <p>&copy; {% now "Y" %} <strong>Mejas Microfinance Management System (MMS)</strong> &bull; {% translate "Haki zote zimehifadhiwa." %}</p>
+    </footer>
+
+</body>
+</html>

@@ -1,5 +1,7 @@
 import datetime
 import csv
+import json
+from io import BytesIO
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -12,6 +14,11 @@ from django.db.models import Sum, Q, Count
 from django.utils.translation import gettext as _
 import openpyxl
 
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
 from .models import (
     Branch, User, ClientProfile, Loan, RepaymentSchedule,
     Payment, CashFlow, DailyReconciliation, AuditLog, Notification
@@ -19,9 +26,13 @@ from .models import (
 from .forms import (
     MMSLoginForm, UserForm, ClientRegistrationForm, ClientProfileForm,
     LoanApplicationForm, LoanApprovalForm, PaymentRecordingForm,
-    OfficeCashFlowForm, DailyReconciliationForm, PasswordChangeForm, PasswordResetForm
+    OfficeCashFlowForm, DailyReconciliationForm, PasswordChangeForm, PasswordResetForm,
+    BranchForm
 )
-from .utils import log_activity
+from .utils import (
+    log_activity, send_sms, sync_overdue_loans_and_penalties, calculate_client_credit_score
+)
+
 
 
 # --- AUTH VIEWS ---
@@ -203,8 +214,14 @@ def dashboard_view(request):
     user = request.user
     role = user.role
 
-    # Check physical cash and EOD status
-    # Prepare different context elements per role
+    # Automatically synchronize overdue statuses & penalties
+    sync_overdue_loans_and_penalties()
+
+    # Ensure staff flag is set for system administrative roles
+    if role in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER, User.Role.CASHIER] and not user.is_staff:
+        user.is_staff = True
+        user.save(update_fields=["is_staff"])
+
     context = {
         "role": role,
     }
@@ -217,27 +234,47 @@ def dashboard_view(request):
     else:
         selected_branch = user.branch
 
-    # We can query based on branch
+    # Query based on branch
     branch_q_loans = Q(branch=selected_branch) if selected_branch else Q()
     branch_q_payments = Q(loan__branch=selected_branch) if selected_branch else Q()
 
     if role in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
-        # CEO / Admin / Manager Metrics
-        context["branches"] = Branch.objects.all()
+        all_branches = Branch.objects.all()
+        context["branches"] = all_branches
         context["selected_branch"] = selected_branch
         loans = Loan.objects.filter(branch_q_loans)
         context["total_disbursed"] = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(sum=Sum("principal_amount"))["sum"] or Decimal("0.00")
         context["total_repayments_expected"] = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(sum=Sum("total_repayable"))["sum"] or Decimal("0.00")
 
-        # Total collections (payments tied to loans in the selected branch)
+        # Total collections
         context["total_collections"] = Payment.objects.filter(branch_q_payments).aggregate(sum=Sum("amount_paid"))["sum"] or Decimal("0.00")
         context["active_loans_count"] = loans.filter(status=Loan.Status.ACTIVE).count()
         context["overdue_loans_count"] = loans.filter(status=Loan.Status.OVERDUE).count()
+        context["defaulted_loans_count"] = loans.filter(status=Loan.Status.DEFAULTED).count()
         context["pending_loans_count"] = loans.filter(status=Loan.Status.PENDING).count()
+        context["net_cash_flow"] = context["total_collections"] - context["total_disbursed"]
+        context["total_penalty_accumulated"] = loans.aggregate(sum=Sum("penalty_accumulated"))["sum"] or Decimal("0.00")
+
         clients_q = User.objects.filter(role=User.Role.CLIENT)
         if selected_branch:
             clients_q = clients_q.filter(branch=selected_branch)
         context["clients_count"] = clients_q.count()
+
+        # Branch performance comparison
+        branch_perf = []
+        for b in all_branches:
+            b_loans = Loan.objects.filter(branch=b)
+            b_disb = b_loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(s=Sum("principal_amount"))["s"] or Decimal("0.00")
+            b_coll = Payment.objects.filter(loan__branch=b).aggregate(s=Sum("amount_paid"))["s"] or Decimal("0.00")
+            branch_perf.append({
+                "branch": b,
+                "clients": User.objects.filter(role=User.Role.CLIENT, branch=b).count(),
+                "active_loans": b_loans.filter(status=Loan.Status.ACTIVE).count(),
+                "overdue_loans": b_loans.filter(status__in=[Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).count(),
+                "disbursed": b_disb,
+                "collected": b_coll,
+            })
+        context["branch_performance"] = branch_perf
 
         # Monthly trend - last 6 months for chart
         monthly_data = []
@@ -252,9 +289,13 @@ def dashboard_view(request):
                 "collection": float(m_coll)
             })
         context["monthly_data"] = monthly_data
+        context["chart_months"] = json.dumps([m["month"] for m in monthly_data])
+        context["chart_disbursements"] = json.dumps([m["disbursement"] for m in monthly_data])
+        context["chart_collections"] = json.dumps([m["collection"] for m in monthly_data])
 
         # Recent activity logs
-        context["recent_logs"] = AuditLog.objects.all()[:10]
+        context["recent_logs"] = AuditLog.objects.all().order_by("-timestamp")[:10]
+        context["recent_audit_logs"] = context["recent_logs"]
         return render(request, "dashboard/ceo_manager.html", context)
 
     elif role == User.Role.CASHIER:
@@ -269,13 +310,13 @@ def dashboard_view(request):
         context["today_cash_out"] = today_flows.filter(flow_type="OUT").aggregate(s=Sum("amount"))["s"] or Decimal("0.00")
 
         # Get yesterday's reconciliation for opening balance
-        yesterday = today - datetime.timedelta(days=1)
         prev_recon = DailyReconciliation.objects.filter(branch=user.branch, status="CONFIRMED").order_by("-date").first()
         context["opening_balance"] = prev_recon.actual_cash if prev_recon else Decimal("0.00")
         context["calculated_closing"] = context["opening_balance"] + context["today_cash_in"] - context["today_cash_out"]
 
-        # Today's received payments list
+        # Today's received payments list and pending disbursements
         context["today_payments"] = Payment.objects.filter(loan__branch=user.branch, payment_date__date=today)
+        context["pending_disbursements"] = Loan.objects.filter(branch=user.branch, status=Loan.Status.APPROVED)
         context["recon"] = DailyReconciliation.objects.filter(branch=user.branch, date=today).first()
 
         return render(request, "dashboard/cashier.html", context)
@@ -289,6 +330,7 @@ def dashboard_view(request):
         context["today_schedules_count"] = today_schedules.count()
         context["today_paid_count"] = today_schedules.filter(status="PAID").count()
         context["today_unpaid_count"] = today_schedules.filter(status__in=["UNPAID", "OVERDUE"]).count()
+        context["overdue_loans_count"] = Loan.objects.filter(officer=user, status__in=[Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).count()
 
         context["pending_applications"] = Loan.objects.filter(officer=user, status=Loan.Status.PENDING)
         return render(request, "dashboard/officer.html", context)
@@ -300,16 +342,23 @@ def dashboard_view(request):
 
         active_loan = client_loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.OVERDUE]).first()
         context["active_loan"] = active_loan
+        context["credit_score"] = calculate_client_credit_score(user)
 
         if active_loan:
             context["next_schedule"] = active_loan.schedules.filter(status__in=["UNPAID", "OVERDUE"]).order_by("due_date").first()
             context["payment_history"] = active_loan.payments.all().order_by("-payment_date")
             context["full_schedule"] = active_loan.schedules.all().order_by("due_date")
+            context["schedules"] = context["full_schedule"]
             context["total_paid"] = active_loan.payments.aggregate(s=Sum("amount_paid"))["s"] or Decimal("0.00")
+            if active_loan.total_repayable and active_loan.total_repayable > 0:
+                context["progress_percent"] = min(100, int((context["total_paid"] / active_loan.total_repayable) * 100))
+            else:
+                context["progress_percent"] = 0
 
         return render(request, "dashboard/client.html", context)
 
     return render(request, "dashboard/placeholder.html", context)
+
 
 
 @login_required
@@ -389,7 +438,78 @@ def user_toggle_status_view(request, pk):
     return redirect("user_list")
 
 
+# --- BRANCH MANAGEMENT ---
+
+@login_required
+def branch_list_view(request):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
+        raise Http404(_("Ruhusa imekataliwa."))
+    branches = Branch.objects.all().order_by("name")
+
+    branch_data = []
+    for b in branches:
+        loans = Loan.objects.filter(branch=b)
+        users = User.objects.filter(branch=b)
+        clients = users.filter(role=User.Role.CLIENT)
+        staff = users.exclude(role=User.Role.CLIENT)
+        total_disb = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.COMPLETED, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(s=Sum("principal_amount"))["s"] or Decimal("0.00")
+        total_bal = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.OVERDUE]).aggregate(s=Sum("balance"))["s"] or Decimal("0.00")
+        total_coll = Payment.objects.filter(loan__branch=b).aggregate(s=Sum("amount_paid"))["s"] or Decimal("0.00")
+
+        branch_data.append({
+            "branch": b,
+            "staff_count": staff.count(),
+            "client_count": clients.count(),
+            "loan_count": loans.count(),
+            "active_loans": loans.filter(status=Loan.Status.ACTIVE).count(),
+            "overdue_loans": loans.filter(status__in=[Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).count(),
+            "total_disbursed": total_disb,
+            "total_collected": total_coll,
+            "total_balance": total_bal,
+        })
+
+    return render(request, "branches/branch_list.html", {"branch_data": branch_data})
+
+
+@login_required
+def branch_create_view(request):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN]:
+        raise Http404(_("Ruhusa imekataliwa."))
+    if request.method == "POST":
+        form = BranchForm(request.POST)
+        if form.is_valid():
+            branch = form.save()
+            log_activity(request.user, "BRANCH_CREATE", f"Created branch: {branch.name}", request)
+            messages.success(request, _("Tawi jipya la '{}' limesajiliwa kikamilifu!").format(branch.name))
+            return redirect("branch_list")
+        else:
+            messages.error(request, _("Kuna makosa kwenye fomu."))
+    else:
+        form = BranchForm()
+    return render(request, "branches/branch_form.html", {"form": form, "title": _("Sajili Tawi Jipya")})
+
+
+@login_required
+def branch_edit_view(request, pk):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN]:
+        raise Http404(_("Ruhusa imekataliwa."))
+    branch = get_object_or_404(Branch, pk=pk)
+    if request.method == "POST":
+        form = BranchForm(request.POST, instance=branch)
+        if form.is_valid():
+            branch = form.save()
+            log_activity(request.user, "BRANCH_UPDATE", f"Updated branch: {branch.name}", request)
+            messages.success(request, _("Taarifa za tawi la '{}' zimesasishwa!").format(branch.name))
+            return redirect("branch_list")
+        else:
+            messages.error(request, _("Kuna makosa kwenye fomu."))
+    else:
+        form = BranchForm(instance=branch)
+    return render(request, "branches/branch_form.html", {"form": form, "title": _("Hariri Tawi"), "branch": branch})
+
+
 # --- CLIENT MANAGEMENT ---
+
 
 @login_required
 def client_register_view(request):
@@ -427,21 +547,43 @@ def client_list_view(request):
     if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER, User.Role.CASHIER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
-    search_query = request.GET.get("q", "")
-    clients = User.objects.filter(role=User.Role.CLIENT)
+    search_query = request.GET.get("q", "").strip()
+    clients = User.objects.filter(role=User.Role.CLIENT).order_by("-date_joined")
 
     if search_query:
         clients = clients.filter(
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query) |
             Q(phone__icontains=search_query) |
-            Q(username__icontains=search_query)
-        )
+            Q(username__icontains=search_query) |
+            Q(nida__icontains=search_query) |
+            Q(client_loans__loan_id__icontains=search_query)
+        ).distinct()
 
-    # Get active/overdue loans statistics for display
+    client_records = []
+    for c in clients:
+        c_loans = Loan.objects.filter(client=c)
+        active_loans = c_loans.filter(status=Loan.Status.ACTIVE)
+        overdue_loans = c_loans.filter(status__in=[Loan.Status.OVERDUE, Loan.Status.DEFAULTED])
+        total_balance = c_loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(s=Sum("balance"))["s"] or Decimal("0.00")
+        client_records.append({
+            "client": c,
+            "credit": calculate_client_credit_score(c),
+            "active_loans_count": active_loans.count(),
+            "overdue_loans_count": overdue_loans.count(),
+            "total_balance": total_balance,
+        })
+
+    total_clients = User.objects.filter(role=User.Role.CLIENT).count()
+    active_borrowers = Loan.objects.filter(status=Loan.Status.ACTIVE).values("client").distinct().count()
+    overdue_borrowers = Loan.objects.filter(status__in=[Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).values("client").distinct().count()
+
     return render(request, "clients/client_list.html", {
-        "clients": clients,
-        "search_query": search_query
+        "client_records": client_records,
+        "search_query": search_query,
+        "total_clients": total_clients,
+        "active_borrowers": active_borrowers,
+        "overdue_borrowers": overdue_borrowers,
     })
 
 
@@ -453,10 +595,19 @@ def client_detail_view(request, pk):
     client_user = get_object_or_404(User, pk=pk, role=User.Role.CLIENT)
     loans = Loan.objects.filter(client=client_user).order_by("-created_at")
 
+    total_borrowed = loans.aggregate(s=Sum("principal_amount"))["s"] or Decimal("0.00")
+    total_repaid = Payment.objects.filter(loan__client=client_user).aggregate(s=Sum("amount_paid"))["s"] or Decimal("0.00")
+    outstanding_balance = loans.filter(status__in=[Loan.Status.ACTIVE, Loan.Status.OVERDUE, Loan.Status.DEFAULTED]).aggregate(s=Sum("balance"))["s"] or Decimal("0.00")
+
     return render(request, "clients/client_detail.html", {
         "client": client_user,
-        "loans": loans
+        "loans": loans,
+        "credit": calculate_client_credit_score(client_user),
+        "total_borrowed": total_borrowed,
+        "total_repaid": total_repaid,
+        "outstanding_balance": outstanding_balance,
     })
+
 
 
 @login_required
@@ -515,7 +666,7 @@ def loan_apply_view(request):
         form = LoanApplicationForm(initial={
             "branch": request.user.branch,
             "officer": request.user if request.user.role == User.Role.OFFICER else None,
-            "interest_rate": 10.0,
+            "interest_rate": 5.0,
             "penalty_rate": 1.0,
         })
     return render(request, "loans/loan_apply.html", {"form": form})
@@ -574,6 +725,234 @@ def loan_detail_view(request, pk):
         "schedules": schedules,
         "payments": payments
     })
+
+
+@login_required
+def loan_statement_pdf_view(request, pk):
+    """
+    Generates and returns an official PDF Loan Statement (Kauli ya Akaunti ya Mkopo).
+    Accessible by the loan's client, loan officer, cashier, or management.
+    """
+    loan = get_object_or_404(Loan, pk=pk)
+
+    # Permission check: client can only view their own loan
+    if request.user.role == User.Role.CLIENT and loan.client != request.user:
+        raise Http404(_("Ruhusa imekataliwa."))
+
+    # For staff with branch assigned, verify matching branch
+    if request.user.role in [User.Role.OFFICER, User.Role.CASHIER] and request.user.branch and loan.branch:
+        if request.user.branch != loan.branch and loan.officer != request.user:
+            raise Http404(_("Ruhusa imekataliwa."))
+
+    loan.calculate_penalties()
+    schedules = loan.schedules.all().order_by("due_date")
+    payments = loan.payments.all().order_by("-payment_date")
+    total_paid = payments.aggregate(s=Sum("amount_paid"))["s"] or Decimal("0.00")
+    today = timezone.now()
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=25,
+        leftMargin=25,
+        topMargin=25,
+        bottomMargin=25
+    )
+    elements = []
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        'StatementTitle',
+        parent=styles['Heading1'],
+        fontName='Helvetica-Bold',
+        fontSize=15,
+        textColor=colors.HexColor('#114139'),
+        spaceAfter=2,
+        alignment=1
+    )
+    subtitle_style = ParagraphStyle(
+        'StatementSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=8,
+        textColor=colors.HexColor('#475569'),
+        spaceAfter=8,
+        alignment=1
+    )
+    section_title_style = ParagraphStyle(
+        'SectionTitle',
+        parent=styles['Heading2'],
+        fontName='Helvetica-Bold',
+        fontSize=9,
+        textColor=colors.HexColor('#114139'),
+        spaceBefore=8,
+        spaceAfter=3,
+    )
+    cell_style = ParagraphStyle(
+        'CellText',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=7.5,
+        leading=9.5
+    )
+    cell_bold = ParagraphStyle(
+        'CellBold',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=7.5,
+        leading=9.5
+    )
+    header_style = ParagraphStyle(
+        'HeaderCell',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=7.5,
+        textColor=colors.white,
+        leading=9.5
+    )
+
+    # Header
+    elements.append(Paragraph("MEJAS ENTERPRISES MICROFINANCE", title_style))
+    branch_name = loan.branch.name if loan.branch else "Tawi Kuu"
+    elements.append(Paragraph(
+        f"<b>KAULI YA AKAUNTI YA MKOPO (LOAN STATEMENT)</b><br/>"
+        f"Namba ya Mkopo: <b>{loan.loan_id}</b> &bull; Tawi: <b>{branch_name}</b> &bull; Tarehe ya Kuchapishwa: <b>{today.strftime('%d/%m/%Y %H:%M')}</b>",
+        subtitle_style
+    ))
+    elements.append(Spacer(1, 4))
+
+    # Summary Info Table
+    info_data = [
+        [
+            Paragraph("<b>Jina la Mteja:</b>", cell_bold),
+            Paragraph(loan.client.get_full_name(), cell_style),
+            Paragraph("<b>Kiasi cha Mkopo (Principal):</b>", cell_bold),
+            Paragraph(f"TZS {loan.principal_amount:,.2f}", cell_style),
+        ],
+        [
+            Paragraph("<b>Namba ya Simu:</b>", cell_bold),
+            Paragraph(loan.client.phone or "-", cell_style),
+            Paragraph("<b>Kiwango cha Riba:</b>", cell_bold),
+            Paragraph(f"{loan.interest_rate}% ({loan.get_frequency_display()})", cell_style),
+        ],
+        [
+            Paragraph("<b>NIDA / Kitambulisho:</b>", cell_bold),
+            Paragraph(loan.client.nida or "-", cell_style),
+            Paragraph("<b>Jumla ya Marejesho:</b>", cell_bold),
+            Paragraph(f"TZS {loan.total_repayable:,.2f}", cell_style),
+        ],
+        [
+            Paragraph("<b>Afisa Mkopo (Officer):</b>", cell_bold),
+            Paragraph(loan.officer.get_full_name() if loan.officer else "-", cell_style),
+            Paragraph("<b>Jumla Iliyolipwa:</b>", cell_bold),
+            Paragraph(f"TZS {total_paid:,.2f}", cell_style),
+        ],
+        [
+            Paragraph("<b>Tarehe ya Kutolewa:</b>", cell_bold),
+            Paragraph(loan.disbursement_date.strftime("%d/%m/%Y") if loan.disbursement_date else "-", cell_style),
+            Paragraph("<b>Salio Lililobaki:</b>", cell_bold),
+            Paragraph(f"<b>TZS {loan.balance:,.2f}</b>", cell_style),
+        ],
+        [
+            Paragraph("<b>Hali ya Mkopo:</b>", cell_bold),
+            Paragraph(f"<b>{loan.get_status_display()}</b>", cell_style),
+            Paragraph("<b>Adhabu / Faini (Penalties):</b>", cell_bold),
+            Paragraph(f"TZS {loan.penalty_accumulated:,.2f}", cell_style),
+        ],
+    ]
+
+    info_table = Table(info_data, colWidths=[125, 150, 140, 130])
+    info_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
+        ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+    ]))
+    elements.append(info_table)
+    elements.append(Spacer(1, 4))
+
+    # Repayment Schedules Section
+    elements.append(Paragraph("RATIBA YA MAREJESHO (REPAYMENT SCHEDULE)", section_title_style))
+    sched_headers = [_("Awamu"), _("Tarehe ya Mwisho"), _("Kiasi Kinachotakiwa"), _("Kiasi Kilicholipwa"), _("Hali ya Awamu")]
+    sched_rows = [[Paragraph(f"<b>{h}</b>", header_style) for h in sched_headers]]
+
+    for idx, s in enumerate(schedules, 1):
+        sched_rows.append([
+            Paragraph(f"Awamu #{idx}", cell_style),
+            Paragraph(s.due_date.strftime("%d/%m/%Y") if s.due_date else "-", cell_style),
+            Paragraph(f"TZS {s.installment_amount:,.2f}", cell_style),
+            Paragraph(f"TZS {s.paid_amount:,.2f}", cell_style),
+            Paragraph(s.get_status_display(), cell_style),
+        ])
+
+    if not schedules.exists():
+        sched_rows.append([Paragraph("Hakuna ratiba iliyotengenezwa bado.", cell_style)] + [Paragraph("-", cell_style)] * 4)
+
+    sched_table = Table(sched_rows, colWidths=[80, 115, 125, 125, 100])
+    sched_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#114139')),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('TOPPADDING', (0, 0), (-1, -1), 2.5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2.5),
+    ]))
+    elements.append(sched_table)
+    elements.append(Spacer(1, 4))
+
+    # Payment History Section
+    elements.append(Paragraph("HISTORIA YA MALIPO (PAYMENT TRANSACTIONS)", section_title_style))
+    pay_headers = [_("Risiti No"), _("Tarehe na Muda"), _("Kiasi Kilicholipwa"), _("Mhazini / Afisa")]
+    pay_rows = [[Paragraph(f"<b>{h}</b>", header_style) for h in pay_headers]]
+
+    for p in payments:
+        pay_rows.append([
+            Paragraph(p.receipt_no, cell_style),
+            Paragraph(p.payment_date.strftime("%d/%m/%Y %H:%M"), cell_style),
+            Paragraph(f"TZS {p.amount_paid:,.2f}", cell_style),
+            Paragraph(p.cashier_or_officer.get_full_name() if p.cashier_or_officer else "-", cell_style),
+        ])
+
+    if not payments.exists():
+        pay_rows.append([Paragraph("Hakuna malipo yaliyofanyika bado.", cell_style)] + [Paragraph("-", cell_style)] * 3)
+
+    pay_table = Table(pay_rows, colWidths=[145, 130, 130, 140])
+    pay_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#114139')),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('TOPPADDING', (0, 0), (-1, -1), 2.5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2.5),
+    ]))
+    elements.append(pay_table)
+    elements.append(Spacer(1, 10))
+
+    # Signoff and footer
+    signoff = Paragraph(
+        "<b>Imethibitishwa na (Afisa/Mhazini):</b> ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; "
+        "<b>Saini:</b> ____________ &nbsp;&nbsp;&nbsp;&nbsp; <b>Tarehe:</b> ____________",
+        cell_style
+    )
+    elements.append(signoff)
+    elements.append(Spacer(1, 6))
+    elements.append(Paragraph(
+        "<font size='7' color='#94a3b8'>Mfumo Rasmi wa Kidigitali wa Mejas Enterprises Microfinance &copy; 2026. Hati hii ni halali bila mabadiliko ya mkono.</font>",
+        subtitle_style
+    ))
+
+    doc.build(elements)
+    buffer.seek(0)
+
+    response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="loan_statement_{loan.loan_id}.pdf"'
+    return response
 
 
 @login_required
@@ -937,18 +1316,65 @@ def daily_repayment_tracking_view(request):
     if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
-    today = datetime.date.today()
-    branch_id = request.GET.get("branch", "")
-    officer_id = request.GET.get("officer", "")
+    # Sync overdue loans & penalties
+    sync_overdue_loans_and_penalties()
 
-    schedules = RepaymentSchedule.objects.filter(due_date=today)
+    # Parse selected date (default to today)
+    date_str = request.GET.get("date", "").strip()
+    today = datetime.date.today()
+    if date_str:
+        try:
+            selected_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            selected_date = today
+    else:
+        selected_date = today
+
+    branch_id = request.GET.get("branch", "").strip()
+    officer_id = request.GET.get("officer", "").strip()
+
+    schedules = RepaymentSchedule.objects.filter(due_date=selected_date).select_related("loan", "loan__client", "loan__officer", "loan__branch")
 
     if branch_id:
         schedules = schedules.filter(loan__branch_id=branch_id)
     if officer_id:
         schedules = schedules.filter(loan__officer_id=officer_id)
 
-    # We can fetch filters for the template
+    # Handle Bulk Reminder SMS to Unpaid Clients for the selected date
+    if request.method == "POST" and "send_reminders" in request.POST:
+        unpaid_schedules = schedules.filter(status__in=[RepaymentSchedule.Status.UNPAID, RepaymentSchedule.Status.OVERDUE])
+        sent_count = 0
+        for s in unpaid_schedules:
+            client = s.loan.client
+            pending_amt = s.installment_amount - s.paid_amount
+            if client.phone:
+                msg = _("MMS: Ndugu {}, tunakukumbusha rejesho lako la TZS {} kwa mkopo {}. Tafadhali fanya malipo kuepuka adhabu ya kuchelewa.").format(
+                    client.get_full_name(), pending_amt, s.loan.loan_id
+                )
+                send_sms(client.phone, msg)
+                sent_count += 1
+            # In-app notification
+            Notification.objects.create(
+                user=client,
+                title=_("Kikumbusho cha Malipo ya Leo"),
+                message=_("Rejesho lako la TZS {} kwa mkopo {} linatakiwa kulipwa leo tarehe {}.").format(
+                    pending_amt, s.loan.loan_id, selected_date.strftime("%d/%m/%Y")
+                )
+            )
+
+        log_activity(request.user, "DAILY_TRACKING_REMINDERS_SENT", f"Dispatched {sent_count} SMS reminders for date {selected_date}", request)
+        messages.success(request, _("Vikumbusho vya SMS {} vimetumwa kikamilifu kwa wateja ambao hawajalipa!").format(sent_count))
+        return redirect(f"{request.path}?date={selected_date.strftime('%Y-%m-%d')}&branch={branch_id}&officer={officer_id}")
+
+    # Compute KPI statistics for the selected date
+    total_expected = schedules.aggregate(s=Sum("installment_amount"))["s"] or Decimal("0.00")
+    total_collected = schedules.aggregate(s=Sum("paid_amount"))["s"] or Decimal("0.00")
+    collection_rate_percent = ((total_collected / total_expected) * 100).quantize(Decimal("0.1")) if total_expected > 0 else Decimal("0.0")
+
+    paid_count = schedules.filter(status=RepaymentSchedule.Status.PAID).count()
+    unpaid_count = schedules.filter(status__in=[RepaymentSchedule.Status.UNPAID, RepaymentSchedule.Status.OVERDUE], paid_amount=Decimal("0.00")).count()
+    partial_count = schedules.filter(status__in=[RepaymentSchedule.Status.UNPAID, RepaymentSchedule.Status.OVERDUE], paid_amount__gt=Decimal("0.00")).count()
+
     branches = Branch.objects.all()
     officers = User.objects.filter(role=User.Role.OFFICER)
 
@@ -957,8 +1383,16 @@ def daily_repayment_tracking_view(request):
         "branches": branches,
         "officers": officers,
         "branch_id": branch_id,
-        "officer_id": officer_id
+        "officer_id": officer_id,
+        "selected_date": selected_date,
+        "total_expected": total_expected,
+        "total_collected": total_collected,
+        "collection_rate_percent": collection_rate_percent,
+        "paid_count": paid_count,
+        "unpaid_count": unpaid_count,
+        "partial_count": partial_count,
     })
+
 
 
 # --- CASH FLOW & DAILY RECONCILIATION ---
@@ -1122,7 +1556,7 @@ def generate_report_view(request, report_type):
 
     start_date_str = request.GET.get("start_date")
     end_date_str = request.GET.get("end_date")
-    export_format = request.GET.get("export", "")
+    export_format = request.GET.get("export") or request.GET.get("export_format", "")
 
     # Date filters
     today = datetime.date.today()
@@ -1257,7 +1691,105 @@ def generate_report_view(request, report_type):
         ]
 
     # Handle Exports
-    if export_format == "excel":
+    if export_format == "pdf":
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=A4,
+            rightMargin=25,
+            leftMargin=25,
+            topMargin=25,
+            bottomMargin=25
+        )
+        elements = []
+        styles = getSampleStyleSheet()
+
+        title_style = ParagraphStyle(
+            'ReportTitle',
+            parent=styles['Heading1'],
+            fontName='Helvetica-Bold',
+            fontSize=15,
+            textColor=colors.HexColor('#114139'),
+            spaceAfter=3,
+            alignment=1
+        )
+        subtitle_style = ParagraphStyle(
+            'ReportSubtitle',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=9,
+            textColor=colors.HexColor('#475569'),
+            spaceAfter=12,
+            alignment=1
+        )
+        cell_style = ParagraphStyle(
+            'CellText',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=8,
+            leading=10
+        )
+        header_style = ParagraphStyle(
+            'HeaderCell',
+            parent=styles['Normal'],
+            fontName='Helvetica-Bold',
+            fontSize=8,
+            textColor=colors.white,
+            leading=10
+        )
+
+        elements.append(Paragraph("MEJAS ENTERPRISES MICROFINANCE", title_style))
+        elements.append(Paragraph(f"<b>{title}</b><br/>Kipindi: {start_date.strftime('%d/%m/%Y')} hadi {end_date.strftime('%d/%m/%Y')} | Imetolewa: {today.strftime('%d/%m/%Y %H:%M')}", subtitle_style))
+        elements.append(Spacer(1, 8))
+
+        # Build table rows
+        table_data = [[Paragraph(f"<b>{h}</b>", header_style) for h in headers]]
+        for r in rows:
+            row_items = []
+            for cell in r:
+                if isinstance(cell, (datetime.date, datetime.datetime)):
+                    val_str = cell.strftime("%d/%m/%Y %H:%M") if isinstance(cell, datetime.datetime) else cell.strftime("%d/%m/%Y")
+                elif isinstance(cell, (int, float, Decimal)):
+                    val_str = f"TZS {cell:,.2f}" if isinstance(cell, Decimal) else str(cell)
+                else:
+                    val_str = str(cell) if cell is not None else "-"
+                row_items.append(Paragraph(val_str, cell_style))
+            table_data.append(row_items)
+
+        col_count = len(headers) if headers else 1
+        avail_width = 545
+        col_w = avail_width / col_count
+
+        t = Table(table_data, colWidths=[col_w] * col_count)
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#114139')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
+            ('TOPPADDING', (0, 0), (-1, 0), 5),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+            ('TOPPADDING', (0, 1), (-1, -1), 4),
+        ]))
+        elements.append(t)
+        elements.append(Spacer(1, 18))
+
+        signoff = Paragraph(
+            "<b>Afisa Aliyeidhinisha (Manager/CEO):</b> ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; <b>Saini:</b> ____________ &nbsp;&nbsp;&nbsp;&nbsp; <b>Tarehe:</b> ____________",
+            cell_style
+        )
+        elements.append(signoff)
+        elements.append(Spacer(1, 8))
+        elements.append(Paragraph("<font size='7' color='#94a3b8'>Mfumo Rasmi wa Kidigitali wa Uendeshaji wa Microfinance (MMS) &copy; 2026 Mejas Microfinance.</font>", subtitle_style))
+
+        doc.build(elements)
+        buffer.seek(0)
+        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{report_type}_report_{today}.pdf"'
+        return response
+
+    elif export_format == "excel":
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = report_type[:30]
@@ -1284,6 +1816,7 @@ def generate_report_view(request, report_type):
         for r in rows:
             writer.writerow([str(x) for x in r])
         return response
+
 
     return render(request, "reports/generate.html", {
         "title": title,

@@ -15,22 +15,28 @@
         </div>
 
         <!-- Export buttons -->
-        <div class="flex items-center gap-2">
-            <!-- Print to PDF -->
-            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition inline-flex items-center gap-1.5 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
-                <i class="fa-solid fa-print"></i>{% translate "Chapa / PDF (Print)" %}
-            </button>
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- Direct PDF Download -->
+            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=pdf" class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-pdf"></i>{% translate "Pakua PDF (Official)" %}
+            </a>
 
             <!-- Excel Export link -->
-            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=excel" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg text-xs transition inline-flex items-center gap-1.5">
-                <i class="fa-solid fa-file-excel"></i>{% translate "Excel" %}
+            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=excel" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel"></i>{% translate "Pakua Excel" %}
             </a>
 
             <!-- CSV Export link -->
-            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=csv" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs transition inline-flex items-center gap-1.5">
+            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=csv" class="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition inline-flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-file-csv"></i>{% translate "CSV" %}
             </a>
+
+            <!-- Print to PDF -->
+            <button onclick="window.print()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition inline-flex items-center gap-1.5 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">
+                <i class="fa-solid fa-print"></i>{% translate "Chapa (Print)" %}
+            </button>
         </div>
+
     </div>
 
     <!-- Date filter form (no-print) -->
