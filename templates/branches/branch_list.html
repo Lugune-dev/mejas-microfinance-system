@@ -20,7 +20,7 @@
             </p>
         </div>
 
-        {% if user.role in 'CEO,ADMIN' %}
+        {% if user.role == 'ADMIN' or user.is_superuser %}
         <div class="flex items-center gap-3">
             <a href="{% url 'branch_create' %}" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-500 to-amber-500 hover:from-brand-600 hover:to-amber-600 active:scale-95 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-brand-500/20 inline-flex items-center gap-2.5">
                 <i class="fa-solid fa-plus text-xs"></i>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
 
-                    {% if user.role in 'CEO,ADMIN' %}
+                    {% if user.role == 'ADMIN' or user.is_superuser %}
                     <a href="{% url 'branch_edit' item.branch.pk %}" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-brand-500/10 hover:text-brand-500 text-slate-400 dark:text-slate-400 flex items-center justify-center transition text-xs" title="{% translate 'Hariri Tawi' %}">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </a>

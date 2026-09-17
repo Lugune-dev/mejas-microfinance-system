@@ -9,7 +9,7 @@ Mfumo wa **Mejas Microfinance Management System (MMS)** ni jukwaa la kisasa la k
 
 #### Sifa Kuu za Mfumo (Key Features):
 1. **Usimamizi wa Matawi Mengi (Multi-Branch Management)**: Uwezo wa kusimamia matawi (Dar es Salaam, Arusha, Mwanza, Dodoma, n.k.) chini ya mfumo mmoja.
-2. **Mgawanyo wa Majukumu (Role-Based Access Control - RBAC)**: Majukumu 5 tofauti (CEO/Mkurugenzi, Meneja wa Tawi, Mhasibu/Cashier, Afisa Mikopo, na Mteja).
+2. **Mgawanyo wa Majukumu (Role-Based Access Control - RBAC)**: Majukumu 5 ya msingi: Django Admin (Msimamizi Mkuu), Meneja wa Tawi, Mhasibu/Cashier, Afisa Mikopo, na Mteja.
 3. **Ukadiriaji Mahiri wa Alama za Wateja (Client Credit Scoring)**: Mfumo unakadiria tabia ya mlipaji kiotomatiki:
    - **AAA (Excellent)**: Amemaliza mikopo yote bila kuchelewesha.
    - **AA (Good)**: Malipo thabiti na ucheleweshaji mdogo sana.
@@ -27,31 +27,26 @@ Mfumo wa **Mejas Microfinance Management System (MMS)** ni jukwaa la kisasa la k
 6. **Ripoti 7 Rasmi zenye Uhakiki wa PDF, Excel, na CSV**:
    - Upakuaji wa PDF rasmi wenye nembo na mihuri kwa kutumia injini ya **ReportLab**.
    - Upakuaji wa lahajedwali (Excel `.xlsx` na CSV).
-7. **Kuingia kwa Bonyezo Moja (1-Click Test Login Pills)**:
-   - Ukurasa wa kuingia una vitufe vya majaribio ya haraka kwa kila ngazi ya mtumiaji.
 
 ---
 
 ### 2. AKAUNTI ZA MAJARIBIO (Default Test Credentials)
 
-Kwa ajili ya ukaguzi na matumizi ya haraka, mfumo una akaunti 5 maalum zilizosanidiwa:
+Kwa ajili ya ukaguzi na matumizi ya haraka, mfumo una majukumu 5 maalum ya watumiaji:
 
 | Jukumu (Role) | Jina la Mtumiaji (Username) | Nenosiri (Password) | Eneo la Ufikiaji (Access Scope) |
 |---|---|---|---|
-| **CEO / Director** | `ceo` | `CEO_password123` | Taasisi nzima, Matawi yote, Fedha zote, Ripoti za ngazi ya juu |
+| **Django Admin** | `admin` | `Admin_password123` | Usimamizi mkuu wa mfumo wote, watumiaji wote, ripoti zote, na Django Admin Console |
 | **Branch Manager** | `manager` | `Manager_password123` | Tawi husika, Kuidhinisha mikopo, Kusimamia maafisa, Usuluhisho wa siku |
-| **Cashier / Teller** | `cashier` | `Cashier_password123` | Kutoa mikopo, Kupokea marejesho, Kumbukumbu za fedha taslimu, EOD Balance |
+| **Cashier (Mhazini)** | `cashier` | `Cashier_password123` | Kutoa mikopo, Kupokea marejesho, Kumbukumbu za fedha taslimu, EOD Balance |
 | **Loan Officer** | `officer` | `Officer_password123` | Kusajili wateja, Kupokea maombi ya mikopo, Ufuatiliaji wa kila siku |
-| **Client / Mteja** | `client` | `Client_password123` | Dashibodi ya mteja, Ratiba ya malipo, Kauli ya akaunti (Statement) |
-| **Super Admin** | `admin` | `Admin_password123` | Usimamizi wa mfumo wa kiufundi na watumiaji wote |
-
-> **Ushauri:** Kwenye ukurasa wa Kuingia (`/login/`), unaweza kubonyeza kitufe cha rangi cha jukumu lolote (k.m. *CEO*, *Manager*, *Cashier*, *Officer*, *Client*) na mfumo utajaza taarifa kiotomatiki na kukupeleka kwenye dashibodi husika.
+| **Client (Mteja)** | `client` | `Client_password123` | Dashibodi ya mteja, Ratiba ya malipo, Kauli ya akaunti (Statement) |
 
 ---
 
 ### 3. MAJUKUMU NA MTIRIRIKO WA KAZI (Roles & Workflows)
 
-#### 3.1 CEO / Mkurugenzi Mkuu (Executive Dashboard)
+#### 3.1 Django Admin (Usimamizi Mkuu)
 - **Kazi Kuu**:
   - Kuona taswira ya jumla ya taasisi (Total Loan Portfolio, Active Loans, Total Collected, Total Overdue, Net Cash Flow).
   - Grafu shirikishi za mapato na marejesho ya miezi 6.

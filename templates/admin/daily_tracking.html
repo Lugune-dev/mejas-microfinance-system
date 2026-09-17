@@ -1,0 +1,347 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n static humanize %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Nyumbani' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='mms_app' %}">MMS App</a>
+    &rsaquo; {% translate 'Ufuatiliaji wa Marejesho ya Siku' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<style>
+    .dt-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: var(--body-fg, #1e293b);
+    }
+    .dt-header {
+        background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);
+        color: #ffffff;
+        border-radius: 14px;
+        padding: 22px 26px;
+        margin-bottom: 22px;
+        border-bottom: 3px solid #dfb13c;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        box-shadow: 0 4px 16px rgba(11, 42, 37, 0.15);
+    }
+    .dt-header h2 {
+        font-size: 20px;
+        font-weight: 800;
+        margin: 0;
+        color: #ffffff;
+    }
+    .dt-header p {
+        font-size: 12px;
+        color: #cbd5e1;
+        margin: 4px 0 0 0;
+    }
+    .dt-filter-card {
+        background: var(--body-bg, #ffffff);
+        border: 1px solid var(--hairline-color, #e2e8f0);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .dt-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+    .dt-stat-card {
+        background: var(--body-bg, #ffffff);
+        border: 1px solid var(--hairline-color, #e2e8f0);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .dt-stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .icon-emerald { background: #ecfdf5; color: #10b981; }
+    .icon-gold { background: #fefce8; color: #dfb13c; }
+    .icon-rose { background: #fef2f2; color: #ef4444; }
+
+    .dt-stat-val {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--body-fg, #0f172a);
+        line-height: 1.2;
+    }
+    .dt-stat-lbl {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--body-quiet-color, #64748b);
+        margin-top: 3px;
+    }
+    .dt-table-card {
+        background: var(--body-bg, #ffffff);
+        border: 1px solid var(--hairline-color, #e2e8f0);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
+    }
+    .dt-table-head {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--hairline-color, #e2e8f0);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .dt-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    .dt-table th {
+        background: var(--darkened-bg, #f8fafc);
+        color: var(--body-quiet-color, #475569);
+        font-weight: 800;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--hairline-color, #e2e8f0);
+        white-space: nowrap;
+    }
+    .dt-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--hairline-color, #f1f5f9);
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .dt-badge {
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 9999px;
+        display: inline-block;
+    }
+    .badge-paid { background: #dcfce7; color: #15803d; }
+    .badge-unpaid { background: #fee2e2; color: #b91c1c; }
+    .badge-overdue { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* Dark Mode overrides */
+    [data-bs-theme="dark"] .dt-filter-card,
+    [data-bs-theme="dark"] .dt-stat-card,
+    [data-bs-theme="dark"] .dt-table-card {
+        background: #0f2420 !important;
+        border-color: rgba(255,255,255,0.08) !important;
+    }
+    [data-bs-theme="dark"] .dt-table th {
+        background: #091714 !important;
+        color: #94a3b8 !important;
+        border-color: rgba(255,255,255,0.08) !important;
+    }
+    [data-bs-theme="dark"] .dt-table td {
+        border-color: rgba(255,255,255,0.05) !important;
+        color: #e2e8f0 !important;
+    }
+</style>
+
+<div class="dt-container">
+
+    <!-- 1. Header Banner -->
+    <div class="dt-header">
+        <div>
+            <h2><i class="fa-solid fa-calendar-check mr-2" style="color: #dfb13c;"></i> {% translate "Ufuatiliaji wa Marejesho ya Siku" %}</h2>
+            <p>{% translate "Tazama na dhibiti wateja wanaotakiwa kurejesha leo au tarehe uliyochagua. Unaweza kutuma SMS za ukumbusho kwa wanaodaiwa." %}</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{% url 'admin:index' %}" class="button" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 7px 14px; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-arrow-left"></i> {% translate "Rudi Dashibodi ya Admin" %}
+            </a>
+            <a href="{% url 'admin:mms_app_payment_add' %}" class="button" style="background: #dfb13c; color: #04120f; border-radius: 8px; padding: 7px 14px; text-decoration: none; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-plus"></i> {% translate "Rekodi Malipo Mapya" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Filters Form -->
+    <div class="dt-filter-card">
+        <form method="get" style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;">
+            <div>
+                <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">{% translate "Chagua Tarehe" %}</label>
+                <input type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">{% translate "Tawi" %}</label>
+                <select name="branch" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; min-width: 140px;">
+                    <option value="">-- {% translate "Matawi Yote" %} --</option>
+                    {% for b in branches %}
+                        <option value="{{ b.id }}" {% if branch_id == b.id|stringformat:"s" %}selected{% endif %}>{{ b.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">{% translate "Afisa Mkopo" %}</label>
+                <select name="officer" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; min-width: 150px;">
+                    <option value="">-- {% translate "Maafisa Wote" %} --</option>
+                    {% for off in officers %}
+                        <option value="{{ off.id }}" {% if officer_id == off.id|stringformat:"s" %}selected{% endif %}>{{ off.get_full_name|default:off.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="button" style="background: #114139; color: #fff; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                    <i class="fa-solid fa-filter mr-1"></i> {% translate "Chuja" %}
+                </button>
+                <a href="{% url 'admin_daily_tracking' %}" style="padding: 7px 12px; border-radius: 6px; border: 1px solid #cbd5e1; color: #64748b; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center;">
+                    {% translate "Weka Upya" %}
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- 3. Stat Cards Row -->
+    <div class="dt-stat-grid">
+        <div class="dt-stat-card">
+            <div class="dt-stat-icon icon-gold">
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+            <div>
+                <div class="dt-stat-val">TZS {{ total_expected|floatformat:0|intcomma }}</div>
+                <div class="dt-stat-lbl">{% translate "Tarajiwa (Expected)" %}</div>
+            </div>
+        </div>
+
+        <div class="dt-stat-card">
+            <div class="dt-stat-icon icon-emerald">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div>
+                <div class="dt-stat-val">TZS {{ total_collected|floatformat:0|intcomma }}</div>
+                <div class="dt-stat-lbl">{% translate "Makusanyo (Collected)" %}</div>
+            </div>
+        </div>
+
+        <div class="dt-stat-card">
+            <div class="dt-stat-icon icon-gold">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div>
+                <div class="dt-stat-val">{{ collection_rate_percent }}%</div>
+                <div class="dt-stat-lbl">{% translate "Kiwango cha Makusanyo" %}</div>
+            </div>
+        </div>
+
+        <div class="dt-stat-card">
+            <div class="dt-stat-icon icon-rose">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div>
+                <div class="dt-stat-val">{{ unpaid_count }} <span style="font-size: 12px; font-weight: normal; color: #94a3b8;">/ {{ paid_count }} Walioilipa</span></div>
+                <div class="dt-stat-lbl">{% translate "Hawajalipa Leo" %}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Table Card -->
+    <div class="dt-table-card">
+        <div class="dt-table-head">
+            <div>
+                <strong style="font-size: 14px;">{% translate "Orodha ya Wateja na Marejesho ya Tarehe" %} {{ selected_date|date:"d/m/Y" }}</strong>
+                <span style="font-size: 11px; color: #64748b; margin-left: 8px;">({{ schedules|length }} {% translate "yaliyopangwa" %})</span>
+            </div>
+
+            {% if unpaid_count > 0 %}
+            <form method="post" onsubmit="return confirm('Je, una uhakika unataka kutuma SMS za ukumbusho kwa wateja wote {{ unpaid_count }} ambao hawajalipa leo?');">
+                {% csrf_token %}
+                <button type="submit" name="send_reminders" class="button" style="background: #ef4444; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-paper-plane"></i> {% translate "Tuma SMS za Ukumbusho (" %}{{ unpaid_count }})
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="dt-table">
+                <thead>
+                    <tr>
+                        <th>{% translate "Mkopaji / Simu" %}</th>
+                        <th>{% translate "Namba ya Mkopo" %}</th>
+                        <th>{% translate "Tawi & Afisa" %}</th>
+                        <th>{% translate "Kiasi cha Awamu" %}</th>
+                        <th>{% translate "Kilicholipwa" %}</th>
+                        <th>{% translate "Hali" %}</th>
+                        <th>{% translate "Kitendo" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in schedules %}
+                    <tr>
+                        <td>
+                            <strong>{{ s.loan.client.get_full_name|default:s.loan.client.username }}</strong><br/>
+                            <span style="font-size: 11px; color: #64748b;"><i class="fa-solid fa-phone" style="font-size: 9px;"></i> {{ s.loan.client.phone|default:"-" }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'admin:mms_app_loan_change' s.loan.pk %}" style="font-family: monospace; font-weight: 700; color: #dfb13c;">
+                                {{ s.loan.loan_id }}
+                            </a>
+                        </td>
+                        <td>
+                            <span>{{ s.loan.branch.name|default:"Tawi Kuu" }}</span><br/>
+                            <span style="font-size: 10px; color: #64748b;">{{ s.loan.officer.get_full_name|default:"-" }}</span>
+                        </td>
+                        <td>
+                            <strong>TZS {{ s.installment_amount|floatformat:0|intcomma }}</strong>
+                        </td>
+                        <td>
+                            <span style="color: #15803d; font-weight: 700;">TZS {{ s.paid_amount|floatformat:0|intcomma }}</span>
+                        </td>
+                        <td>
+                            {% if s.status == 'PAID' %}
+                                <span class="dt-badge badge-paid"><i class="fa-solid fa-circle-check"></i> {% translate "Amelipa" %}</span>
+                            {% elif s.status == 'OVERDUE' %}
+                                <span class="dt-badge badge-overdue"><i class="fa-solid fa-triangle-exclamation"></i> {% translate "Iliyochelewa" %}</span>
+                            {% else %}
+                                <span class="dt-badge badge-unpaid"><i class="fa-solid fa-clock"></i> {% translate "Hajalipa" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin:mms_app_payment_add' %}?loan={{ s.loan.id }}&amount={{ s.installment_amount }}" class="button" style="background: #10b981; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 11px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-receipt"></i> {% translate "Lipa" %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fa-solid fa-calendar-xmark" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+                            {% translate "Hakuna marejesho yaliyopangwa kwa tarehe hii au vigezo vilivyochaguliwa." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

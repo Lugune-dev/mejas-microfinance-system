@@ -34,8 +34,103 @@ class UserAdmin(DjangoUserAdmin):
     ordering = ("username",)
 
 
+from django import forms
+from django.utils import timezone
+
+
+class ClientProfileAdminForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=150, label=_("Jina la Kwanza"))
+    last_name = forms.CharField(max_length=150, label=_("Jina la Mwisho"))
+    phone = forms.CharField(max_length=20, label=_("Namba ya Simu"))
+    nida = forms.CharField(max_length=30, label=_("Namba ya NIDA"))
+    branch = forms.ModelChoiceField(queryset=Branch.objects.all(), label=_("Tawi"))
+    email = forms.EmailField(required=False, label=_("Barua Pepe"))
+    initial_password = forms.CharField(
+        widget=forms.PasswordInput,
+        required=False,
+        label=_("Neno la Siri la Awali"),
+        help_text=_("Weka neno la siri au liache wazi ili kutumia namba ya simu au neno la msingi.")
+    )
+
+    class Meta:
+        model = ClientProfile
+        fields = [
+            "first_name",
+            "last_name",
+            "phone",
+            "nida",
+            "branch",
+            "email",
+            "initial_password",
+            "address",
+            "guarantor_name",
+            "guarantor_phone",
+            "guarantor_relationship",
+            "guarantor_nida",
+            "guarantor_address",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
+            u = self.instance.user
+            self.fields["first_name"].initial = u.first_name
+            self.fields["last_name"].initial = u.last_name
+            self.fields["phone"].initial = u.phone
+            self.fields["nida"].initial = u.nida
+            self.fields["branch"].initial = u.branch
+            self.fields["email"].initial = u.email
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        cd = self.cleaned_data
+
+        if not getattr(profile, "user_id", None):
+            year = timezone.now().year
+            last_client = User.objects.filter(role=User.Role.CLIENT, username__startswith=f"CLT-{year}-").order_by("-id").first()
+            if last_client:
+                try:
+                    last_num = int(last_client.username.split("-")[-1])
+                    new_num = f"{last_num + 1:04d}"
+                except ValueError:
+                    new_num = f"{User.objects.filter(role=User.Role.CLIENT).count() + 1:04d}"
+            else:
+                new_num = f"{User.objects.filter(role=User.Role.CLIENT).count() + 1:04d}"
+            username = f"CLT-{year}-{new_num}"
+
+            pwd = cd.get("initial_password") or cd.get("phone") or "Client_password123"
+            user = User.objects.create_user(
+                username=username,
+                password=pwd,
+                role=User.Role.CLIENT,
+                first_name=cd.get("first_name", ""),
+                last_name=cd.get("last_name", ""),
+                phone=cd.get("phone", ""),
+                nida=cd.get("nida", ""),
+                email=cd.get("email", ""),
+                branch=cd.get("branch"),
+            )
+            profile.user = user
+        else:
+            u = profile.user
+            u.first_name = cd.get("first_name", u.first_name)
+            u.last_name = cd.get("last_name", u.last_name)
+            u.phone = cd.get("phone", u.phone)
+            u.nida = cd.get("nida", u.nida)
+            u.email = cd.get("email", u.email)
+            u.branch = cd.get("branch", u.branch)
+            if cd.get("initial_password"):
+                u.set_password(cd["initial_password"])
+            u.save()
+
+        if commit:
+            profile.save()
+        return profile
+
+
 @admin.register(ClientProfile)
 class ClientProfileAdmin(admin.ModelAdmin):
+    form = ClientProfileAdminForm
     list_display = ("get_client_name", "get_phone", "get_nida", "get_branch", "guarantor_name", "guarantor_phone", "created_at")
     search_fields = (
         "user__username",

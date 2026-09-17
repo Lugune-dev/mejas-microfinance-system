@@ -35,23 +35,33 @@ class Command(BaseCommand):
         )
         self.stdout.write(self.style.SUCCESS("✓ 4 Branches created/verified"))
 
-        # 2. Setup 5 Core Test Accounts (+ Admin)
-        # CEO
-        ceo, _ = User.objects.get_or_create(
-            username="ceo",
+        # 2. Setup 5 Core Test Accounts: Django Admin, Manager, Cashier, Loan Officer, Client
+        # Django Admin (Single System Administrator)
+        admin, _ = User.objects.get_or_create(
+            username="admin",
             defaults={
-                "first_name": "John",
-                "last_name": "Meja",
-                "email": "ceo@mejas.co.tz",
-                "role": User.Role.CEO,
-                "phone": "+255711111111",
-                "nida": "19900101-11111-00001-11",
+                "first_name": "Django",
+                "last_name": "Admin",
+                "email": "admin@mejas.co.tz",
+                "role": User.Role.ADMIN,
+                "phone": "+255766666666",
+                "nida": "19960606-66666-00006-66",
                 "is_active": True,
+                "is_staff": True,
+                "is_superuser": True,
                 "branch": b_hq
             }
         )
-        ceo.set_password("CEO_password123")
-        ceo.save()
+        admin.first_name = "Django"
+        admin.last_name = "Admin"
+        admin.role = User.Role.ADMIN
+        admin.is_staff = True
+        admin.is_superuser = True
+        admin.set_password("Admin_password123")
+        admin.save()
+
+        # Remove duplicate CEO user if present
+        User.objects.filter(username="ceo").delete()
 
         # Manager
         manager, _ = User.objects.get_or_create(
@@ -133,26 +143,7 @@ class Command(BaseCommand):
             }
         )
 
-        # Admin
-        admin, _ = User.objects.get_or_create(
-            username="admin",
-            defaults={
-                "first_name": "Admin",
-                "last_name": "User",
-                "email": "admin@mejas.co.tz",
-                "role": User.Role.ADMIN,
-                "phone": "+255766666666",
-                "nida": "19960606-66666-00006-66",
-                "is_active": True,
-                "is_staff": True,
-                "is_superuser": True,
-                "branch": b_hq
-            }
-        )
-        admin.set_password("Admin_password123")
-        admin.is_staff = True
-        admin.is_superuser = True
-        admin.save()
+
 
         # Additional clients for testing diverse scenarios
         client2, _ = User.objects.get_or_create(

@@ -22,16 +22,27 @@
             </p>
         </div>
 
-        <!-- Bulk Action: Send Reminders -->
-        {% if unpaid_count > 0 and user.role in 'CEO,MANAGER,OFFICER' %}
-        <form method="post" onsubmit="return confirm('{% translate 'Je, una uhakika unataka kutuma SMS za ukumbusho kwa wateja wote ambao hawajalipa leo?' %}');">
-            {% csrf_token %}
-            <button type="submit" name="send_reminders" value="1" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 active:scale-95 text-slate-950 font-black rounded-2xl text-xs transition shadow-md inline-flex items-center gap-2 hover:brightness-105">
-                <i class="fa-solid fa-paper-plane text-xs"></i>
-                <span>{% translate "Tuma Vikumbusho vya SMS kwa Wasiolipa (" %}{{ unpaid_count }})</span>
-            </button>
-        </form>
-        {% endif %}
+        <div class="flex items-center gap-3 flex-wrap">
+            {% if user.role == 'ADMIN' or user.is_superuser %}
+            <a href="{% url 'admin:index' %}" class="px-4 py-2.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-500 font-extrabold rounded-2xl text-xs border border-amber-500/30 transition inline-flex items-center gap-2 shadow-sm" title="{% translate 'Rudi Kwenye Dashibodi Kuu ya Django Admin' %}">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span>{% translate "Rudi Django Admin Cockpit" %}</span>
+            </a>
+            {% endif %}
+
+            <!-- Bulk Action: Send Reminders -->
+            {% if unpaid_count > 0 and user.role in 'ADMIN,MANAGER,OFFICER' %}
+            <form method="post" 
+                  data-confirm="{% translate 'Je, una uhakika unataka kutuma SMS za ukumbusho kwa wateja wote ambao hawajalipa leo?' %}"
+                  onsubmit="return confirm(this.dataset.confirm);">
+                {% csrf_token %}
+                <button type="submit" name="send_reminders" value="1" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 active:scale-95 text-slate-950 font-black rounded-2xl text-xs transition shadow-md inline-flex items-center gap-2 hover:brightness-105">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <span>{% translate "Tuma Vikumbusho vya SMS kwa Wasiolipa (" %}{{ unpaid_count }})</span>
+                </button>
+            </form>
+            {% endif %}
+        </div>
     </div>
 
     <!-- KPI Summary Cards -->
@@ -96,7 +107,7 @@
             <span class="font-heading font-black text-brand-600 dark:text-brand-400 text-sm">{{ collection_rate_percent }}%</span>
         </div>
         <div class="w-full bg-slate-100 dark:bg-white/[0.05] rounded-full h-3 overflow-hidden">
-            <div class="bg-gradient-to-r from-brand-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: {{ collection_rate_percent }}%;"></div>
+            <div class="bg-gradient-to-r from-brand-500 to-emerald-500 h-3 rounded-full transition-all duration-500" data-width="{{ collection_rate_percent }}%"></div>
         </div>
     </div>
 
@@ -263,4 +274,11 @@
     </div>
 
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('[data-width]').forEach(function(el) {
+        el.style.width = el.getAttribute('data-width');
+    });
+});
+</script>
 {% endblock %}

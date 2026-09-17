@@ -145,25 +145,52 @@
             <span>{% translate "Rudi Mwanzo" %}</span>
         </a>
 
-        <!-- Modern Language Switcher -->
+        <!-- Modern Language Dropdown -->
         {% load i18n %}
         {% get_current_language as CURRENT_LANG %}
-        {% get_available_languages as ALL_LANGS %}
-        <form action="/i18n/setlang/" method="post" class="relative inline-flex items-center">
-            {% csrf_token %}
-            <input name="next" type="hidden" value="{{ request.get_full_path }}">
-            <div class="relative flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/12 rounded-full px-3 py-1.5 transition backdrop-blur-md cursor-pointer">
-                <i class="fa-solid fa-globe text-[#dfb13c] text-xs"></i>
-                <select name="language" onchange="this.form.submit()" class="appearance-none bg-transparent text-white border-none outline-none focus:ring-0 text-xs font-semibold cursor-pointer pr-3">
-                    {% for lang in ALL_LANGS %}
-                        <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %} class="bg-[#0b2a25] text-white">
-                            {{ lang.1 }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <i class="fa-solid fa-chevron-down text-white/40 text-[9px] pointer-events-none absolute right-2.5"></i>
+        <div class="relative" id="login-lang-wrapper">
+            <form id="login-lang-form" action="/i18n/setlang/" method="post" class="hidden">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <input name="language" id="login-lang-input" type="hidden" value="{{ CURRENT_LANG }}">
+            </form>
+            <button id="login-lang-btn" type="button" class="flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-full px-3.5 py-1.5 transition-all text-xs font-bold text-white shadow-lg backdrop-blur-md cursor-pointer focus:outline-none">
+                <span class="text-sm leading-none">{% if CURRENT_LANG == 'en' %}🇬🇧{% else %}🇹🇿{% endif %}</span>
+                <span class="tracking-wide uppercase font-black">{% if CURRENT_LANG == 'en' %}EN{% else %}SW{% endif %}</span>
+                <i id="login-lang-chevron" class="fa-solid fa-chevron-down text-[8px] text-white/50 transition-transform duration-200"></i>
+            </button>
+            
+            <!-- Modern Popover Menu -->
+            <div id="login-lang-menu" class="hidden absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-[12rem] sm:w-48 bg-[#071915]/95 backdrop-blur-2xl border border-brand-500/30 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1">
+                <div class="px-3 py-1.5 border-b border-white/10">
+                    <p class="text-[10px] font-extrabold uppercase tracking-wider text-brand-400">Chagua Lugha</p>
+                </div>
+                <button type="button" onclick="submitLoginLang('sw')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer {% if CURRENT_LANG == 'sw' %}bg-brand-500/20 text-brand-400 font-black{% else %}hover:bg-white/10 text-slate-200 font-medium{% endif %}">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-base leading-none">🇹🇿</span>
+                        <div>
+                            <p class="text-xs font-bold leading-tight text-white">Kiswahili</p>
+                            <p class="text-[10px] text-slate-400">Lugha Rasmi</p>
+                        </div>
+                    </div>
+                    {% if CURRENT_LANG == 'sw' %}
+                    <i class="fa-solid fa-circle-check text-xs text-brand-500"></i>
+                    {% endif %}
+                </button>
+                <button type="button" onclick="submitLoginLang('en')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer {% if CURRENT_LANG == 'en' %}bg-brand-500/20 text-brand-400 font-black{% else %}hover:bg-white/10 text-slate-200 font-medium{% endif %}">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-base leading-none">🇬🇧</span>
+                        <div>
+                            <p class="text-xs font-bold leading-tight text-white">English</p>
+                            <p class="text-[10px] text-slate-400">International</p>
+                        </div>
+                    </div>
+                    {% if CURRENT_LANG == 'en' %}
+                    <i class="fa-solid fa-circle-check text-xs text-brand-500"></i>
+                    {% endif %}
+                </button>
             </div>
-        </form>
+        </div>
     </div>
 
     <!-- Main Container: Split Screen on Large Displays -->
@@ -228,17 +255,11 @@
                 </div>
             </div>
 
-            <!-- Trust Indicator -->
-            <div class="flex items-center gap-3 pt-2 text-xs text-slate-400">
-                <i class="fa-solid fa-circle-check text-emerald-400"></i>
-                <span>Database ya wingu imeunganishwa moja kwa moja na <strong>Supabase Cloud PostgreSQL</strong></span>
-            </div>
-
         </div>
 
         <!-- Right Side: The Pristine Login Form -->
         <div class="lg:col-span-5 w-full max-w-md mx-auto">
-            <div class="glass-panel rounded-3xl p-7 sm:p-9 relative">
+            <div class="glass-panel rounded-3xl p-5 sm:p-8 md:p-9 relative">
 
                 <!-- Header & Brand Emblem -->
                 <div class="flex flex-col items-center text-center mb-6">
@@ -354,6 +375,35 @@
                 loginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-sm"></i> <span>{% translate "Inathibitisha..." %}</span>';
                 loginBtn.disabled = true;
                 loginBtn.classList.add('opacity-80', 'cursor-wait');
+            });
+        }
+
+        // Modern Language Selector Script
+        function submitLoginLang(lang) {
+            var form = document.getElementById('login-lang-form');
+            var input = document.getElementById('login-lang-input');
+            if (form && input) {
+                input.value = lang;
+                form.submit();
+            }
+        }
+        var loginLangBtn = document.getElementById('login-lang-btn');
+        var loginLangMenu = document.getElementById('login-lang-menu');
+        var loginLangChevron = document.getElementById('login-lang-chevron');
+        if (loginLangBtn && loginLangMenu) {
+            loginLangBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var isHidden = loginLangMenu.classList.contains('hidden');
+                loginLangMenu.classList.toggle('hidden');
+                if (loginLangChevron) {
+                    loginLangChevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            });
+            document.addEventListener('click', function(e) {
+                if (!loginLangBtn.contains(e.target) && !loginLangMenu.contains(e.target)) {
+                    loginLangMenu.classList.add('hidden');
+                    if (loginLangChevron) loginLangChevron.style.transform = 'rotate(0deg)';
+                }
             });
         }
     </script>

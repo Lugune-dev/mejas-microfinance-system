@@ -262,7 +262,7 @@ def azampay_webhook_view(request):
         )
 
         staff_qs = User.objects.filter(
-            role__in=[User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER]
+            role__in=[User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER]
         )
         if loan.branch:
             staff_qs = staff_qs.filter(branch=loan.branch)
@@ -289,7 +289,7 @@ def azampay_webhook_view(request):
         admin_sms = _(
             "MMS ARIFA: Malipo ya TZS {:,.0f} yamepokelewa kutoka {} ({}) kwa mkopo {}. Risiti: {}."
         ).format(amount, loan.client.get_full_name(), operator, loan.loan_id, receipt_no)
-        for admin in staff_qs.filter(role__in=[User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]):
+        for admin in staff_qs.filter(role__in=[User.Role.ADMIN, User.Role.MANAGER]):
             if admin.phone:
                 send_sms(admin.phone, admin_sms)
 

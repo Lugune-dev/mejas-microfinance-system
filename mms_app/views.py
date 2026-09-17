@@ -648,6 +648,9 @@ def client_edit_view(request, pk):
 
 @login_required
 def loan_apply_view(request):
+    if request.user.role == User.Role.ADMIN or request.user.is_superuser:
+        return redirect("admin:mms_app_loan_add")
+
     if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.OFFICER]:
         raise Http404(_("Ruhusa imekataliwa."))
 
@@ -1312,8 +1315,11 @@ def client_lipa_payment_view(request, pk):
 # --- DAILY REPAYMENT TRACKING ---
 
 @login_required
-def daily_repayment_tracking_view(request):
-    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER]:
+def daily_repayment_tracking_view(request, template_name="tracking/daily_tracking.html"):
+    if template_name != "admin/daily_tracking.html" and (request.user.role == User.Role.ADMIN or request.user.is_superuser):
+        return redirect("admin_daily_tracking")
+
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER, User.Role.CASHIER, User.Role.OFFICER] and not request.user.is_superuser:
         raise Http404(_("Ruhusa imekataliwa."))
 
     # Sync overdue loans & penalties
@@ -1378,7 +1384,7 @@ def daily_repayment_tracking_view(request):
     branches = Branch.objects.all()
     officers = User.objects.filter(role=User.Role.OFFICER)
 
-    return render(request, "tracking/daily_tracking.html", {
+    return render(request, template_name, {
         "schedules": schedules,
         "branches": branches,
         "officers": officers,
@@ -1392,6 +1398,13 @@ def daily_repayment_tracking_view(request):
         "unpaid_count": unpaid_count,
         "partial_count": partial_count,
     })
+
+
+@login_required
+def admin_daily_tracking_view(request):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER] and not request.user.is_superuser:
+        raise Http404(_("Ruhusa imekataliwa."))
+    return daily_repayment_tracking_view(request, template_name="admin/daily_tracking.html")
 
 
 
@@ -1544,14 +1557,23 @@ def reconciliation_approve_view(request, pk):
 
 @login_required
 def reports_menu_view(request):
+    if request.user.role == User.Role.ADMIN or request.user.is_superuser:
+        return redirect("admin_reports_menu")
     if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
         raise Http404(_("Ruhusa imekataliwa."))
     return render(request, "reports/menu.html")
 
 
 @login_required
-def generate_report_view(request, report_type):
-    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER]:
+def admin_reports_menu_view(request):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER] and not request.user.is_superuser:
+        raise Http404(_("Ruhusa imekataliwa."))
+    return render(request, "admin/reports_menu.html")
+
+
+@login_required
+def generate_report_view(request, report_type, template_name="reports/generate.html"):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER] and not request.user.is_superuser:
         raise Http404(_("Ruhusa imekataliwa."))
 
     start_date_str = request.GET.get("start_date")
@@ -1818,7 +1840,7 @@ def generate_report_view(request, report_type):
         return response
 
 
-    return render(request, "reports/generate.html", {
+    return render(request, template_name, {
         "title": title,
         "headers": headers,
         "rows": rows,
@@ -1826,6 +1848,13 @@ def generate_report_view(request, report_type):
         "start_date": start_date,
         "end_date": end_date
     })
+
+
+@login_required
+def admin_generate_report_view(request, report_type):
+    if request.user.role not in [User.Role.CEO, User.Role.ADMIN, User.Role.MANAGER] and not request.user.is_superuser:
+        raise Http404(_("Ruhusa imekataliwa."))
+    return generate_report_view(request, report_type, template_name="admin/report_generate.html")
 
 
 # --- PUBLIC PAGES ---

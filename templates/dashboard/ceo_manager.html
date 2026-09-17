@@ -29,10 +29,12 @@
     }
     .small-box h3 {
         font-family: 'Outfit', sans-serif;
-        font-size: 24px;
+        font-size: clamp(17px, 2.2vw, 24px);
         font-weight: 800;
         margin: 0 0 6px 0;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         padding: 0;
         letter-spacing: -0.02em;
     }
@@ -205,7 +207,9 @@
         <div class="flex items-center gap-4">
             <div class="relative flex-shrink-0">
                 {% if user.photo %}
-                    <img src="{{ user.photo.url }}" class="h-14 w-14 rounded-2xl object-cover border-2 border-brand-500 shadow-md" alt="avatar">
+                    <img src="{{ user.photo.url }}" class="h-14 w-14 rounded-2xl object-cover object-center ring-2 ring-brand-500 shadow-md border border-slate-900/40" alt="{{ user.username }}">
+                {% elif user.role == 'ADMIN' %}
+                    <img src="{% static 'images/admin_avatar.png' %}" class="h-14 w-14 rounded-2xl object-cover object-center ring-2 ring-brand-500 shadow-md border border-slate-900/40" alt="{{ user.username }}">
                 {% else %}
                     <div class="h-14 w-14 rounded-2xl bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
                         {{ user.username|slice:":1"|upper }}
@@ -221,7 +225,7 @@
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-500/15 text-brand-600 dark:text-brand-400 border border-brand-500/30">
                         AdminLTE &bull; {{ user.get_role_display }}
                     </span>
-                    {% if user.is_staff or user.is_superuser %}
+                    {% if user.role == 'ADMIN' and user.is_superuser %}
                     <a href="{% url 'admin:index' %}" target="_blank" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/15 text-amber-500 border border-amber-500/30 hover:bg-amber-500/25 transition">
                         <i class="fa-solid fa-server mr-1"></i>Django Admin &rarr;
                     </a>
@@ -254,7 +258,7 @@
     <!-- ============================================================== -->
     <!-- 2. ADMINLTE 5 SIGNATURE SMALL BOXES -->
     <!-- ============================================================== -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         
         <!-- Small Box 1: Disbursed (Teal) -->
         <div class="small-box" style="background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);">
@@ -461,7 +465,7 @@
                 </div>
             </div>
 
-            {% if user.role in 'CEO,ADMIN' %}
+            {% if user.role == 'ADMIN' or user.is_superuser %}
             <div class="p-5 pt-0">
                 <a href="{% url 'branch_list' %}" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-800 dark:text-white text-xs font-bold rounded-xl transition text-center inline-flex items-center justify-center gap-2 border border-slate-200 dark:border-white/[0.08]">
                     <i class="fa-solid fa-building-columns text-brand-500"></i>
@@ -542,7 +546,7 @@
                 <i class="fa-solid fa-clock-rotate-left text-brand-500"></i>
                 <span>{% translate "Mfuatano wa Matukio (AdminLTE Audit Timeline)" %}</span>
             </h3>
-            {% if user.role in 'CEO,ADMIN' %}
+            {% if user.role in 'ADMIN,MANAGER' or user.is_superuser %}
             <a href="{% url 'audit_log_list' %}" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">
                 {% translate "Tazama Kumbukumbu Zote" %} &rarr;
             </a>
@@ -582,24 +586,31 @@
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="ceo-chart-months-data" type="text/plain">{{ chart_months|default:"[]"|safe }}</script>
+<script id="ceo-chart-disb-data" type="text/plain">{{ chart_disbursements|default:"[]"|safe }}</script>
+<script id="ceo-chart-coll-data" type="text/plain">{{ chart_collections|default:"[]"|safe }}</script>
 <script>
     const ctx = document.getElementById('monthlyTrendChart');
     if (ctx) {
+        const chartLabels = JSON.parse(document.getElementById('ceo-chart-months-data')?.textContent || '[]');
+        const chartDisbursements = JSON.parse(document.getElementById('ceo-chart-disb-data')?.textContent || '[]');
+        const chartCollections = JSON.parse(document.getElementById('ceo-chart-coll-data')?.textContent || '[]');
+
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: {{ chart_months|safe }},
+                labels: chartLabels,
                 datasets: [
                     {
                         label: 'Mikopo Iliyotolewa (TZS)',
-                        data: {{ chart_disbursements|safe }},
+                        data: chartDisbursements,
                         backgroundColor: 'rgba(223, 177, 60, 0.85)',
                         borderRadius: 6,
                         borderSkipped: false
                     },
                     {
                         label: 'Marejesho Yaliyokusanywa (TZS)',
-                        data: {{ chart_collections|safe }},
+                        data: chartCollections,
                         backgroundColor: 'rgba(16, 185, 129, 0.85)',
                         borderRadius: 6,
                         borderSkipped: false

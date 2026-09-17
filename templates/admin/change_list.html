@@ -1,0 +1,485 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list jazzmin humanize %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'vendor/select2/css/select2.min.css' %}">
+    {{ media.css }}
+    <style>
+        /* Modern Change List Layout */
+        .mms-cl-header {
+            background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);
+            border-radius: 14px;
+            padding: 20px 24px;
+            color: #ffffff;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #dfb13c;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 4px 16px rgba(11, 42, 37, 0.12);
+        }
+        .mms-cl-header h1, .mms-cl-header h2 {
+            font-size: 20px;
+            font-weight: 900;
+            margin: 0;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .mms-cl-header p {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin: 4px 0 0 0;
+        }
+        .mms-cl-badge-count {
+            background: rgba(223, 177, 60, 0.2);
+            border: 1px solid rgba(223, 177, 60, 0.5);
+            color: #dfb13c;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mms-cl-btn-add {
+            background: #dfb13c !important;
+            color: #04120f !important;
+            border: 1px solid #c59b2b !important;
+            font-weight: 800 !important;
+            font-size: 12.5px !important;
+            padding: 9px 18px !important;
+            border-radius: 10px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            transition: all 0.2s ease !important;
+            text-decoration: none !important;
+        }
+        .mms-cl-btn-add:hover {
+            background: #c59b2b !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+
+        /* Filter & Search Toolbar Card */
+        .mms-toolbar-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+        .mms-search-box {
+            position: relative;
+            flex: 1 1 300px;
+            max-width: 450px;
+        }
+        .mms-search-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .mms-search-input {
+            width: 100% !important;
+            padding: 8px 14px 8px 36px !important;
+            border-radius: 8px !important;
+            border: 1px solid #cbd5e1 !important;
+            font-size: 13px !important;
+            transition: border-color 0.2s ease !important;
+        }
+        .mms-search-input:focus {
+            border-color: #dfb13c !important;
+            box-shadow: 0 0 0 3px rgba(223, 177, 60, 0.2) !important;
+            outline: none !important;
+        }
+        .mms-btn-search {
+            background: #114139 !important;
+            border: 1px solid #0b2a25 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            font-size: 12.5px !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+        .mms-btn-search:hover {
+            background: #0b2a25 !important;
+            color: #dfb13c !important;
+        }
+        .mms-btn-clear {
+            background: transparent !important;
+            border: 1px solid #cbd5e1 !important;
+            color: #64748b !important;
+            font-size: 12px !important;
+            padding: 8px 14px !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+        }
+        .mms-btn-clear:hover {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+
+        /* Modern Table Card */
+        .mms-table-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .mms-actions-bar {
+            background: #f8fafc;
+            padding: 12px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .mms-actions-bar label {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+        }
+        .mms-actions-bar select {
+            font-size: 12.5px !important;
+            padding: 5px 12px !important;
+            border-radius: 6px !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #ffffff;
+        }
+        .mms-actions-bar button {
+            background: #114139 !important;
+            border: none !important;
+            color: #ffffff !important;
+            padding: 6px 14px !important;
+            border-radius: 6px !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+        }
+        .mms-actions-bar button:hover {
+            background: #0b2a25 !important;
+            color: #dfb13c !important;
+        }
+
+        /* Result List Table Overrides */
+        #changelist #result_list {
+            margin-bottom: 0 !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            width: 100% !important;
+        }
+        #result_list thead th {
+            background: #f8fafc !important;
+            color: #334155 !important;
+            font-size: 11.5px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+            padding: 12px 16px !important;
+            border-bottom: 2px solid #e2e8f0 !important;
+            vertical-align: middle !important;
+        }
+        #result_list thead th a {
+            color: #1e293b !important;
+            text-decoration: none !important;
+        }
+        #result_list thead th a:hover {
+            color: #dfb13c !important;
+        }
+        #result_list tbody td, #result_list tbody th {
+            padding: 12px 16px !important;
+            vertical-align: middle !important;
+            font-size: 13px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+        #result_list tbody tr:hover td, #result_list tbody tr:hover th {
+            background-color: rgba(223, 177, 60, 0.04) !important;
+        }
+        #result_list tbody th a {
+            font-weight: 700 !important;
+            color: #0b2a25 !important;
+            text-decoration: none !important;
+        }
+        #result_list tbody th a:hover {
+            color: #dfb13c !important;
+        }
+
+        /* Pagination bar */
+        .mms-pagination-bar {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 12px;
+            color: #64748b;
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #0b2a25 !important;
+            border-color: #0b2a25 !important;
+            color: #dfb13c !important;
+            font-weight: 800 !important;
+        }
+
+        /* Dark Mode Overrides */
+        [data-bs-theme="dark"] .mms-toolbar-card,
+        [data-bs-theme="dark"] .mms-table-card {
+            background: #071f1b !important;
+            border-color: rgba(223, 177, 60, 0.2) !important;
+        }
+        [data-bs-theme="dark"] .mms-actions-bar,
+        [data-bs-theme="dark"] .mms-pagination-bar {
+            background: #041411 !important;
+            border-color: rgba(223, 177, 60, 0.18) !important;
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] #result_list thead th {
+            background: #041411 !important;
+            color: #dfb13c !important;
+            border-bottom-color: rgba(223, 177, 60, 0.25) !important;
+        }
+        [data-bs-theme="dark"] #result_list thead th a {
+            color: #dfb13c !important;
+        }
+        [data-bs-theme="dark"] #result_list tbody td,
+        [data-bs-theme="dark"] #result_list tbody th {
+            color: #e2e8f0 !important;
+            border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+        }
+        [data-bs-theme="dark"] #result_list tbody th a {
+            color: #ffffff !important;
+        }
+        [data-bs-theme="dark"] #result_list tbody tr:hover td,
+        [data-bs-theme="dark"] #result_list tbody tr:hover th {
+            background-color: rgba(223, 177, 60, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .mms-search-input {
+            background: #041411 !important;
+            color: #ffffff !important;
+            border-color: rgba(223, 177, 60, 0.3) !important;
+        }
+        [data-bs-theme="dark"] .mms-actions-bar select {
+            background: #041411 !important;
+            color: #ffffff !important;
+            border-color: rgba(223, 177, 60, 0.3) !important;
+        }
+    </style>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ media.js }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-list{% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}"><i class="fas fa-home me-1"></i> {% trans 'Home' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
+        <li class="breadcrumb-item active">{{ cl.opts.verbose_name_plural|capfirst }}</li>
+    </ol>
+{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block coltype %}flex{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+
+    <!-- 1. Executive Page Header -->
+    <div class="mms-cl-header">
+        <div>
+            <h2>
+                <i class="{% if opts.model_name == 'loan' %}fas fa-hand-holding-dollar{% elif opts.model_name == 'clientprofile' %}fas fa-address-card{% elif opts.model_name == 'payment' %}fas fa-receipt{% elif opts.model_name == 'repaymentschedule' %}fas fa-calendar-alt{% elif opts.model_name == 'user' %}fas fa-users-gear{% elif opts.model_name == 'branch' %}fas fa-building{% elif opts.model_name == 'cashflow' %}fas fa-money-bill-transfer{% elif opts.model_name == 'dailyreconciliation' %}fas fa-scale-balanced{% elif opts.model_name == 'auditlog' %}fas fa-history{% else %}fas fa-list-check{% endif %} text-warning"></i>
+                <span>{{ cl.opts.verbose_name_plural|capfirst }}</span>
+            </h2>
+            <p>
+                {% if opts.model_name == 'loan' %}
+                    Usimamizi wa mikopo yote ya wateja, uidhinishaji, riba ya 5%, na ufuatiliaji wa marejesho.
+                {% elif opts.model_name == 'clientprofile' %}
+                    Orodha kamili ya wateja waliosajiliwa, taarifa za mawasiliano, NIDA, na wadhamini.
+                {% elif opts.model_name == 'payment' %}
+                    Kumbukumbu rasmi za marejesho yote ya fedha, stakabadhi za malipo na maafisa waliohusika.
+                {% elif opts.model_name == 'repaymentschedule' %}
+                    Ratiba kamili ya awamu za marejesho ya mikopo na tarehe zake za mwisho (due dates).
+                {% elif opts.model_name == 'user' %}
+                    Akaunti za watumiaji wote, maafisa mikopo, wahasibu, mameneja na wateja.
+                {% elif opts.model_name == 'branch' %}
+                    Matawi rasmi ya Mejas Microfinance na maeneo ya utoaji huduma.
+                {% elif opts.model_name == 'cashflow' %}
+                    Ufuatiliaji wa mtiririko wa mapato na matumizi ya uendeshaji wa taasisi.
+                {% elif opts.model_name == 'dailyreconciliation' %}
+                    Usuluhisho wa hesabu za fedha za kila siku kwa kila tawi na watunza hazina.
+                {% elif opts.model_name == 'auditlog' %}
+                    Kumbukumbu za kiusalama na ukaguzi wa shughuli zote zilizofanywa mfumoni.
+                {% else %}
+                    Usimamizi na uhariri wa taarifa za mfumo wa Mejas Microfinance System.
+                {% endif %}
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="mms-cl-badge-count">
+                <i class="fas fa-database"></i> {{ cl.result_count }} {% if cl.result_count == 1 %}Rekodi{% else %}Rekodi{% endif %}
+            </span>
+            {% if has_add_permission %}
+                {% url cl.opts|admin_urlname:'add' as add_url %}
+                <a href="{% add_preserved_filters add_url is_popup to_field %}" class="mms-cl-btn-add">
+                    <i class="fas fa-plus-circle"></i>
+                    {% blocktrans with cl.opts.verbose_name as name %}Ongeza {{ name }}{% endblocktrans %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 2. Date Hierarchy Filter (if configured) -->
+    {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
+
+    <!-- 3. Search & Filter Bar Toolbar -->
+    {% block search %}
+    <div class="mms-toolbar-card">
+        <form id="changelist-search" class="d-flex flex-wrap gap-3 align-items-center justify-content-between" method="GET">
+            <div class="d-flex flex-wrap gap-2 align-items-center flex-grow-1">
+                {% if cl.search_fields %}
+                    <div class="mms-search-box">
+                        <i class="fas fa-search"></i>
+                        <input class="mms-search-input" type="text" name="q" value="{{ cl.query }}" id="searchbar"
+                               placeholder="{% if cl.search_help_text %}{{ cl.search_help_text }}{% else %}Tafuta kwa jina, namba ya simu, kitambulisho...{% endif %}">
+                    </div>
+                {% endif %}
+
+                {% if cl.has_filters %}
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        {% for spec in cl.filter_specs %}
+                            {% jazzmin_list_filter cl spec %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if cl.has_filters or cl.search_fields %}
+                    <button type="submit" class="mms-btn-search">
+                        <i class="fas fa-filter me-1"></i> {% trans 'Tafuta' %}
+                    </button>
+                    {% if cl.query or cl.is_filtered %}
+                        <a href="?" class="mms-btn-clear">
+                            <i class="fas fa-rotate-left me-1"></i> {% trans 'Weka Upya' %}
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+                {% admin_extra_filters cl as extra_filters %}
+                {% for pair in extra_filters.items %}
+                    {% if pair.0 != "q" %}<input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}">{% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Object Tools & Export Items (if present) -->
+            {% block object-tools %}
+                {% block object-tools-items %}
+                    <div class="d-flex gap-2">
+                        {% change_list_object_tools %}
+                    </div>
+                {% endblock %}
+            {% endblock %}
+        </form>
+    </div>
+    {% endblock %}
+
+    <!-- 4. Data Table Card with Bulk Actions -->
+    <div class="mms-table-card">
+        <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>
+            {% csrf_token %}
+
+            {% if cl.formset and cl.formset.errors %}
+                <div class="alert alert-warning m-3" role="alert">
+                    {% if cl.formset.total_error_count == 1 %}
+                        {% trans "Tafadhali rekebisha hitilafu hapa chini." %}
+                    {% else %}
+                        {% trans "Tafadhali rekebisha hitilafu zilizo hapa chini." %}
+                    {% endif %}
+                </div>
+                {{ cl.formset.non_form_errors }}
+            {% endif %}
+
+            <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+                {% if cl.formset %}
+                    <div>{{ cl.formset.management_form }}</div>
+                {% endif %}
+
+                {% block result_list %}
+                    {% if action_form and actions_on_top and cl.show_admin_actions %}
+                        <div class="mms-actions-bar">
+                            <i class="fas fa-tasks text-warning me-1"></i>
+                            {% admin_actions %}
+                        </div>
+                    {% endif %}
+
+                    <div class="table-responsive">
+                        {% result_list cl %}
+                    </div>
+
+                    {% if action_form and actions_on_bottom and cl.show_admin_actions %}
+                        <div class="mms-actions-bar">
+                            <i class="fas fa-tasks text-warning me-1"></i>
+                            {% admin_actions %}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+
+                <!-- Pagination Bar -->
+                <div class="mms-pagination-bar">
+                    <div>
+                        {% blocktrans count counter=cl.result_count %}Imeonyeshwa <strong>{{ counter }}</strong> rekodi{% plural %}Zimeonyeshwa rekodi <strong>{{ counter }}</strong> kwa ujumla{% endblocktrans %}
+                        {% if cl.show_full_result_count %}
+                            <span class="text-muted ms-1">({% blocktrans with full_result_count=cl.full_result_count %}kati ya {{ full_result_count }}{% endblocktrans %})</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% block pagination %}{% pagination cl %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extrajs %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'vendor/select2/js/select2.min.js' %}"></script>
+    <script id="mms-filter-input-data" type="text/plain">{
+        {% for k,v in cl.model_admin.filter_input_length.items %}
+            "{{ k }}": {{ v }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    }</script>
+    <script>
+        window.filterInputLengthDefault = 0;
+        try {
+            window.filterInputLength = JSON.parse(document.getElementById('mms-filter-input-data')?.textContent || '{}');
+        } catch (e) {
+            window.filterInputLength = {};
+        }
+    </script>
+    <script type="text/javascript" src="{% static 'jazzmin/js/change_list.js' %}"></script>
+{% endblock %}

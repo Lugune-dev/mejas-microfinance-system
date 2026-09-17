@@ -179,7 +179,7 @@
                 <!-- Flowbite Progress Bar -->
                 <div class="w-full bg-slate-100 rounded-full h-3 dark:bg-white/[0.08] overflow-hidden">
                     <div class="bg-gradient-to-r from-emerald-500 via-brand-500 to-amber-500 h-3 rounded-full transition-all duration-700 ease-out" 
-                         style="width: {{ progress_percent|default:'0' }}%"></div>
+                         data-width="{{ progress_percent|default:'0' }}%"></div>
                 </div>
                 <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
                     <span>TZS 0</span>
@@ -361,4 +361,11 @@
 
 <!-- Flowbite JS CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('[data-width]').forEach(function(el) {
+        el.style.width = el.getAttribute('data-width');
+    });
+});
+</script>
 {% endblock %}

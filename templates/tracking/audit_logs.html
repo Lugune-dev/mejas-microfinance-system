@@ -13,8 +13,8 @@
         </div>
     </div>
 
-    <!-- Backup & Restore Panel (CEO/Admin Only) -->
-    {% if user.role == 'CEO' or user.role == 'ADMIN' %}
+    <!-- Backup & Restore Panel (Django Admin Only) -->
+    {% if user.role == 'ADMIN' or user.is_superuser %}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
         <!-- Backup Section -->
         <div class="space-y-3">
@@ -44,7 +44,10 @@
             <form action="{% url 'db_restore' %}" method="post" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
                 {% csrf_token %}
                 <input type="file" name="backup_file" accept=".json" required class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 dark:file:bg-slate-800 dark:file:text-slate-200 file:text-slate-700 hover:file:bg-slate-300 dark:hover:file:bg-slate-700 transition cursor-pointer">
-                <button type="submit" onclick="return confirm('{% translate "Je, una uhakika unataka kurejesha database? Kitendo hiki kitaongeza/kusasisha taarifa zilizopo." %}')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs shadow transition duration-150">
+                <button type="submit" 
+                        data-confirm="{% translate 'Je, una uhakika unataka kurejesha database? Kitendo hiki kitaongeza/kusasisha taarifa zilizopo.' %}"
+                        onclick="return confirm(this.dataset.confirm);" 
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs shadow transition duration-150">
                     <i class="fa-solid fa-upload"></i> {% translate "Rejesha Database sasa" %}
                 </button>
             </form>

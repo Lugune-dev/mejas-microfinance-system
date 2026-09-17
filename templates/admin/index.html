@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n l10n static admin_kpis %}
+{% load i18n l10n static humanize admin_kpis %}
 
 {% block extrahead %}
 {{ block.super }}
@@ -132,7 +132,6 @@
     }
     .icon-teal { background: #ecfdf5; color: #10b981; }
     .icon-gold { background: #fefce8; color: #dfb13c; }
-    .icon-blue { background: #eff6ff; color: #3b82f6; }
     .icon-rose { background: #fef2f2; color: #ef4444; }
 
     .mms-kpi-value {
@@ -151,7 +150,7 @@
         gap: 6px;
     }
     .pill-green { color: #15803d; font-weight: 700; }
-    .pill-blue { color: #2563eb; font-weight: 700; }
+    .pill-gold { color: #b45309; font-weight: 700; }
 
     /* Chart Containers */
     .mms-chart-card {
@@ -292,6 +291,86 @@
     .badge-mms-completed { background: #e0e7ff; color: #4338ca; }
     .badge-mms-overdue { background: #fee2e2; color: #b91c1c; }
     .badge-mms-pending { background: #f1f5f9; color: #475569; }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+
+    /* Dark Mode Comprehensive Styling */
+    [data-bs-theme="dark"] .mms-kpi-card,
+    [data-bs-theme="dark"] .mms-chart-card,
+    .theme-dark .mms-kpi-card,
+    .theme-dark .mms-chart-card {
+        background: #0f2420 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-bs-theme="dark"] .mms-kpi-value,
+    [data-bs-theme="dark"] .mms-chart-title h3,
+    .theme-dark .mms-kpi-value,
+    .theme-dark .mms-chart-title h3 {
+        color: #ffffff !important;
+    }
+    [data-bs-theme="dark"] .mms-kpi-title,
+    [data-bs-theme="dark"] .mms-chart-title p,
+    [data-bs-theme="dark"] .mms-ratio-label,
+    .theme-dark .mms-kpi-title,
+    .theme-dark .mms-chart-title p,
+    .theme-dark .mms-ratio-label {
+        color: #94a3b8 !important;
+    }
+    [data-bs-theme="dark"] .mms-chart-head {
+        border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-bs-theme="dark"] .mms-admin-table th {
+        background: #091714 !important;
+        color: #94a3b8 !important;
+        border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-bs-theme="dark"] .mms-admin-table td {
+        border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+        color: #e2e8f0 !important;
+    }
+    [data-bs-theme="dark"] .mms-admin-table tr:hover {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+    }
+    [data-bs-theme="dark"] .mms-timeline-text p {
+        color: #e2e8f0 !important;
+    }
+    [data-bs-theme="dark"] .mms-timeline-dot {
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #34d399 !important;
+    }
+    [data-bs-theme="dark"] .mms-ratio-track {
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-bs-theme="dark"] .icon-teal { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
+    [data-bs-theme="dark"] .icon-gold { background: rgba(223, 177, 60, 0.15) !important; color: #dfb13c !important; }
+    [data-bs-theme="dark"] .icon-rose { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+    [data-bs-theme="dark"] .pill-gold { color: #fbbf24 !important; }
+    [data-bs-theme="dark"] .badge-mms-pending { background: #1e293b !important; color: #cbd5e1 !important; }
+
+    @media (max-width: 768px) {
+        .mms-dash-header {
+            padding: 16px !important;
+            gap: 14px !important;
+        }
+        .mms-dash-header h2 {
+            font-size: 18px !important;
+        }
+        .mms-quick-actions {
+            width: 100% !important;
+            gap: 8px !important;
+        }
+        .mms-btn-action {
+            flex: 1 1 calc(50% - 6px) !important;
+            justify-content: center !important;
+            font-size: 11px !important;
+            padding: 8px 10px !important;
+            text-align: center !important;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -302,29 +381,40 @@
 
     <!-- 1. EXECUTIVE HEADER BANNER -->
     <div class="mms-dash-header">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <h2>Mejas Microfinance Dashboard</h2>
-                <span class="badge-bot ml-2">
-                    <i class="fa-solid fa-shield-halved"></i> BOT Tier 2 Regulated &bull; MSP2-TZ-2024-0084
-                </span>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div style="position: relative; flex-shrink: 0;">
+                <img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static 'images/admin_avatar.png' %}{% endif %}" 
+                     style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; object-position: center; border: 2.5px solid #dfb13c; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" 
+                     alt="{{ user.username }}">
+                <span style="position: absolute; bottom: 1px; right: 1px; width: 12px; height: 12px; background: #10b981; border: 2px solid #0b2a25; border-radius: 50%;" title="Online"></span>
             </div>
-            <p>Mfumo wa Kisasa wa Usimamizi wa Mikopo na Fedha &bull; Karibu tena, <strong>{{ user.get_full_name|default:user.username }}</strong>.</p>
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <h2>Mejas Microfinance Dashboard</h2>
+                    <span class="badge-bot ml-1">
+                        <i class="fa-solid fa-shield-halved"></i> BOT Tier 2 &bull; MSP2-TZ-2024-0084
+                    </span>
+                    <span style="background: rgba(223, 177, 60, 0.2); border: 1px solid #dfb13c; color: #dfb13c; font-weight: 800; border-radius: 9999px; font-size: 10px; padding: 4px 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fa-solid fa-user-shield mr-1"></i> Django Admin (Executive)
+                    </span>
+                </div>
+                <p>Mfumo wa Kisasa wa Usimamizi wa Mikopo na Fedha &bull; Karibu tena, <strong>{{ user.get_full_name|default:user.username }}</strong>.</p>
+            </div>
         </div>
 
         <!-- Quick Action Shortcuts -->
         <div class="mms-quick-actions">
             <a href="{% url 'admin:mms_app_clientprofile_add' %}" class="mms-btn-action mms-btn-action-primary">
-                <i class="fa-solid fa-user-plus"></i> Sajili Mteja Mpya
+                <i class="fa-solid fa-user-plus"></i> {% translate "Sajili Mteja Mpya" %}
             </a>
-            <a href="{% url 'loan_apply' %}" class="mms-btn-action">
-                <i class="fa-solid fa-hand-holding-dollar"></i> Toa Mkopo (5%)
+            <a href="{% url 'admin:mms_app_loan_add' %}" class="mms-btn-action">
+                <i class="fa-solid fa-hand-holding-dollar"></i> {% translate "Toa Mkopo (5%)" %}
             </a>
-            <a href="{% url 'daily_repayment_tracking' %}" class="mms-btn-action">
-                <i class="fa-solid fa-calendar-check"></i> Ufuatiliaji wa Leo
+            <a href="{% url 'admin_daily_tracking' %}" class="mms-btn-action">
+                <i class="fa-solid fa-calendar-check"></i> {% translate "Ufuatiliaji wa Leo" %}
             </a>
-            <a href="{% url 'reports_menu' %}" class="mms-btn-action">
-                <i class="fa-solid fa-file-invoice-dollar"></i> Ripoti za Kifedha
+            <a href="{% url 'admin_reports_menu' %}" class="mms-btn-action">
+                <i class="fa-solid fa-file-invoice-dollar"></i> {% translate "Ripoti za Kifedha" %}
             </a>
             <button type="button" id="adminThemeToggleBtn" class="mms-btn-action" style="cursor: pointer;" title="Badili Mandhari ya Admin (Light / Dark)">
                 <i class="fa-solid fa-circle-half-stroke text-warning"></i> <span id="adminThemeLabel">Mandhari</span>
@@ -346,7 +436,7 @@
                         </div>
                     </div>
                     <div class="mms-kpi-value">
-                        TZS {{ kpi.active_portfolio|floatformat:0 }}
+                        TZS {{ kpi.active_portfolio|floatformat:0|intcomma }}
                     </div>
                 </div>
                 <div class="mms-kpi-sub">
@@ -362,7 +452,7 @@
                 <div>
                     <div class="mms-kpi-header">
                         <span class="mms-kpi-title">Yield on Portfolio</span>
-                        <div class="mms-kpi-icon icon-blue">
+                        <div class="mms-kpi-icon icon-gold">
                             <i class="fa-solid fa-percent"></i>
                         </div>
                     </div>
@@ -371,7 +461,7 @@
                     </div>
                 </div>
                 <div class="mms-kpi-sub">
-                    <span class="pill-blue"><i class="fa-solid fa-circle-check"></i> 5.0% Standard</span>
+                    <span class="pill-gold"><i class="fa-solid fa-circle-check"></i> 5.0% Standard</span>
                     <span>riba halisi ya mwezi</span>
                 </div>
             </div>
@@ -388,7 +478,7 @@
                         </div>
                     </div>
                     <div class="mms-kpi-value">
-                        TZS {{ kpi.monthly_collections|floatformat:0 }}
+                        TZS {{ kpi.monthly_collections|floatformat:0|intcomma }}
                     </div>
                 </div>
                 <div class="mms-kpi-sub">
@@ -408,7 +498,7 @@
                             <i class="fa-solid fa-shield-virus"></i>
                         </div>
                     </div>
-                    <div class="mms-kpi-value" style="color: {% if kpi.par_percentage > 5.0 %}#b91c1c{% else %}#15803d{% endif %};">
+                    <div class="mms-kpi-value" {% if kpi.par_percentage > 5.0 %}style="color: #b91c1c;"{% else %}style="color: #15803d;"{% endif %}>
                         {{ kpi.par_percentage }}%
                     </div>
                 </div>
@@ -463,7 +553,7 @@
                             <span style="color: #10b981;">{{ kpi.repayment_rate }}%</span>
                         </div>
                         <div class="mms-ratio-track">
-                            <div class="mms-ratio-fill" style="width: {{ kpi.repayment_rate }}%; background: #10b981;"></div>
+                            <div class="mms-ratio-fill" data-width="{{ kpi.repayment_rate }}%" style="background: #10b981;"></div>
                         </div>
                     </div>
 
@@ -473,17 +563,17 @@
                             <span style="color: #dfb13c;">{{ kpi.oss_percentage }}% (Endelevu)</span>
                         </div>
                         <div class="mms-ratio-track">
-                            <div class="mms-ratio-fill" style="width: {% if kpi.oss_percentage > 100 %}100{% else %}{{ kpi.oss_percentage }}{% endif %}%; background: #dfb13c;"></div>
+                            <div class="mms-ratio-fill" data-width="{% if kpi.oss_percentage > 100 %}100{% else %}{{ kpi.oss_percentage }}{% endif %}%" style="background: #dfb13c;"></div>
                         </div>
                     </div>
 
                     <div class="mms-ratio-item">
                         <div class="mms-ratio-label">
                             <span>Udhibiti wa NPL (&lt; 3.0%)</span>
-                            <span style="color: #0284c7;">{{ kpi.npl_ratio }}% (Salama)</span>
+                            <span style="color: #10b981;">{{ kpi.npl_ratio }}% (Salama)</span>
                         </div>
                         <div class="mms-ratio-track">
-                            <div class="mms-ratio-fill" style="width: {% if kpi.npl_ratio > 0 %}{{ kpi.npl_ratio }}{% else %}4{% endif %}%; background: #0284c7;"></div>
+                            <div class="mms-ratio-fill" data-width="{% if kpi.npl_ratio > 0 %}{{ kpi.npl_ratio }}{% else %}4{% endif %}%" style="background: #10b981;"></div>
                         </div>
                     </div>
 
@@ -541,7 +631,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <strong class="text-dark">TZS {{ loan.principal_amount|floatformat:0 }}</strong>
+                                    <strong class="text-dark">TZS {{ loan.principal_amount|floatformat:0|intcomma }}</strong>
                                 </td>
                                 <td>
                                     <span class="text-muted">5.0% &bull; {{ loan.duration }} Siku</span>
@@ -588,7 +678,7 @@
                         </div>
                         <div class="mms-timeline-text">
                             <p>
-                                Malipo ya <strong>TZS {{ pay.amount_paid|floatformat:0 }}</strong> yamethibitishwa kwa mkopo <strong>{{ pay.loan.loan_id }}</strong>
+                                Malipo ya <strong>TZS {{ pay.amount_paid|floatformat:0|intcomma }}</strong> yamethibitishwa kwa mkopo <strong>{{ pay.loan.loan_id }}</strong>
                             </p>
                             <span>{{ pay.payment_date|timesince }} zilizopita &bull; Risiti: {{ pay.receipt_no }}</span>
                         </div>
@@ -610,7 +700,7 @@
                     <a href="{% url 'admin:mms_app_payment_changelist' %}" class="btn btn-sm btn-primary flex-fill font-weight-bold">
                         <i class="fa-solid fa-list mr-1"></i> Malipo Yote
                     </a>
-                    <a href="{% url 'daily_repayment_tracking' %}" class="btn btn-sm btn-warning flex-fill font-weight-bold">
+                    <a href="{% url 'admin_daily_tracking' %}" class="btn btn-sm btn-warning flex-fill font-weight-bold">
                         <i class="fa-solid fa-calendar-check mr-1"></i> Ufuatiliaji
                     </a>
                 </div>
@@ -622,14 +712,23 @@
 </div>
 
 <!-- 5. CHART.JS INITIALIZATION SCRIPT -->
+<script id="admin-chart-months-data" type="text/plain">{{ kpi.chart_months_json|safe }}</script>
+<script id="admin-disb-data" type="text/plain">{{ kpi.disb_json|safe }}</script>
+<script id="admin-coll-data" type="text/plain">{{ kpi.coll_json|safe }}</script>
+<script id="admin-donut-data" type="text/plain">{{ kpi.donut_json|safe }}</script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    // Set ratio bar widths
+    document.querySelectorAll('.mms-ratio-fill[data-width]').forEach(function(el) {
+        el.style.width = el.getAttribute('data-width');
+    });
+
     // 1. Chart.js: Disbursements vs. Collections (Monthly Flow)
     const ctxFlow = document.getElementById('disbVsCollChart');
     if (ctxFlow) {
-        const months = {{ kpi.chart_months_json|safe }};
-        const disbData = {{ kpi.disb_json|safe }};
-        const collData = {{ kpi.coll_json|safe }};
+        const months = JSON.parse(document.getElementById('admin-chart-months-data')?.textContent || '[]');
+        const disbData = JSON.parse(document.getElementById('admin-disb-data')?.textContent || '[]');
+        const collData = JSON.parse(document.getElementById('admin-coll-data')?.textContent || '[]');
 
         new Chart(ctxFlow, {
             type: 'bar',
@@ -709,7 +808,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // 2. Chart.js: Portfolio Breakdown Donut Chart
     const ctxDonut = document.getElementById('portfolioDonutChart');
     if (ctxDonut) {
-        const donutData = {{ kpi.donut_json|safe }}; // [active, completed, overdue, pending]
+        const donutData = JSON.parse(document.getElementById('admin-donut-data')?.textContent || '[]');
 
         new Chart(ctxDonut, {
             type: 'doughnut',
@@ -719,7 +818,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     data: donutData,
                     backgroundColor: [
                         '#10b981', // Emerald for active
-                        '#3b82f6', // Blue for completed
+                        '#dfb13c', // Gold for completed
                         '#ef4444', // Red for overdue
                         '#94a3b8'  // Slate for pending
                     ],
@@ -753,22 +852,47 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Admin Theme Switcher Logic
+    // Admin 2-Theme Switcher Logic (Light & Dark)
     const adminThemeBtn = document.getElementById('adminThemeToggleBtn');
     const adminThemeLabel = document.getElementById('adminThemeLabel');
     if (adminThemeBtn && adminThemeLabel) {
-        const updateThemeLabel = () => {
-            const currentMode = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('jazzmin-theme-mode') || 'light';
-            adminThemeLabel.textContent = currentMode === 'dark' ? 'Light Mode' : 'Dark Mode';
+        const updateThemeUI = (mode) => {
+            const currentMode = mode || localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            if (currentMode === 'dark') {
+                adminThemeLabel.textContent = 'Njia ya Mchana (Light)';
+                const icon = adminThemeBtn.querySelector('i');
+                if (icon) { icon.className = 'fa-solid fa-sun text-warning'; }
+            } else {
+                adminThemeLabel.textContent = 'Njia ya Giza (Dark)';
+                const icon = adminThemeBtn.querySelector('i');
+                if (icon) { icon.className = 'fa-solid fa-moon text-warning'; }
+            }
         };
-        updateThemeLabel();
+
+        updateThemeUI();
 
         adminThemeBtn.addEventListener('click', function () {
-            const currentMode = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('jazzmin-theme-mode') || 'light';
-            const nextMode = currentMode === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', nextMode);
-            localStorage.setItem('jazzmin-theme-mode', nextMode);
-            updateThemeLabel();
+            if (window.toggleGlobalAdminTheme) {
+                window.toggleGlobalAdminTheme();
+            } else {
+                const currentMode = localStorage.getItem('color-theme') === 'dark' ? 'dark' : 'light';
+                const nextMode = currentMode === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('color-theme', nextMode);
+                localStorage.setItem('jazzmin-theme-mode', nextMode);
+                document.documentElement.setAttribute('data-bs-theme', nextMode);
+                if (nextMode === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.remove('dark-mode');
+                }
+                updateThemeUI(nextMode);
+            }
+        });
+
+        window.addEventListener('mms-theme-changed', function(e) {
+            updateThemeUI(e.detail.mode);
         });
     }
 });

@@ -1,0 +1,253 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static humanize %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Nyumbani' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='mms_app' %}">MMS App</a>
+    &rsaquo; <a href="{% url 'admin_reports_menu' %}">{% translate 'Ripoti za Kifedha' %}</a>
+    &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<style>
+    .rg-header {
+        background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);
+        color: #ffffff;
+        border-radius: 14px;
+        padding: 22px 26px;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #dfb13c;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        box-shadow: 0 4px 16px rgba(11, 42, 37, 0.15);
+    }
+    .rg-header h2 {
+        font-size: 18px;
+        font-weight: 800;
+        margin: 0;
+        color: #ffffff;
+    }
+    .rg-header p {
+        font-size: 12px;
+        color: #cbd5e1;
+        margin: 4px 0 0 0;
+    }
+    .rg-filter-card {
+        background: var(--body-bg, #ffffff);
+        border: 1px solid var(--hairline-color, #e2e8f0);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .rg-downloads {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .rg-btn {
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        text-decoration: none !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .rg-btn-pdf {
+        background: #ef4444;
+        color: #ffffff !important;
+    }
+    .rg-btn-pdf:hover {
+        background: #dc2626;
+    }
+    .rg-btn-excel {
+        background: #10b981;
+        color: #ffffff !important;
+    }
+    .rg-btn-excel:hover {
+        background: #059669;
+    }
+    .rg-btn-csv {
+        background: #f1f5f9;
+        color: #334155 !important;
+        border: 1px solid #cbd5e1;
+    }
+    .rg-table-card {
+        background: var(--body-bg, #ffffff);
+        border: 1px solid var(--hairline-color, #e2e8f0);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
+    }
+    .rg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    .rg-table th {
+        background: var(--darkened-bg, #f8fafc);
+        color: var(--body-quiet-color, #475569);
+        font-weight: 800;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--hairline-color, #e2e8f0);
+        white-space: nowrap;
+    }
+    .rg-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--hairline-color, #f1f5f9);
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .rg-table tr:hover {
+        background-color: var(--darkened-bg, #f8fafc);
+    }
+    .rg-signoff {
+        padding: 20px;
+        background: var(--body-bg, #ffffff);
+        border: 1px solid var(--hairline-color, #e2e8f0);
+        border-radius: 12px;
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 30px;
+    }
+
+    [data-bs-theme="dark"] .rg-filter-card,
+    [data-bs-theme="dark"] .rg-table-card,
+    [data-bs-theme="dark"] .rg-signoff {
+        background: #0f2420 !important;
+        border-color: rgba(255,255,255,0.08) !important;
+    }
+    [data-bs-theme="dark"] .rg-table th {
+        background: #091714 !important;
+        color: #94a3b8 !important;
+        border-color: rgba(255,255,255,0.08) !important;
+    }
+    [data-bs-theme="dark"] .rg-table td {
+        border-color: rgba(255,255,255,0.05) !important;
+        color: #e2e8f0 !important;
+    }
+    [data-bs-theme="dark"] .rg-btn-csv {
+        background: #1e3a34 !important;
+        color: #e2e8f0 !important;
+        border-color: rgba(255,255,255,0.15) !important;
+    }
+</style>
+
+<div>
+    <!-- Header -->
+    <div class="rg-header">
+        <div>
+            <h2><i class="fa-solid fa-file-lines mr-2" style="color: #dfb13c;"></i> {{ title }}</h2>
+            <p>{% translate "Kipindi:" %} <strong>{{ start_date|date:"d/m/Y" }}</strong> {% translate "hadi" %} <strong>{{ end_date|date:"d/m/Y" }}</strong> &bull; {% translate "Jumla ya rekodi:" %} <strong>{{ rows|length }}</strong></p>
+        </div>
+        <a href="{% url 'admin_reports_menu' %}" class="button" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 7px 14px; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-arrow-left"></i> {% translate "Rudi kwenye Menyu ya Ripoti" %}
+        </a>
+    </div>
+
+    <!-- Filter & Download Bar -->
+    <div class="rg-filter-card">
+        <form method="get" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+            <div>
+                <label style="display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">{% translate "Tarehe ya Kuanzia" %}</label>
+                <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">{% translate "Tarehe ya Mwisho" %}</label>
+                <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px;">
+            </div>
+
+            <button type="submit" class="button" style="background: #114139; color: #fff; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                <i class="fa-solid fa-rotate mr-1"></i> {% translate "Chuja Upya" %}
+            </button>
+        </form>
+
+        <div class="rg-downloads">
+            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=pdf" class="rg-btn rg-btn-pdf" title="Pakua ripoti rasmi ya PDF yenye Nembo">
+                <i class="fa-solid fa-file-pdf"></i> {% translate "Pakua PDF (Official)" %}
+            </a>
+            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=excel" class="rg-btn rg-btn-excel" title="Pakua data kwa mfumo wa Microsoft Excel">
+                <i class="fa-solid fa-file-excel"></i> {% translate "Pakua Excel" %}
+            </a>
+            <a href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=csv" class="rg-btn rg-btn-csv" title="Pakua CSV">
+                <i class="fa-solid fa-file-csv"></i> {% translate "CSV" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="rg-table-card">
+        <div style="overflow-x: auto;">
+            <table class="rg-table">
+                <thead>
+                    <tr>
+                        {% for h in headers %}
+                            <th>{{ h }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        {% for val in row %}
+                            <td>
+                                {% if val|stringformat:"s"|slice:":3" == "TZS" %}
+                                    <strong>{{ val }}</strong>
+                                {% else %}
+                                    {{ val }}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{{ headers|length|default:5 }}" style="text-align: center; padding: 30px; color: #64748b;">
+                            <i class="fa-solid fa-folder-open" style="font-size: 24px; margin-bottom: 8px; display: block; opacity: 0.5;"></i>
+                            {% translate "Hakuna taarifa zilizopatikana kwa vigezo na tarehe zilizochaguliwa." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Signoff Block -->
+    <div class="rg-signoff">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <strong>{% translate "Afisa Msimamizi (Admin/CEO):" %}</strong> ___________________________
+            </div>
+            <div>
+                <strong>{% translate "Saini Rasmi:" %}</strong> ___________________________
+            </div>
+            <div>
+                <strong>{% translate "Tarehe:" %}</strong> ___________________________
+            </div>
+        </div>
+        <p style="margin: 14px 0 0 0; font-size: 10px; color: #94a3b8; text-align: center;">
+            Mfumo Rasmi wa Kidigitali wa Mejas Enterprises Microfinance Management System (MMS) &bull; BOT Tier 2 License MSP2-TZ-2024-0084
+        </p>
+    </div>
+
+</div>
+{% endblock %}

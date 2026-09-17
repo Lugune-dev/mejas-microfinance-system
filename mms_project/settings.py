@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     "mms_app",
     "payments",
 ]
@@ -207,8 +208,8 @@ JAZZMIN_SETTINGS = {
     "user_avatar": "photo",
     "topmenu_links": [
         {"name": "Tovuti ya Mwanzo", "url": "home", "permissions": []},
-        {"name": "Ripoti za Kifedha", "url": "reports_menu", "permissions": ["mms_app.view_loan"]},
-        {"name": "Ufuatiliaji wa Leo", "url": "daily_repayment_tracking", "permissions": ["mms_app.view_payment"]},
+        {"name": "Ripoti za Kifedha", "url": "admin_reports_menu", "permissions": ["mms_app.view_loan"]},
+        {"name": "Ufuatiliaji wa Leo", "url": "admin_daily_tracking", "permissions": ["mms_app.view_payment"]},
     ],
     "usermenu_links": [
         {"name": "Tovuti Kuu (Home)", "url": "home", "icon": "fas fa-globe"},
@@ -247,8 +248,8 @@ JAZZMIN_SETTINGS = {
     "related_modal_active": True,
     "custom_css": "admin_custom.css",
     "custom_js": None,
-    "show_theme_chooser": True,
-    "show_ui_builder": True,
+    "show_theme_chooser": False,
+    "show_ui_builder": False,
     "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {
         "mms_app.loan": "horizontal_tabs",

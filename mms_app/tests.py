@@ -521,6 +521,129 @@ class MMSCoreBusinessTests(TestCase):
         self.assertContains(res_admin, "mms-kpi-sparkline")
         self.assertContains(res_admin, "mms-svg-chart")
 
+    def test_admin_action_routing_and_views(self):
+        """Verify Admin stays inside Django Admin for loans, daily tracking, and reports."""
+        admin_user = User.objects.create_user(
+            username="test_admin_cockpit",
+            password="Admin_password123",
+            role=User.Role.ADMIN,
+            is_staff=True,
+            is_superuser=True
+        )
+        client = Client()
+        client.login(username="test_admin_cockpit", password="Admin_password123")
+
+        # 1. Admin accessing frontend /loans/apply/ redirects to admin:mms_app_loan_add
+        res_loan = client.get(reverse("loan_apply"))
+        self.assertRedirects(res_loan, reverse("admin:mms_app_loan_add"))
+
+        # 2. Admin accessing frontend /daily-tracking/ redirects to admin_daily_tracking
+        res_track = client.get(reverse("daily_repayment_tracking"))
+        self.assertRedirects(res_track, reverse("admin_daily_tracking"))
+
+        # 3. Admin accessing frontend /reports/ redirects to admin_reports_menu
+        res_rep = client.get(reverse("reports_menu"))
+        self.assertRedirects(res_rep, reverse("admin_reports_menu"))
+
+        # 4. Accessing admin_daily_tracking directly loads Django admin tracking page
+        res_admin_track = client.get(reverse("admin_daily_tracking"))
+        self.assertEqual(res_admin_track.status_code, 200)
+        self.assertContains(res_admin_track, "Ufuatiliaji wa Marejesho ya Siku")
+
+        # 5. Accessing admin_reports_menu directly loads Django admin reports hub
+        res_admin_reports = client.get(reverse("admin_reports_menu"))
+        self.assertEqual(res_admin_reports.status_code, 200)
+        self.assertContains(res_admin_reports, "Kituo cha Ripoti za Kifedha")
+
+        # 6. Accessing admin_generate_report preview
+        res_admin_gen = client.get(reverse("admin_generate_report", kwargs={"report_type": "disbursement"}))
+        self.assertEqual(res_admin_gen.status_code, 200)
+        self.assertContains(res_admin_gen, "Ripoti ya Mikopo Iliyotolewa")
+
+    def test_admin_client_registration_form(self):
+        """Verify ClientProfileAdminForm creates both User and ClientProfile seamlessly."""
+        from mms_app.admin import ClientProfileAdminForm
+        form_data = {
+            "first_name": "Hamisi",
+            "last_name": "Juma",
+            "phone": "+255799112233",
+            "nida": "19900101-12345-00001-20",
+            "branch": self.branch.id,
+            "email": "hamisi.juma@example.com",
+            "initial_password": "Client_password123",
+            "address": "Mtaa wa Posta, Dar es Salaam",
+            "guarantor_name": "Amina Juma",
+            "guarantor_phone": "+255799445566",
+            "guarantor_relationship": "Dada",
+            "guarantor_nida": "19920202-54321-00002-21",
+            "guarantor_address": "Kariakoo, Dar es Salaam",
+        }
+        form = ClientProfileAdminForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        profile = form.save()
+        self.assertIsNotNone(profile.pk)
+        self.assertIsNotNone(profile.user)
+        self.assertEqual(profile.user.role, User.Role.CLIENT)
+        self.assertEqual(profile.user.first_name, "Hamisi")
+        self.assertEqual(profile.user.last_name, "Juma")
+        self.assertEqual(profile.user.phone, "+255799112233")
+        self.assertEqual(profile.guarantor_name, "Amina Juma")
+
+    def test_admin_changelist_views(self):
+        """Verify all ModelAdmin changelists load with status 200 without template/attribute errors."""
+        admin_user = User.objects.create_superuser(
+            username="admin_tester",
+            password="Admin_password123",
+            role=User.Role.ADMIN,
+            phone="+255999000",
+        )
+        client = Client()
+        client.force_login(admin_user)
+
+        models = [
+            "loan",
+            "clientprofile",
+            "payment",
+            "repaymentschedule",
+            "branch",
+            "cashflow",
+            "dailyreconciliation",
+            "user",
+            "auditlog",
+            "notification",
+        ]
+        for m in models:
+            url = reverse(f"admin:mms_app_{m}_changelist")
+            res = client.get(url)
+            self.assertEqual(res.status_code, 200, f"Failed loading changelist for {m}: status {res.status_code}")
+
+    def test_admin_changeform_views(self):
+        """Verify all ModelAdmin changeform (add/change) pages load with status 200."""
+        admin_user = User.objects.create_superuser(
+            username="admin_form_tester",
+            password="Admin_password123",
+            role=User.Role.ADMIN,
+            phone="+255999001",
+        )
+        client = Client()
+        client.force_login(admin_user)
+
+        models = [
+            "loan",
+            "clientprofile",
+            "branch",
+            "cashflow",
+            "dailyreconciliation",
+            "user",
+        ]
+        for m in models:
+            url = reverse(f"admin:mms_app_{m}_add")
+            res = client.get(url)
+            self.assertEqual(res.status_code, 200, f"Failed loading add form for {m}: status {res.status_code}")
+
+
+
+
 
 
 

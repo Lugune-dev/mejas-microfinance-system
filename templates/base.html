@@ -115,12 +115,12 @@
         <!-- ============================================================== -->
         <!-- AUTHENTICATED SIDEBAR (Only shown on app internal pages) -->
         <!-- ============================================================== -->
-        {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
+        {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset verify_2fa' %}
         <aside id="sidebar" class="no-print hidden md:flex flex-col w-72 bg-[#04120f] border-r border-white/[0.07] text-slate-300 flex-shrink-0 z-20 shadow-2xl">
             
             <!-- Sidebar Header / Brand Emblem -->
             <div class="h-20 flex items-center gap-3.5 px-5 bg-[#030d0b] border-b border-white/[0.07] flex-shrink-0">
-                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 group">
+                <a href="{% if user.role == 'ADMIN' %}{% url 'admin:index' %}{% else %}{% url 'dashboard' %}{% endif %}" class="flex items-center gap-3 group">
                     <div class="relative">
                         <div class="absolute -inset-1 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-500 blur opacity-40 group-hover:opacity-75 transition-opacity"></div>
                         <img src="{% static 'logo.png' %}" class="relative h-10 w-10 rounded-full object-cover border border-brand-500 shadow-md" alt="Mejas Logo">
@@ -154,7 +154,7 @@
                 <div class="space-y-1">
                     <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Kuu (Core)" %}</p>
                     
-                    <a href="{% url 'dashboard' %}" 
+                    <a href="{% if user.role == 'ADMIN' %}{% url 'admin:index' %}{% else %}{% url 'dashboard' %}{% endif %}" 
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if request.resolver_match.url_name == 'dashboard' %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
                         <i class="fa-solid fa-chart-pie w-5 text-sm {% if request.resolver_match.url_name == 'dashboard' %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
                         <span>{% translate "Dashibodi" %}</span>
@@ -189,7 +189,7 @@
                 </div>
 
                 <!-- SECTION 3: FEDHA & MATAWI / TREASURY -->
-                {% if user.role in 'CEO,MANAGER,CASHIER' %}
+                {% if user.role in 'ADMIN,MANAGER,CASHIER' %}
                 <div class="space-y-1">
                     <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Fedha & Matawi" %}</p>
 
@@ -199,7 +199,7 @@
                         <span>{% translate "Fedha & Hesabu" %}</span>
                     </a>
 
-                    {% if user.role in 'CEO,MANAGER' %}
+                    {% if user.role in 'ADMIN,MANAGER' %}
                     <a href="{% url 'branch_list' %}" 
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 {% if 'branch' in request.resolver_match.url_name %}bg-gradient-to-r from-brand-500/20 to-transparent text-brand-400 border-l-4 border-brand-500 shadow-sm font-bold{% else %}hover:bg-white/[0.04] text-slate-300 hover:text-white{% endif %}">
                         <i class="fa-solid fa-building-columns w-5 text-sm {% if 'branch' in request.resolver_match.url_name %}text-brand-500{% else %}text-slate-400{% endif %}"></i>
@@ -210,7 +210,7 @@
                 {% endif %}
 
                 <!-- SECTION 4: TAARIFA & USIMAMIZI / MANAGEMENT & INSIGHTS -->
-                {% if user.role in 'CEO,MANAGER,ADMIN' or user.is_superuser %}
+                {% if user.role in 'ADMIN,MANAGER' or user.is_superuser %}
                 <div class="space-y-1">
                     <p class="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{% translate "Usimamizi & Ripoti" %}</p>
 
@@ -232,7 +232,7 @@
                         <span>{% translate "Kumbukumbu (Audit)" %}</span>
                     </a>
 
-                    {% if user.is_staff or user.is_superuser or user.role == 'ADMIN' %}
+                    {% if user.role == 'ADMIN' and user.is_superuser %}
                     <a href="{% url 'admin:index' %}" target="_blank"
                        class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 transition-all border border-amber-500/30 shadow-sm">
                         <i class="fa-solid fa-server w-5 text-sm text-amber-400"></i>
@@ -246,22 +246,27 @@
             </nav>
 
             <!-- Sidebar User Identity Card (Footer) -->
-            <div class="p-4 bg-[#030d0b] border-t border-white/[0.07] flex items-center justify-between gap-3">
+            <div class="p-3.5 bg-[#030d0b] border-t border-white/[0.07] flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
-                    {% if user.photo %}
-                        <img src="{{ user.photo.url }}" class="h-9 w-9 rounded-full object-cover border border-brand-500" alt="avatar">
-                    {% else %}
-                        <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-bold text-xs shadow">
-                            {{ user.username|slice:":1"|upper }}
-                        </div>
-                    {% endif %}
+                    <div class="relative flex-shrink-0">
+                        {% if user.photo %}
+                            <img src="{{ user.photo.url }}" class="h-10 w-10 rounded-full object-cover object-center ring-2 ring-brand-500 shadow-md border border-slate-900" alt="{{ user.username }}">
+                        {% elif user.role == 'ADMIN' %}
+                            <img src="{% static 'images/admin_avatar.png' %}" class="h-10 w-10 rounded-full object-cover object-center ring-2 ring-brand-500 shadow-md border border-slate-900" alt="{{ user.username }}">
+                        {% else %}
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xs shadow-md ring-2 ring-brand-500/40">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-[#030d0b]" title="Online"></span>
+                    </div>
                     <div class="truncate">
-                        <p class="text-xs font-bold text-white truncate">{{ user.get_full_name|default:user.username }}</p>
-                        <p class="text-[10px] text-brand-400 truncate">{{ user.get_role_display }}</p>
+                        <p class="text-xs font-bold text-white truncate leading-tight">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="text-[10px] font-semibold text-brand-400 truncate mt-0.5">{{ user.get_role_display }}</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-0.5 flex-shrink-0">
                     <a href="{% url 'password_change' %}" class="text-slate-400 hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-white/[0.05]" title="{% translate 'Badili Password ya Akaunti' %}">
                         <i class="fa-solid fa-key text-xs"></i>
                     </a>
@@ -283,31 +288,35 @@
             <header class="no-print h-16 glass-nav border-b border-slate-200/80 dark:border-white/[0.07] flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0 gap-4 shadow-sm">
 
                 <!-- ZONE 1: Brand & Mobile Toggle -->
-                <div class="flex items-center gap-3 flex-shrink-0">
-                    {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
-                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 dark:text-slate-400 hover:text-brand-500 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.05]">
+                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                    {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset verify_2fa' %}
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-500 dark:text-slate-400 hover:text-brand-500 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.05]" aria-label="Open App Menu">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    {% else %}
+                    <button id="public-mobile-btn" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-brand-500 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.05]" aria-label="Open Website Menu">
                         <i class="fa-solid fa-bars text-lg"></i>
                     </button>
                     {% endif %}
 
-                    {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
-                    <a href="{% url 'dashboard' %}" class="flex items-center gap-2.5 md:hidden">
+                    {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset verify_2fa' %}
+                    <a href="{% if user.role == 'ADMIN' %}{% url 'admin:index' %}{% else %}{% url 'dashboard' %}{% endif %}" class="flex items-center gap-2 md:hidden">
                         <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
                         <span class="font-heading font-black text-slate-900 dark:text-white">MEJAS</span>
                     </a>
                     {% else %}
-                    <a href="{% url 'home' %}" class="flex items-center gap-3">
-                        <img src="{% static 'logo.png' %}" class="h-9 w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm" alt="logo">
+                    <a href="{% url 'home' %}" class="flex items-center gap-2 sm:gap-3">
+                        <img src="{% static 'logo.png' %}" class="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover border-2 border-brand-500 shadow-sm" alt="logo">
                         <div>
-                            <span class="font-heading font-extrabold text-base text-slate-900 dark:text-white tracking-wider block leading-none">MEJAS</span>
-                            <span class="text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest block mt-0.5">Microfinance</span>
+                            <span class="font-heading font-extrabold text-sm sm:text-base text-slate-900 dark:text-white tracking-wider block leading-none">MEJAS</span>
+                            <span class="text-[8px] sm:text-[9px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest block mt-0.5">Microfinance</span>
                         </div>
                     </a>
                     {% endif %}
                 </div>
 
                 <!-- ZONE 2: Center Navigation (Public Pages) / Quick Search (Authenticated App Pages) -->
-                {% if request.resolver_match.url_name in 'home about contact login password_reset password_change verify_2fa' or not user.is_authenticated %}
+                {% if request.resolver_match.url_name in 'home about contact login password_reset verify_2fa' or not user.is_authenticated %}
                 <nav class="hidden md:flex items-center gap-1.5">
                     <a href="{% url 'home' %}" class="px-4 py-2 text-xs font-bold rounded-full transition-all {% if request.resolver_match.url_name == 'home' %}bg-brand-500/15 text-brand-600 dark:text-brand-400 font-extrabold{% else %}text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-white/[0.04]{% endif %}">
                         {% translate "Nyumbani" %}
@@ -348,7 +357,7 @@
                         </button>
                         
                         <!-- Floating Dropdown Popover -->
-                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-52 bg-white/95 dark:bg-[#08121a]/95 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1">
+                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-[14rem] sm:w-52 bg-white/95 dark:bg-[#08121a]/95 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1">
                             <div class="px-3 py-1.5 border-b border-slate-100 dark:border-white/5">
                                 <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Chagua Lugha / Language</p>
                             </div>
@@ -381,38 +390,49 @@
 
                     <!-- Notifications (Authenticated only) -->
                     {% if user.is_authenticated %}
-                    {% with unread_notifs=user.notifications.all %}
+                    {% with unread_count=user.unread_notifications_count %}
                     <div class="relative" id="notification-dropdown">
                         <button id="notification-btn" type="button" class="relative text-slate-500 dark:text-slate-400 hover:text-brand-500 dark:hover:text-brand-400 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/[0.06] transition" aria-label="Notifications">
                             <i class="fa-solid fa-bell text-sm"></i>
-                            <span id="notif-badge" class="absolute top-1 right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold text-slate-950 bg-brand-500 rounded-full {% if not user.notifications.all %}hidden{% endif %}">
-                                {{ user.notifications.all|length }}
+                            <span id="notif-badge" class="absolute top-1 right-1 inline-flex items-center justify-center min-w-4 h-4 px-1 text-[9px] font-black text-slate-950 bg-brand-500 rounded-full {% if unread_count == 0 %}hidden{% endif %}">
+                                {{ unread_count }}
                             </span>
                         </button>
                         
                         <!-- Dropdown Panel -->
-                        <div id="notification-menu" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-[#071714] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div id="notification-menu" class="hidden absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white dark:bg-[#071714] border border-slate-200 dark:border-white/[0.08] rounded-2xl shadow-2xl z-50 overflow-hidden">
                             <div class="p-3.5 bg-[#030d0b] text-white flex items-center justify-between border-b border-white/[0.08]">
-                                <span class="font-heading font-bold text-xs tracking-wider">{% translate "Arifa za Mfumo" %}</span>
-                                <span class="bg-brand-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-extrabold">{{ user.notifications.all.count }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-heading font-bold text-xs tracking-wider">{% translate "Arifa za Mfumo" %}</span>
+                                    <span id="notif-count-badge" class="bg-brand-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-extrabold">{{ unread_count }}</span>
+                                </div>
+                                <button type="button" id="mark-all-read-btn" class="text-[11px] text-brand-400 hover:text-brand-300 font-bold hover:underline transition cursor-pointer">
+                                    {% translate "Weka Zote Zimesomwa" %}
+                                </button>
                             </div>
-                            <div class="divide-y divide-slate-100 dark:divide-white/[0.05] max-h-64 overflow-y-auto">
-                                {% for n in user.notifications.all|slice:":8" %}
-                                <div class="p-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.03] transition {% if not n.is_read %}bg-brand-50/50 dark:bg-brand-500/[0.04]{% endif %}">
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-xs font-bold text-slate-800 dark:text-slate-100">{{ n.title }}</p>
-                                        {% if not n.is_read %}
-                                        <span class="w-2 h-2 rounded-full bg-brand-500"></span>
-                                        {% endif %}
+                            <div id="notif-items-list" class="divide-y divide-slate-100 dark:divide-white/[0.05] max-h-72 overflow-y-auto">
+                                {% for n in user.notifications.all|slice:":10" %}
+                                <div class="notif-item p-3.5 transition cursor-pointer {% if not n.is_read %}bg-brand-50/70 dark:bg-brand-500/[0.07] hover:bg-brand-100/50 dark:hover:bg-brand-500/[0.12]{% else %}opacity-75 hover:opacity-100 hover:bg-slate-50 dark:hover:bg-white/[0.03]{% endif %}"
+                                     data-id="{{ n.id }}" 
+                                     data-read="{{ n.is_read|yesno:'true,false' }}"
+                                     title="{% translate 'Bofya kuisoma arifa hii' %}">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <p class="text-xs font-bold text-slate-800 dark:text-slate-100 leading-snug">{{ n.title }}</p>
+                                        <span class="notif-dot w-2 h-2 rounded-full bg-brand-500 flex-shrink-0 mt-1 {% if n.is_read %}hidden{% endif %}"></span>
                                     </div>
                                     <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{{ n.message }}</p>
-                                    <p class="text-[9px] text-slate-400 mt-1.5 flex items-center gap-1">
-                                        <i class="fa-regular fa-clock"></i> {{ n.created_at|date:"d M, H:i" }}
-                                    </p>
+                                    <div class="text-[9px] text-slate-400 mt-2 flex items-center justify-between">
+                                        <span class="flex items-center gap-1">
+                                            <i class="fa-regular fa-clock"></i> {{ n.created_at|date:"d M, H:i" }}
+                                        </span>
+                                        <span class="notif-status-label font-semibold {% if n.is_read %}text-slate-400{% else %}text-emerald-500 dark:text-emerald-400{% endif %}">
+                                            {% if n.is_read %}{% translate "Imesomwa" %}{% else %}{% translate "Bofya kusoma" %}{% endif %}
+                                        </span>
+                                    </div>
                                 </div>
                                 {% empty %}
                                 <div class="p-6 text-center text-slate-400 text-xs">
-                                    <i class="fa-solid fa-bell-slash text-xl mb-2 block"></i>
+                                    <i class="fa-solid fa-bell-slash text-xl mb-2 block text-slate-500"></i>
                                     {% translate "Hauna arifa yoyote hivi sasa." %}
                                 </div>
                                 {% endfor %}
@@ -434,7 +454,7 @@
                             <i class="fa-solid fa-key text-xs text-brand-500"></i>
                             <span class="hidden md:inline">{% translate "Badili Password" %}</span>
                         </a>
-                        <a href="{% url 'dashboard' %}" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 text-xs font-extrabold px-4 py-2 rounded-full shadow-sm hover:brightness-105 transition">
+                        <a href="{% if user.role == 'ADMIN' %}{% url 'admin:index' %}{% else %}{% url 'dashboard' %}{% endif %}" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 text-xs font-extrabold px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm hover:brightness-105 transition">
                             <i class="fa-solid fa-gauge-high text-xs"></i>
                             <span>{% translate "Dashibodi" %}</span>
                         </a>
@@ -449,7 +469,7 @@
             </header>
 
             <!-- MOBILE SIDEBAR (Authenticated internal pages) -->
-            {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset password_change verify_2fa' %}
+            {% if user.is_authenticated and request.resolver_match.url_name not in 'home about contact login password_reset verify_2fa' %}
             <div id="mobile-menu-overlay" class="no-print hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-30 transition-opacity"></div>
             <div id="mobile-sidebar" class="no-print hidden fixed inset-y-0 left-0 w-72 bg-[#04120f] border-r border-white/[0.08] text-slate-100 z-40 flex flex-col shadow-2xl">
                 <div class="h-16 flex items-center justify-between px-5 bg-[#030d0b] border-b border-white/[0.08]">
@@ -459,7 +479,7 @@
                     </button>
                 </div>
                 <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
-                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
+                    <a href="{% if user.role == 'ADMIN' %}{% url 'admin:index' %}{% else %}{% url 'dashboard' %}{% endif %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
                         <i class="fa-solid fa-chart-pie w-5 text-brand-500"></i>
                         <span>{% translate "Dashboard" %}</span>
                     </a>
@@ -479,13 +499,13 @@
                         <span>{% translate "Ufuatiliaji wa Siku" %}</span>
                     </a>
                     {% endif %}
-                    {% if user.role in 'CEO,MANAGER,CASHIER' %}
+                    {% if user.role in 'ADMIN,MANAGER,CASHIER' %}
                     <a href="{% url 'cash_flow_list' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
                         <i class="fa-solid fa-money-bill-transfer w-5 text-brand-500"></i>
                         <span>{% translate "Fedha & Hesabu" %}</span>
                     </a>
                     {% endif %}
-                    {% if user.role in 'CEO,MANAGER' %}
+                    {% if user.role in 'ADMIN,MANAGER' %}
                     <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-white/[0.05]">
                         <i class="fa-solid fa-file-invoice-dollar w-5 text-brand-500"></i>
                         <span>{% translate "Ripoti" %}</span>
@@ -502,8 +522,83 @@
                         </a>
                     </div>
                 </nav>
+                <div class="p-3.5 bg-[#030d0b] border-t border-white/[0.08] flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="relative flex-shrink-0">
+                            {% if user.photo %}
+                                <img src="{{ user.photo.url }}" class="h-9 w-9 rounded-full object-cover object-center ring-2 ring-brand-500 shadow-md border border-slate-900" alt="{{ user.username }}">
+                            {% elif user.role == 'ADMIN' %}
+                                <img src="{% static 'images/admin_avatar.png' %}" class="h-9 w-9 rounded-full object-cover object-center ring-2 ring-brand-500 shadow-md border border-slate-900" alt="{{ user.username }}">
+                            {% else %}
+                                <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xs shadow-md ring-2 ring-brand-500/40">
+                                    {{ user.username|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-[#030d0b]"></span>
+                        </div>
+                        <div class="truncate">
+                            <p class="text-xs font-bold text-white truncate">{{ user.get_full_name|default:user.username }}</p>
+                            <p class="text-[10px] text-brand-400 truncate">{{ user.get_role_display }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <a href="{% url 'password_change' %}" class="text-slate-400 hover:text-brand-400 transition-colors p-1.5 rounded-lg hover:bg-white/[0.05]" title="{% translate 'Badili Password' %}">
+                            <i class="fa-solid fa-key text-xs"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
             {% endif %}
+
+            <!-- PUBLIC MOBILE DRAWER (For public visitors / unauthenticated users) -->
+            <div id="public-mobile-overlay" class="no-print hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 transition-opacity"></div>
+            <div id="public-mobile-drawer" class="no-print hidden fixed inset-y-0 left-0 w-72 bg-white dark:bg-[#071915] border-r border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-slate-100 z-50 flex flex-col shadow-2xl">
+                <div class="h-16 flex items-center justify-between px-5 border-b border-slate-200 dark:border-white/[0.08]">
+                    <div class="flex items-center gap-2.5">
+                        <img src="{% static 'logo.png' %}" class="h-8 w-8 rounded-full object-cover border border-brand-500" alt="logo">
+                        <span class="font-heading font-black text-base text-slate-900 dark:text-white">MEJAS MMS</span>
+                    </div>
+                    <button id="close-public-mobile" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1" aria-label="Close menu">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
+                    <a href="{% url 'home' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition {% if request.resolver_match.url_name == 'home' %}bg-brand-500/15 text-brand-600 dark:text-brand-400{% else %}hover:bg-slate-100 dark:hover:bg-white/[0.05]{% endif %}">
+                        <i class="fa-solid fa-house w-5 text-brand-500"></i>
+                        <span>{% translate "Nyumbani" %}</span>
+                    </a>
+                    <a href="{% url 'about' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition {% if request.resolver_match.url_name == 'about' %}bg-brand-500/15 text-brand-600 dark:text-brand-400{% else %}hover:bg-slate-100 dark:hover:bg-white/[0.05]{% endif %}">
+                        <i class="fa-solid fa-circle-info w-5 text-brand-500"></i>
+                        <span>{% translate "Kuhusu Sisi" %}</span>
+                    </a>
+                    <a href="{% url 'contact' %}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition {% if request.resolver_match.url_name == 'contact' %}bg-brand-500/15 text-brand-600 dark:text-brand-400{% else %}hover:bg-slate-100 dark:hover:bg-white/[0.05]{% endif %}">
+                        <i class="fa-solid fa-envelope w-5 text-brand-500"></i>
+                        <span>{% translate "Wasiliana Nasi" %}</span>
+                    </a>
+
+                    <div class="pt-4 border-t border-slate-200 dark:border-white/[0.08] mt-4 space-y-2">
+                        {% if user.is_authenticated %}
+                            <a href="{% if user.role == 'ADMIN' %}{% url 'admin:index' %}{% else %}{% url 'dashboard' %}{% endif %}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-black rounded-xl text-xs shadow-md">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                <span>{% translate "Fungua Dashibodi" %}</span>
+                            </a>
+                            <a href="{% url 'password_change' %}" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200">
+                                <i class="fa-solid fa-key text-brand-500"></i>
+                                <span>{% translate "Badili Password" %}</span>
+                            </a>
+                            <a href="{% url 'logout' %}" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-500/10">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span>{% translate "Ondoka (Logout)" %}</span>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-black rounded-xl text-xs shadow-md">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                <span>{% translate "Ingia Mfumoni" %}</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
 
             <!-- ============================================================== -->
             <!-- MAIN SCROLLABLE CONTENT VIEW -->
@@ -589,7 +684,7 @@
             });
         }
 
-        // Mobile menu handling
+        // Mobile menu handling (App Sidebar)
         var mobileBtn = document.getElementById('mobile-menu-btn');
         var mobileOverlay = document.getElementById('mobile-menu-overlay');
         var mobileSidebar = document.getElementById('mobile-sidebar');
@@ -610,32 +705,102 @@
             if (closeMobileBtn) closeMobileBtn.addEventListener('click', closeFn);
         }
 
-        // Notification dropdown toggle & Mark as Read endpoint
+        // Public Mobile Drawer handling (Public Website)
+        var publicMobileBtn = document.getElementById('public-mobile-btn');
+        var publicMobileOverlay = document.getElementById('public-mobile-overlay');
+        var publicMobileDrawer = document.getElementById('public-mobile-drawer');
+        var closePublicBtn = document.getElementById('close-public-mobile');
+
+        if (publicMobileBtn && publicMobileDrawer) {
+            publicMobileBtn.addEventListener('click', function() {
+                publicMobileOverlay.classList.remove('hidden');
+                publicMobileDrawer.classList.remove('hidden');
+            });
+
+            var closePublicFn = function() {
+                publicMobileOverlay.classList.add('hidden');
+                publicMobileDrawer.classList.add('hidden');
+            };
+
+            if (publicMobileOverlay) publicMobileOverlay.addEventListener('click', closePublicFn);
+            if (closePublicBtn) closePublicBtn.addEventListener('click', closePublicFn);
+        }
+
+        // Notification dropdown toggle & Interactive Mark as Read
         var notifBtn = document.getElementById('notification-btn');
         var notifMenu = document.getElementById('notification-menu');
         var notifBadge = document.getElementById('notif-badge');
+        var notifCountBadge = document.getElementById('notif-count-badge');
+        var markAllBtn = document.getElementById('mark-all-read-btn');
+
+        function updateBadges(unreadCount) {
+            var count = parseInt(unreadCount, 10);
+            if (isNaN(count)) count = 0;
+            if (notifBadge) {
+                notifBadge.textContent = count;
+                if (count <= 0) {
+                    notifBadge.classList.add('hidden');
+                } else {
+                    notifBadge.classList.remove('hidden');
+                }
+            }
+            if (notifCountBadge) {
+                notifCountBadge.textContent = count;
+            }
+        }
+
+        function markNotificationAsRead(notifId, itemElem) {
+            var formData = new FormData();
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            if (notifId) {
+                formData.append('notification_id', notifId);
+            }
+            fetch("{% url 'mark_notifications_read' %}", {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            }).then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.status === 'success') {
+                    updateBadges(data.unread_count);
+                    if (itemElem) {
+                        itemElem.setAttribute('data-read', 'true');
+                        itemElem.classList.remove('bg-brand-50/70', 'dark:bg-brand-500/[0.07]');
+                        itemElem.classList.add('opacity-75');
+                        var dot = itemElem.querySelector('.notif-dot');
+                        if (dot) dot.classList.add('hidden');
+                        var lbl = itemElem.querySelector('.notif-status-label');
+                        if (lbl) {
+                            lbl.textContent = '{% translate "Imesomwa" %}';
+                            lbl.className = 'notif-status-label font-semibold text-slate-400';
+                        }
+                    } else {
+                        // Mark all
+                        document.querySelectorAll('.notif-item').forEach(function(el) {
+                            el.setAttribute('data-read', 'true');
+                            el.classList.remove('bg-brand-50/70', 'dark:bg-brand-500/[0.07]');
+                            el.classList.add('opacity-75');
+                            var dot = el.querySelector('.notif-dot');
+                            if (dot) dot.classList.add('hidden');
+                            var lbl = el.querySelector('.notif-status-label');
+                            if (lbl) {
+                                lbl.textContent = '{% translate "Imesomwa" %}';
+                                lbl.className = 'notif-status-label font-semibold text-slate-400';
+                            }
+                        });
+                    }
+                }
+            }).catch(function(err) {
+                console.log('Error marking notification read:', err);
+            });
+        }
+
         if (notifBtn && notifMenu) {
             notifBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                var isOpening = notifMenu.classList.contains('hidden');
                 notifMenu.classList.toggle('hidden');
-
-                if (isOpening) {
-                    fetch("{% url 'mark_notifications_read' %}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    }).then(function(res) {
-                        if (res.ok && notifBadge) {
-                            notifBadge.textContent = '0';
-                            notifBadge.classList.add('hidden');
-                        }
-                    }).catch(function(err) {
-                        console.log('Error marking notifications read:', err);
-                    });
-                }
             });
             document.addEventListener('click', function(e) {
                 if (!notifBtn.contains(e.target) && !notifMenu.contains(e.target)) {
@@ -643,6 +808,23 @@
                 }
             });
         }
+
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                markNotificationAsRead(null, null);
+            });
+        }
+
+        document.querySelectorAll('.notif-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                var isRead = item.getAttribute('data-read') === 'true';
+                var notifId = item.getAttribute('data-id');
+                if (!isRead && notifId) {
+                    markNotificationAsRead(notifId, item);
+                }
+            });
+        });
 
         // Modern Language Selector Script
         function submitLanguageChange(lang) {

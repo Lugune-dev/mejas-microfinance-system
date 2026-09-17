@@ -1,7 +1,23 @@
 {% extends "admin/base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block extrahead %}
+{{ block.super }}
+<script>
+    (function() {
+        var storedTheme = localStorage.getItem('color-theme');
+        var isDark = storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var mode = isDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', mode);
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        localStorage.setItem('jazzmin-theme-mode', mode);
+    })();
+</script>
+{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -68,6 +84,65 @@
     #branding h1 span {
         color: #dfb13c !important;
     }
+
+    /* Modern Flex Form & Fieldset Grid for Admin Models */
+    fieldset .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 14px 18px !important;
+        align-items: flex-start;
+        border-bottom: 1px solid var(--hairline-color, #e2e8f0);
+    }
+    fieldset .form-row .fieldBox {
+        float: none !important;
+        flex: 1 1 240px;
+        margin: 0 !important;
+    }
+    fieldset .form-row .fieldBox > label {
+        display: block;
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--body-fg, #1e293b);
+        margin-bottom: 5px;
+    }
+    fieldset .form-row input[type="text"],
+    fieldset .form-row input[type="password"],
+    fieldset .form-row input[type="email"],
+    fieldset .form-row input[type="number"],
+    fieldset .form-row input[type="date"],
+    fieldset .form-row select,
+    fieldset .form-row textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        border: 1px solid var(--hairline-color, #cbd5e1) !important;
+        font-size: 13px !important;
+        background: var(--body-bg, #ffffff);
+        color: var(--body-fg, #0f172a);
+    }
+    fieldset .form-row input:focus,
+    fieldset .form-row select:focus,
+    fieldset .form-row textarea:focus {
+        border-color: #dfb13c !important;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(223, 177, 60, 0.2) !important;
+    }
+    fieldset h2 {
+        border-radius: 8px 8px 0 0;
+        letter-spacing: 0.02em;
+        font-size: 13px !important;
+        padding: 10px 16px !important;
+        background: #0b2a25 !important;
+        color: #dfb13c !important;
+    }
+    .help, p.help {
+        font-size: 11px !important;
+        color: #64748b !important;
+        margin-top: 4px !important;
+    }
 </style>
 {% endblock %}
 
@@ -75,9 +150,132 @@
 <div id="branding">
     <h1 id="site-name">
         <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; gap: 10px;">
-            <img src="{% static 'logo.png' %}" style="height: 35px; width: 35px; border-radius: 50%; border: 2px solid #dfb13c; object-cover: cover;" alt="logo">
+            <img src="{% static 'logo.png' %}" style="height: 35px; width: 35px; border-radius: 50%; border: 2px solid #dfb13c; object-fit: cover;" alt="logo">
             <span>MEJAS</span> <span style="color: #dfb13c;">MMS</span>
         </a>
     </h1>
 </div>
+{% endblock %}
+
+{% block usertools %}
+<div id="user-tools" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    {% block welcome-msg %}
+        <div style="display: inline-flex; align-items: center; gap: 8px;">
+            <img src="{% if user.photo %}{{ user.photo.url }}{% else %}{% static 'images/admin_avatar.png' %}{% endif %}" 
+                 style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid #dfb13c; box-shadow: 0 2px 5px rgba(0,0,0,0.3);" 
+                 alt="{{ user.username }}">
+            <span>{% translate 'Karibu,' %} <strong>{% firstof user.get_full_name user.get_username %}</strong></span>
+            <span style="background: rgba(223, 177, 60, 0.25); border: 1px solid #dfb13c; color: #dfb13c; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 10px;">Django Admin</span>
+        </div>
+    {% endblock %}
+    {% block userlinks %}
+        <span style="color: rgba(255,255,255,0.4);">/</span>
+        {% if site_url %}
+            <a href="{{ site_url }}" style="color: #dfb13c; font-weight: 600;">{% translate 'Tazama tovuti' %}</a>
+            <span style="color: rgba(255,255,255,0.4);">/</span>
+        {% endif %}
+        {% if user.is_active and user.has_usable_password %}
+            <a href="{% url 'password_change' %}" style="color: #cbd5e1;">{% translate 'Badili nenosiri' %}</a>
+            <span style="color: rgba(255,255,255,0.4);">/</span>
+        {% endif %}
+        <form id="logout-form" method="post" action="{% url 'admin:logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" style="background: transparent; border: none; color: #f87171; font-weight: 700; cursor: pointer; padding: 0;">{% translate 'Ondoka' %}</button>
+        </form>
+    {% endblock %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Synchronize body dark-mode class on initial load
+    var storedTheme = localStorage.getItem('color-theme');
+    var isDark = storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+    }
+
+    // 2. Enhance Jazzmin top navbar user menu
+    var userMenuDropdown = document.getElementById('jazzy-usermenu');
+    if (userMenuDropdown) {
+        var triggerLink = userMenuDropdown.previousElementSibling || userMenuDropdown.parentElement.querySelector('a.nav-link');
+        if (triggerLink) {
+            var avatarUrl = "{% if user.photo %}{{ user.photo.url }}{% else %}{% static 'images/admin_avatar.png' %}{% endif %}";
+            var displayName = "{% firstof user.get_full_name user.get_username %}";
+            triggerLink.innerHTML = `
+                <div style="display: inline-flex; align-items: center; gap: 8px; vertical-align: middle;">
+                    <img src="${avatarUrl}" 
+                         style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2px solid #dfb13c; box-shadow: 0 2px 6px rgba(0,0,0,0.35);" 
+                         alt="${displayName}">
+                    <span class="d-none d-md-inline" style="font-size: 13px; font-weight: 700; color: #ffffff;">${displayName}</span>
+                    <i class="fas fa-chevron-down" style="font-size: 9px; color: #dfb13c; margin-left: 2px;"></i>
+                </div>
+            `;
+            triggerLink.classList.remove('btn');
+            triggerLink.style.padding = '4px 10px';
+        }
+
+        // Add 2-Theme Switcher Button in Top Navbar
+        if (!document.getElementById('jazzy-nav-theme-toggle') && userMenuDropdown.parentElement && userMenuDropdown.parentElement.parentElement) {
+            var navContainer = userMenuDropdown.parentElement.parentElement;
+            var themeLi = document.createElement('li');
+            themeLi.className = 'nav-item';
+            themeLi.innerHTML = `
+                <a class="nav-link" id="jazzy-nav-theme-toggle" href="javascript:void(0);" role="button" title="Badili Mandhari (Light / Dark)" style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer;">
+                    <i class="${isDark ? 'fas fa-sun text-warning' : 'fas fa-moon text-light'}" style="font-size: 15px;"></i>
+                </a>
+            `;
+            navContainer.insertBefore(themeLi, userMenuDropdown.parentElement);
+
+            themeLi.querySelector('a').addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleGlobalAdminTheme();
+            });
+        }
+    }
+
+    // 3. Enhance sidebar user panel with official badge
+    var sidebarUserInfo = document.querySelector('.sidebar .user-panel .info');
+    if (sidebarUserInfo && !sidebarUserInfo.querySelector('.user-role-badge')) {
+        var badge = document.createElement('span');
+        badge.className = 'user-role-badge';
+        badge.innerHTML = '<i class="fas fa-shield-alt mr-1"></i> Django Admin';
+        badge.style.cssText = 'display: inline-block; background: rgba(223, 177, 60, 0.2); border: 1px solid #dfb13c; color: #dfb13c; font-size: 9.5px; font-weight: 800; padding: 2px 8px; border-radius: 9999px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;';
+        sidebarUserInfo.appendChild(badge);
+    }
+
+    // Global theme toggle function
+    window.toggleGlobalAdminTheme = function() {
+        var cur = localStorage.getItem('color-theme') === 'dark' ? 'dark' : 'light';
+        var next = cur === 'dark' ? 'light' : 'dark';
+        applyGlobalAdminTheme(next);
+    };
+
+    window.applyGlobalAdminTheme = function(mode) {
+        localStorage.setItem('color-theme', mode);
+        localStorage.setItem('jazzmin-theme-mode', mode);
+        document.documentElement.setAttribute('data-bs-theme', mode);
+        if (mode === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.body.classList.add('dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.body.classList.remove('dark-mode');
+        }
+        var navIcon = document.querySelector('#jazzy-nav-theme-toggle i');
+        if (navIcon) {
+            navIcon.className = mode === 'dark' ? 'fas fa-sun text-warning' : 'fas fa-moon text-light';
+        }
+        window.dispatchEvent(new CustomEvent('mms-theme-changed', { detail: { mode: mode } }));
+    };
+});
+</script>
 {% endblock %}
