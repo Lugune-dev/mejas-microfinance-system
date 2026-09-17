@@ -94,6 +94,12 @@
 
     <!-- Clients Table List -->
     <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#071915] border border-slate-200/80 dark:border-white/[0.08] shadow-sm space-y-4">
+        <!-- Mobile scroll hint -->
+        <div class="md:hidden flex items-center justify-between text-[11px] text-slate-400 px-3 py-1.5 bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-slate-200/60 dark:border-white/5">
+            <span class="flex items-center gap-1.5 font-medium"><i class="fa-solid fa-arrows-left-right text-brand-500"></i> {% translate "Sogeza jedwali kushoto/kulia kuona taarifa zote" %}</span>
+            <span class="font-bold text-slate-500 dark:text-slate-400">Scroll &rarr;</span>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs border-collapse">
                 <thead>
@@ -180,13 +186,36 @@
                     {% empty %}
                     <tr>
                         <td colspan="6" class="p-12 text-center text-slate-400">
-                            <i class="fa-solid fa-users text-4xl mb-3 block text-slate-300 dark:text-slate-600"></i>
-                            <p class="font-semibold text-sm">{% translate "Hakuna wateja waliopatikana kulingana na utafutaji wako." %}</p>
-                            {% if search_query %}
-                            <a href="{% url 'client_list' %}" class="mt-2 inline-block text-xs text-brand-500 font-bold hover:underline">
-                                {% translate "Onyesha wateja wote" %}
-                            </a>
-                            {% endif %}
+                            <div class="max-w-md mx-auto space-y-4">
+                                <div class="w-16 h-16 mx-auto rounded-3xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-400">
+                                    <i class="fa-solid fa-users text-2xl"></i>
+                                </div>
+                                {% if search_query %}
+                                <div>
+                                    <h4 class="font-bold text-slate-800 dark:text-white text-base">{% translate "Hakuna Mteja Aliyepatikana" %}</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{% translate "Hakuna mteja anayelingana na" %} "<b>{{ search_query }}</b>". {% translate "Tafadhali kagua tahajia au namba uliyoingiza." %}</p>
+                                </div>
+                                <div class="pt-2">
+                                    <a href="{% url 'client_list' %}" class="px-5 py-2.5 rounded-2xl bg-brand-500 text-slate-950 font-bold text-xs inline-flex items-center gap-2 shadow-sm hover:brightness-105 transition">
+                                        <i class="fa-solid fa-arrow-rotate-left"></i>
+                                        <span>{% translate "Onyesha Wateja Wote" %}</span>
+                                    </a>
+                                </div>
+                                {% else %}
+                                <div>
+                                    <h4 class="font-bold text-slate-800 dark:text-white text-base">{% translate "Bado Hakuna Wateja" %}</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{% translate "Mfumo hauna wateja waliosajiliwa kwenye tawi hili. Unaweza kuanza kwa kusajili mteja wa kwanza sasa hivi." %}</p>
+                                </div>
+                                {% if user.role in 'CEO,MANAGER,OFFICER' %}
+                                <div class="pt-2">
+                                    <a href="{% url 'client_register' %}" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-slate-950 font-bold text-xs inline-flex items-center gap-2 shadow-md hover:brightness-105 transition">
+                                        <i class="fa-solid fa-user-plus"></i>
+                                        <span>{% translate "Sajili Mteja wa Kwanza" %}</span>
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

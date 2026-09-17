@@ -332,14 +332,83 @@
                 <div class="hidden sm:flex items-center flex-1 max-w-md mx-4">
                     <form action="{% url 'client_list' %}" method="get" class="w-full relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" name="q" placeholder="{% translate 'Tafuta mteja, mkopo ID, au NIDA... (Ctrl+K)' %}" 
-                               class="w-full pl-9 pr-4 py-1.5 text-xs rounded-full bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition">
+                        <input type="text" id="global-search-input" name="q" placeholder="{% translate 'Tafuta mteja, mkopo ID, au NIDA... (Ctrl+K)' %}" 
+                               class="w-full pl-9 pr-14 py-1.5 text-xs rounded-full bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition shadow-inner">
+                        <kbd class="hidden md:inline-flex items-center absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[9px] font-mono font-bold bg-slate-200/80 dark:bg-white/10 text-slate-500 dark:text-slate-400 rounded pointer-events-none border border-slate-300 dark:border-white/10">Ctrl+K</kbd>
                     </form>
                 </div>
                 {% endif %}
 
                 <!-- ZONE 3: Right Action Controls -->
-                <div class="flex items-center gap-2.5 flex-shrink-0">
+                <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+
+                    {% if user.is_authenticated and user.role != 'CLIENT' %}
+                    <!-- Quick Actions Menu ("Vitendo vya Haraka") -->
+                    <div class="relative" id="quick-actions-wrapper">
+                        <button id="quick-actions-btn" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500/15 to-brand-500/20 hover:from-amber-500/25 hover:to-brand-500/30 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition shadow-sm cursor-pointer" title="{% translate 'Vitendo vya Haraka (Quick Actions)' %}">
+                            <i class="fa-solid fa-bolt text-amber-500 text-xs animate-pulse"></i>
+                            <span class="tracking-tight">{% translate "Vitendo vya Haraka" %}</span>
+                            <i id="quick-actions-chevron" class="fa-solid fa-chevron-down text-[8px] text-amber-500 transition-transform duration-200"></i>
+                        </button>
+                        <div id="quick-actions-menu" class="hidden absolute right-0 mt-2 w-64 bg-white/95 dark:bg-[#081714]/95 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 space-y-1 animate-fade-in">
+                            <div class="px-3 py-2 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                                <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{% translate "Njia za Mkato za Kazi" %}</p>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">MMS Quick Hub</span>
+                            </div>
+                            {% if user.role in 'CEO,MANAGER,OFFICER' %}
+                            <a href="{% url 'client_register' %}" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-emerald-500/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition group">
+                                <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-user-plus"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white leading-none">{% translate "Sajili Mteja Mpya" %}</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">KYC & Usajili wa mteja</p>
+                                </div>
+                            </a>
+                            <a href="{% url 'loan_apply' %}" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-brand-500/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition group">
+                                <div class="w-7 h-7 rounded-lg bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-file-circle-plus"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white leading-none">{% translate "Omba Mkopo Mpya" %}</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Uhesabuji wa riba na ratiba</p>
+                                </div>
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'daily_repayment_tracking' %}" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-blue-500/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition group">
+                                <div class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white leading-none">{% translate "Ufuatiliaji wa Leo" %}</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Wanaopaswa kulipa na SMS</p>
+                                </div>
+                            </a>
+                            {% if user.role in 'ADMIN,MANAGER,CASHIER' %}
+                            <a href="{% url 'daily_reconciliation' %}" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-rose-500/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition group">
+                                <div class="w-7 h-7 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white leading-none">{% translate "Funga Hesabu (EOD)" %}</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Ulinganisho wa droo na benki</p>
+                                </div>
+                            </a>
+                            {% endif %}
+                            {% if user.role in 'ADMIN,MANAGER' %}
+                            <a href="{% url 'reports_menu' %}" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-purple-500/10 text-slate-700 dark:text-slate-200 text-xs font-semibold transition group">
+                                <div class="w-7 h-7 rounded-lg bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white leading-none">{% translate "Kituo cha Ripoti" %}</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">PDF, Excel & Taarifa rasmi</p>
+                                </div>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
 
                     <!-- Modern Language Switcher -->
                     {% load i18n %}
@@ -606,24 +675,25 @@
             <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#061210] print-full flex flex-col justify-between">
 
                 <div class="{% if user.is_authenticated %}p-4 md:p-8{% else %}px-0 py-0{% endif %} flex-1 w-full">
-                    <!-- Alert Messages / Toasts -->
+                    <!-- Alert Messages / Smart Toasts -->
                     {% if messages %}
-                    <div class="mb-6 p-4 md:p-8 no-print space-y-2.5 max-w-7xl mx-auto">
+                    <div id="toast-container" class="mb-5 no-print space-y-2.5 max-w-7xl mx-auto">
                         {% for message in messages %}
-                        <div class="p-4 rounded-2xl flex items-center justify-between text-xs font-bold shadow-sm {% if message.tags == 'error' %}bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300{% elif message.tags == 'warning' %}bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300{% else %}bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300{% endif %}">
+                        <div class="toast-item relative overflow-hidden p-4 rounded-2xl flex items-center justify-between text-xs font-bold shadow-md transition-all duration-300 transform {% if message.tags == 'error' %}bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300{% elif message.tags == 'warning' %}bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300{% else %}bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300{% endif %}">
                             <div class="flex items-center gap-2.5">
                                 {% if message.tags == 'error' %}
-                                    <i class="fa-solid fa-circle-exclamation text-base text-rose-500"></i>
+                                    <i class="fa-solid fa-circle-exclamation text-base text-rose-500 flex-shrink-0"></i>
                                 {% elif message.tags == 'warning' %}
-                                    <i class="fa-solid fa-triangle-exclamation text-base text-amber-500"></i>
+                                    <i class="fa-solid fa-triangle-exclamation text-base text-amber-500 flex-shrink-0"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-circle-check text-base text-emerald-500"></i>
+                                    <i class="fa-solid fa-circle-check text-base text-emerald-500 flex-shrink-0"></i>
                                 {% endif %}
                                 <span class="leading-relaxed">{{ message }}</span>
                             </div>
-                            <button type="button" onclick="this.parentElement.style.display='none'" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1">
+                            <button type="button" onclick="dismissToast(this.closest('.toast-item'))" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 ml-3 cursor-pointer" title="{% translate 'Funga' %}">
                                 <i class="fa-solid fa-xmark"></i>
                             </button>
+                            <div class="toast-progress absolute bottom-0 left-0 h-1 bg-current opacity-30 w-full transition-all linear duration-5000"></div>
                         </div>
                         {% endfor %}
                     </div>
@@ -854,6 +924,61 @@
                 }
             });
         }
+
+        // Quick Actions Dropdown Handler
+        var qaBtn = document.getElementById('quick-actions-btn');
+        var qaMenu = document.getElementById('quick-actions-menu');
+        var qaChevron = document.getElementById('quick-actions-chevron');
+        if (qaBtn && qaMenu) {
+            qaBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var isHidden = qaMenu.classList.contains('hidden');
+                qaMenu.classList.toggle('hidden');
+                if (qaChevron) {
+                    qaChevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            });
+            document.addEventListener('click', function(e) {
+                if (!qaBtn.contains(e.target) && !qaMenu.contains(e.target)) {
+                    qaMenu.classList.add('hidden');
+                    if (qaChevron) qaChevron.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+
+        // Toast Dismiss and Auto-Timer
+        function dismissToast(el) {
+            if (!el) return;
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-8px)';
+            setTimeout(function() {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 300);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var toasts = document.querySelectorAll('.toast-item');
+            toasts.forEach(function(toast) {
+                var bar = toast.querySelector('.toast-progress');
+                if (bar) {
+                    setTimeout(function() { bar.style.width = '0%'; }, 50);
+                }
+                setTimeout(function() {
+                    dismissToast(toast);
+                }, 5000);
+            });
+        });
+
+        // Global Search Shortcut (Ctrl+K or Cmd+K)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                var searchInput = document.getElementById('global-search-input');
+                if (searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        });
     </script>
 </body>
 </html>

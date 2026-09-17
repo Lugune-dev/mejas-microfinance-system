@@ -151,7 +151,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);">
             <div class="inner">
                 <h3>TZS {{ opening_balance|localize }}</h3>
-                <p>{% translate "Salio la Kuanzia (Opening)" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Salio la Kuanzia (Opening)" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Pesa taslimu zilizokuwepo kwenye droo asubuhi wakati ofisi inafunguliwa (kutoka funga hesabu ya jana)." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">Kutoka funga hesabu ya jana</div>
             </div>
             <div class="icon">
@@ -166,7 +174,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
             <div class="inner">
                 <h3>TZS {{ today_cash_in|localize }}</h3>
-                <p>{% translate "Leo Cash In (Collections)" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Leo Cash In (Collections)" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Jumla ya fedha zote zilizoingia drooni leo kutokana na marejesho ya mikopo na mapato mengine." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">{{ today_payments.count }} {% translate "risiti zilizokusanywa" %}</div>
             </div>
             <div class="icon">
@@ -181,7 +197,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);">
             <div class="inner">
                 <h3>TZS {{ today_cash_out|localize }}</h3>
-                <p>{% translate "Leo Cash Out (Disbursed)" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Leo Cash Out (Disbursed)" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Fedha zilizotolewa leo kulipa mikopo mipya iliyoidhinishwa na matumizi mengine rasmi ya ofisi." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">{{ pending_disbursements.count }} {% translate "mikopo inasubiri fedha" %}</div>
             </div>
             <div class="icon">
@@ -196,7 +220,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #c59b2b 0%, #dfb13c 100%); color: #04120f;">
             <div class="inner">
                 <h3 style="color: #04120f;">TZS {{ calculated_closing|localize }}</h3>
-                <p style="color: #04120f;">{% translate "Salio Lililopo Droo (Drawer)" %}</p>
+                <p style="color: #04120f;" class="flex items-center gap-1.5">
+                    <span>{% translate "Salio Lililopo Droo (Drawer)" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Kiasi cha fedha taslimu kinachopaswa kuwepo kwenye droo hivi sasa (Opening + Cash In - Cash Out)." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext" style="color: rgba(4, 18, 15, 0.85);">Opening + In - Out</div>
             </div>
             <div class="icon" style="color: rgba(4, 18, 15, 0.15);">

@@ -258,13 +258,23 @@
     <!-- ============================================================== -->
     <!-- 2. ADMINLTE 5 SIGNATURE SMALL BOXES -->
     <!-- ============================================================== -->
+    <!-- 2. ADMINLTE 5 SIGNATURE SMALL BOXES -->
+    <!-- ============================================================== -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         
         <!-- Small Box 1: Disbursed (Teal) -->
         <div class="small-box" style="background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);">
             <div class="inner">
                 <h3>TZS {{ total_disbursed|localize }}</h3>
-                <p>{% translate "Iliyotolewa" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Iliyotolewa" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Kiasi chote cha mtaji (Principal) kilichotolewa kwa wateja bila kujumlisha riba." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">Principal Yote Iliyoidhinishwa</div>
             </div>
             <div class="icon">
@@ -279,7 +289,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
             <div class="inner">
                 <h3>TZS {{ total_collections|localize }}</h3>
-                <p>{% translate "Makusanyo" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Makusanyo" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Jumla ya marejesho yote (Mtaji + Riba + Faini) yaliyopokelewa kutoka kwa wateja." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">Lengo: TZS {{ total_repayments_expected|localize }}</div>
             </div>
             <div class="icon">
@@ -294,7 +312,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #c59b2b 0%, #dfb13c 100%); color: #04120f;">
             <div class="inner">
                 <h3 style="color: #04120f;">TZS {{ net_cash_flow|localize }}</h3>
-                <p style="color: #04120f;">{% translate "Mtiririko Halisi (Net)" %}</p>
+                <p style="color: #04120f;" class="flex items-center gap-1.5">
+                    <span>{% translate "Mtiririko Halisi (Net)" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Makusanyo yote ukitoa matoleo yote ya mikopo na matumizi. Kipimo cha ukwasi wa taasisi." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext" style="color: rgba(4, 18, 15, 0.85);">Makusanyo kutoa matoleo</div>
             </div>
             <div class="icon" style="color: rgba(4, 18, 15, 0.15);">
@@ -309,7 +335,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);">
             <div class="inner">
                 <h3>{{ active_loans_count }}</h3>
-                <p>{% translate "Mikopo Hai" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Mikopo Hai" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Mikopo yote inayotolewa na inayoendelea kulipwa hivi sasa bila kumalizika au kufutwa." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">Inasubiri Idhini: {{ pending_loans_count }}</div>
             </div>
             <div class="icon">
@@ -324,7 +358,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);">
             <div class="inner">
                 <h3>{{ overdue_loans_count }}</h3>
-                <p>{% translate "Chechefu (NPL)" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Chechefu (NPL)" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Portfolio at Risk (PAR): Mikopo ambayo marejesho yake yamepitiliza tarehe ya makubaliano." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="subtext">{{ defaulted_loans_count }} Wameacha Kulipa</div>
             </div>
             <div class="icon">

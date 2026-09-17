@@ -208,7 +208,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #0b2a25 0%, #114139 100%);">
             <div class="inner">
                 <h3>{{ assigned_clients_count }}</h3>
-                <p>{% translate "Wateja Wako" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Wateja Wako" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Idadi ya wateja waliopangwa chini ya kitengo chako kwa ajili ya maombi na marejesho." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="text-[11px] text-white/70">Chini ya dawati lako</div>
             </div>
             <div class="icon">
@@ -223,7 +231,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);">
             <div class="inner">
                 <h3>{{ today_schedules_count }}</h3>
-                <p>{% translate "Ratiba ya Leo" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Ratiba ya Leo" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Wateja wote ambao awamu ya mkopo wao inatakiwa kulipwa leo hii." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="text-[11px] text-white/70">Wanaopaswa kulipa leo</div>
             </div>
             <div class="icon">
@@ -238,7 +254,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
             <div class="inner">
                 <h3>{{ today_paid_count }}</h3>
-                <p>{% translate "Waliolipa Leo" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Waliolipa Leo" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Wateja waliokamilisha marejesho yao ya siku ya leo kikamilifu." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="text-[11px] text-white/70">Wamerejesha kikamilifu</div>
             </div>
             <div class="icon">
@@ -253,7 +277,15 @@
         <div class="small-box" style="background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);">
             <div class="inner">
                 <h3>{{ today_unpaid_count }}</h3>
-                <p>{% translate "Wasiolipa Leo" %}</p>
+                <p class="flex items-center gap-1.5">
+                    <span>{% translate "Wasiolipa Leo" %}</span>
+                    <span class="group/tip relative cursor-help inline-flex items-center" tabindex="0">
+                        <i class="fa-solid fa-circle-info text-[11px] opacity-70 hover:opacity-100 transition-opacity"></i>
+                        <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tip:block group-focus/tip:block w-48 p-2.5 rounded-xl bg-slate-950/95 text-white text-[10px] font-medium leading-normal shadow-2xl border border-white/15 z-50 text-left">
+                            {% translate "Wateja walio kwenye ratiba ya leo lakini bado hawajalipa. Wanastahili kupigiwa simu au kutumiwa SMS." %}
+                        </span>
+                    </span>
+                </p>
                 <div class="text-[11px] text-white/70">Wanahitaji ufuatiliaji / SMS</div>
             </div>
             <div class="icon">

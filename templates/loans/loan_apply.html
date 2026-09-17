@@ -37,6 +37,39 @@
                     <div class="relative">
                         {{ field }}
                     </div>
+                    {% if field.name == 'principal_amount' %}
+                    <div id="principal-formatted-preview" class="hidden mt-2 p-2 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs font-bold text-brand-700 dark:text-brand-300 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-coins text-brand-500"></i>
+                            <span id="principal-formatted-text">TZS 0</span>
+                        </span>
+                        <span id="principal-words-text" class="text-[10px] text-slate-500 dark:text-slate-400 font-normal"></span>
+                    </div>
+                    <!-- Quick Principal Presets -->
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="setPrincipal(100000)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">100K</button>
+                        <button type="button" onclick="setPrincipal(300000)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">300K</button>
+                        <button type="button" onclick="setPrincipal(500000)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">500K</button>
+                        <button type="button" onclick="setPrincipal(1000000)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">1M</button>
+                        <button type="button" onclick="setPrincipal(2000000)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">2M</button>
+                    </div>
+                    {% elif field.name == 'duration' %}
+                    <!-- Quick Duration Presets -->
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="setDurationPreset(30, 'DAILY')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">{% translate "Siku 30" %}</button>
+                        <button type="button" onclick="setDurationPreset(60, 'DAILY')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">{% translate "Siku 60" %}</button>
+                        <button type="button" onclick="setDurationPreset(4, 'WEEKLY')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">{% translate "Wiki 4" %}</button>
+                        <button type="button" onclick="setDurationPreset(12, 'WEEKLY')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">{% translate "Wiki 12" %}</button>
+                        <button type="button" onclick="setDurationPreset(3, 'MONTHLY')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">{% translate "Miezi 3" %}</button>
+                    </div>
+                    {% elif field.name == 'interest_rate' %}
+                    <!-- Quick Interest Presets -->
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="setInterest(5)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-brand-500/15 text-brand-600 dark:text-brand-400 hover:bg-brand-500/25 transition cursor-pointer">5% (Mejas Standard)</button>
+                        <button type="button" onclick="setInterest(10)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">10%</button>
+                        <button type="button" onclick="setInterest(12)" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] hover:bg-brand-500/20 hover:text-brand-500 text-slate-600 dark:text-slate-300 transition cursor-pointer">12%</button>
+                    </div>
+                    {% endif %}
                     {% if field.help_text %}
                     <p class="text-3xs text-slate-400 mt-1.5">{{ field.help_text }}</p>
                     {% endif %}
@@ -49,13 +82,57 @@
                 {% endfor %}
             </div>
 
-            <div class="p-4 bg-brand-500/10 border border-brand-500/20 rounded-2xl flex items-start gap-3">
-                <div class="text-brand-500 mt-0.5">
-                    <i class="fa-solid fa-calculator text-sm"></i>
+            <!-- Interactive Live Loan Calculation Card -->
+            <div id="loan-calculator-card" class="p-6 bg-gradient-to-br from-slate-900 via-[#0b2a25] to-[#04120f] text-white rounded-3xl border border-brand-500/30 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-sm font-black shadow-inner">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading font-black text-sm text-white leading-tight">{% translate "Kikokotoo cha Moja kwa Moja (Live Loan Calculator)" %}</h4>
+                            <p class="text-[10px] text-brand-400/80">{% translate "Uhesabuji wa riba na awamu kulingana na vigezo vilivyojazwa" %}</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-500/20 text-brand-400 border border-brand-500/30">
+                        ⚡ Realtime
+                    </span>
                 </div>
-                <div class="text-xs text-slate-600 dark:text-slate-300">
-                    <span class="font-bold text-slate-900 dark:text-white">{% translate "Mfumo wa Uhesabuji wa Kiotomatiki:" %}</span>
-                    {% translate " Mara ombi litakapoidhinishwa na Msimamizi/Afisa, kiasi cha awamu (installment amount) na tarehe za marejesho vitapangiliwa moja kwa moja kulingana na vigezo vilivyojazwa hapa." %}
+
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{% translate "Kiasi cha Mkopo" %}</span>
+                        <span id="calc-principal" class="font-heading font-black text-sm sm:text-base text-white mt-1 block">TZS 0</span>
+                        <span class="text-[9px] text-slate-400">Mtaji (Principal)</span>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
+                        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">{% translate "Riba Itakayotozwa" %}</span>
+                        <span id="calc-interest" class="font-heading font-black text-sm sm:text-base text-amber-400 mt-1 block">TZS 0</span>
+                        <span id="calc-interest-pct" class="text-[9px] text-slate-400">0% Riba</span>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">{% translate "Jumla ya Kurejesha" %}</span>
+                        <span id="calc-total" class="font-heading font-black text-sm sm:text-base text-emerald-400 mt-1 block">TZS 0</span>
+                        <span class="text-[9px] text-slate-400">Total Repayable</span>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-brand-500/15 border border-brand-500/30">
+                        <span class="text-[10px] font-extrabold text-brand-400 uppercase tracking-wider block">{% translate "Awamu ya Malipo" %}</span>
+                        <span id="calc-installment" class="font-heading font-black text-base sm:text-lg text-brand-400 mt-1 block">TZS 0</span>
+                        <span id="calc-freq-label" class="text-[9px] text-brand-300 font-semibold">/ awamu</span>
+                    </div>
+                </div>
+
+                <!-- Visual Ratio Bar (Principal vs Interest) -->
+                <div class="space-y-1 pt-1">
+                    <div class="flex justify-between text-[10px] text-slate-300 font-semibold">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> {% translate "Mtaji (Principal)" %}: <span id="bar-principal-pct">100%</span></span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> {% translate "Riba (Interest)" %}: <span id="bar-interest-pct">0%</span></span>
+                    </div>
+                    <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden flex">
+                        <div id="bar-principal-fill" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-300" style="width: 100%;"></div>
+                        <div id="bar-interest-fill" class="bg-gradient-to-r from-amber-400 to-amber-500 h-full transition-all duration-300" style="width: 0%;"></div>
+                    </div>
                 </div>
             </div>
 
@@ -71,4 +148,141 @@
         </form>
     </div>
 </div>
+
+<script>
+    function formatMoney(amount) {
+        return 'TZS ' + Math.round(amount).toLocaleString('en-US');
+    }
+
+    function setPrincipal(val) {
+        var input = document.getElementById('id_principal_amount');
+        if (input) {
+            input.value = val;
+            input.dispatchEvent(new Event('input'));
+        }
+    }
+
+    function setDurationPreset(count, freq) {
+        var durationInput = document.getElementById('id_duration');
+        var freqInput = document.getElementById('id_frequency');
+        if (durationInput) {
+            durationInput.value = count;
+            durationInput.dispatchEvent(new Event('input'));
+        }
+        if (freqInput) {
+            freqInput.value = freq;
+            freqInput.dispatchEvent(new Event('change'));
+        }
+    }
+
+    function setInterest(rate) {
+        var interestInput = document.getElementById('id_interest_rate');
+        if (interestInput) {
+            interestInput.value = rate;
+            interestInput.dispatchEvent(new Event('input'));
+        }
+    }
+
+    function updateLoanSimulator() {
+        var principalInput = document.getElementById('id_principal_amount');
+        var interestInput = document.getElementById('id_interest_rate');
+        var durationInput = document.getElementById('id_duration');
+        var frequencyInput = document.getElementById('id_frequency');
+
+        var principal = parseFloat(principalInput ? principalInput.value : 0) || 0;
+        var interestRate = parseFloat(interestInput ? interestInput.value : 0) || 0;
+        var duration = parseInt(durationInput ? durationInput.value : 0) || 0;
+        var frequency = frequencyInput ? frequencyInput.value : 'DAILY';
+
+        // Update principal formatted badge
+        var previewBox = document.getElementById('principal-formatted-preview');
+        var previewText = document.getElementById('principal-formatted-text');
+        var wordsText = document.getElementById('principal-words-text');
+        if (previewBox && previewText) {
+            if (principal > 0) {
+                previewBox.classList.remove('hidden');
+                previewText.textContent = formatMoney(principal);
+                if (wordsText) {
+                    if (principal >= 1000000) {
+                        var mils = (principal / 1000000).toFixed(1);
+                        wordsText.textContent = '(Takriban Milioni ' + mils + ')';
+                    } else if (principal >= 100000) {
+                        var lakis = (principal / 100000).toFixed(1);
+                        wordsText.textContent = '(Takriban Laki ' + lakis + ')';
+                    } else {
+                        wordsText.textContent = '';
+                    }
+                }
+            } else {
+                previewBox.classList.add('hidden');
+            }
+        }
+
+        // Calculate interest and total repayable
+        var totalInterest = principal * (interestRate / 100.0);
+        var totalRepayable = principal + totalInterest;
+        var installment = (duration > 0) ? (totalRepayable / duration) : 0;
+
+        // Update numbers on the card
+        var calcPrincipal = document.getElementById('calc-principal');
+        var calcInterest = document.getElementById('calc-interest');
+        var calcInterestPct = document.getElementById('calc-interest-pct');
+        var calcTotal = document.getElementById('calc-total');
+        var calcInstallment = document.getElementById('calc-installment');
+        var calcFreqLabel = document.getElementById('calc-freq-label');
+
+        if (calcPrincipal) calcPrincipal.textContent = formatMoney(principal);
+        if (calcInterest) calcInterest.textContent = formatMoney(totalInterest);
+        if (calcInterestPct) calcInterestPct.textContent = interestRate + '% Riba';
+        if (calcTotal) calcTotal.textContent = formatMoney(totalRepayable);
+        if (calcInstallment) calcInstallment.textContent = formatMoney(installment);
+
+        if (calcFreqLabel) {
+            var label = '/ awamu';
+            if (frequency === 'DAILY') label = '/ siku (daily)';
+            else if (frequency === 'WEEKLY') label = '/ wiki (weekly)';
+            else if (frequency === 'MONTHLY') label = '/ mwezi (monthly)';
+            calcFreqLabel.textContent = label;
+        }
+
+        // Update ratio bar
+        var barPrinFill = document.getElementById('bar-principal-fill');
+        var barIntFill = document.getElementById('bar-interest-fill');
+        var barPrinPct = document.getElementById('bar-principal-pct');
+        var barIntPct = document.getElementById('bar-interest-pct');
+
+        if (totalRepayable > 0) {
+            var prinPct = Math.round((principal / totalRepayable) * 100);
+            var intPct = 100 - prinPct;
+            if (barPrinFill) barPrinFill.style.width = prinPct + '%';
+            if (barIntFill) barIntFill.style.width = intPct + '%';
+            if (barPrinPct) barPrinPct.textContent = prinPct + '%';
+            if (barIntPct) barIntPct.textContent = intPct + '%';
+        } else {
+            if (barPrinFill) barPrinFill.style.width = '100%';
+            if (barIntFill) barIntFill.style.width = '0%';
+            if (barPrinPct) barPrinPct.textContent = '100%';
+            if (barIntPct) barIntPct.textContent = '0%';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var fields = ['id_principal_amount', 'id_interest_rate', 'id_duration', 'id_frequency'];
+        fields.forEach(function(fieldId) {
+            var el = document.getElementById(fieldId);
+            if (el) {
+                el.addEventListener('input', updateLoanSimulator);
+                el.addEventListener('change', updateLoanSimulator);
+            }
+        });
+
+        // Set default interest rate to 5% if currently empty
+        var interestInput = document.getElementById('id_interest_rate');
+        if (interestInput && !interestInput.value) {
+            interestInput.value = '5';
+        }
+
+        updateLoanSimulator();
+    });
+</script>
 {% endblock %}

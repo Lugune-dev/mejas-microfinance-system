@@ -39,8 +39,31 @@
             </div>
         </div>
 
+        <!-- Hidden Loan Meta for JS -->
+        <div id="loan-meta" 
+             data-balance="{{ loan.balance|stringformat:'.2f' }}" 
+             data-installment="{{ loan.installment_amount|stringformat:'.2f' }}" 
+             class="hidden"></div>
+
         <form method="post" class="space-y-6">
             {% csrf_token %}
+
+            <!-- Quick-Fill Action Chips -->
+            <div class="space-y-2">
+                <label class="block text-3xs font-extrabold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                    {% translate "Njia za Mkato za Kujaza Kiasi (Quick Fill)" %}
+                </label>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="fillAmount('installment')" class="px-3 py-2 rounded-xl text-xs font-bold bg-brand-500/15 hover:bg-brand-500/25 text-brand-600 dark:text-brand-400 border border-brand-500/30 transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-bolt text-xs"></i>
+                        <span>{% translate "Lipa Awamu Kamili" %} (TZS {{ loan.installment_amount|localize }})</span>
+                    </button>
+                    <button type="button" onclick="fillAmount('full')" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition flex items-center gap-1.5 cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-star text-xs"></i>
+                        <span>{% translate "Lipa Salio Lote" %} (TZS {{ loan.balance|localize }})</span>
+                    </button>
+                </div>
+            </div>
 
             {% for field in form %}
             <div>
@@ -50,6 +73,16 @@
                 <div class="relative">
                     {{ field }}
                 </div>
+                
+                <!-- Live Payment Amount Badge & Words -->
+                <div id="payment-amount-preview" class="hidden mt-2 p-2.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs font-bold text-brand-700 dark:text-brand-300 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-hand-holding-dollar text-brand-500"></i>
+                        <span id="payment-formatted-text">TZS 0</span>
+                    </span>
+                    <span id="payment-words-text" class="text-[10px] text-slate-500 dark:text-slate-400 font-normal"></span>
+                </div>
+
                 {% if field.help_text %}
                 <p class="text-3xs text-slate-400 mt-1">{{ field.help_text }}</p>
                 {% endif %}
@@ -60,6 +93,68 @@
                 {% endif %}
             </div>
             {% endfor %}
+
+            <!-- Live Post-Payment Balance Breakdown Card -->
+            <div id="balance-preview-card" class="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">{% translate "Salio Baada ya Malipo Haya:" %}</span>
+                    <span id="preview-new-balance" class="font-display font-black text-slate-900 dark:text-white text-sm">
+                        TZS {{ loan.balance|localize }}
+                    </span>
+                </div>
+                <!-- Loan Cleared Badge -->
+                <div id="loan-cleared-banner" class="hidden p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                    <span>{% translate "🎉 Hongera! Malipo haya yatamaliza mkopo huu kikamilifu." %}</span>
+                </div>
+                <!-- Overpayment Warning Badge -->
+                <div id="overpayment-banner" class="hidden p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500 text-sm"></i>
+                    <span id="overpayment-text">{% translate "Kiasi kimezidi salio la mkopo." %}</span>
+                </div>
+            </div>
+
+            <!-- Built-in Cash Tendered & Change Due Calculator -->
+            <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-[#071915] to-[#04120f] text-white border border-brand-500/30 space-y-3 shadow-lg">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-cash-register text-brand-400 text-sm"></i>
+                        <span class="text-xs font-extrabold tracking-wide uppercase text-white">{% translate "Kikokotoo cha Chenji (Cashier Change Due)" %}</span>
+                    </div>
+                    <span class="text-[9px] font-bold text-slate-400">Teller Assist</span>
+                </div>
+                
+                <div>
+                    <label for="cash-tendered-input" class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                        {% translate "Pesa Alizotoa Mteja Mkononi (Cash Tendered):" %}
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">TZS</span>
+                        <input type="number" id="cash-tendered-input" placeholder="Mfano: 20000" step="100"
+                               class="w-full pl-12 pr-4 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-500/50">
+                    </div>
+                </div>
+
+                <!-- Quick Tender Note Buttons -->
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[10px] text-slate-400 font-medium mr-1">Noti:</span>
+                    <button type="button" onclick="setCashTendered(5000)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white/10 hover:bg-brand-500 hover:text-slate-950 text-slate-200 transition cursor-pointer">5K</button>
+                    <button type="button" onclick="setCashTendered(10000)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white/10 hover:bg-brand-500 hover:text-slate-950 text-slate-200 transition cursor-pointer">10K</button>
+                    <button type="button" onclick="setCashTendered(20000)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white/10 hover:bg-brand-500 hover:text-slate-950 text-slate-200 transition cursor-pointer">20K</button>
+                    <button type="button" onclick="setCashTendered(50000)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white/10 hover:bg-brand-500 hover:text-slate-950 text-slate-200 transition cursor-pointer">50K</button>
+                    <button type="button" onclick="setCashTendered(100000)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white/10 hover:bg-brand-500 hover:text-slate-950 text-slate-200 transition cursor-pointer">100K</button>
+                    <button type="button" onclick="clearCashTendered()" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white transition cursor-pointer">Futa</button>
+                </div>
+
+                <!-- Change Due Display -->
+                <div class="p-3 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{% translate "Chenji ya Kumrudishia Mteja:" %}</span>
+                        <span id="change-due-status" class="text-[9px] text-slate-400">Ingiza pesa iliyopokelewa</span>
+                    </div>
+                    <span id="change-due-amount" class="font-heading font-black text-base sm:text-lg text-emerald-400">TZS 0</span>
+                </div>
+            </div>
 
             <div class="pt-6 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-white/5">
                 <a href="{% url 'loan_detail' loan.pk %}" class="px-5 py-2.5 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 text-sm font-semibold transition">
@@ -73,4 +168,151 @@
         </form>
     </div>
 </div>
+
+<script>
+    function getLoanMeta() {
+        var meta = document.getElementById('loan-meta');
+        return {
+            balance: parseFloat(meta ? meta.getAttribute('data-balance') : 0) || 0,
+            installment: parseFloat(meta ? meta.getAttribute('data-installment') : 0) || 0
+        };
+    }
+
+    function formatMoney(amount) {
+        return 'TZS ' + Math.round(amount).toLocaleString('en-US');
+    }
+
+    function fillAmount(type) {
+        var meta = getLoanMeta();
+        var input = document.getElementById('id_amount_paid');
+        if (!input) return;
+
+        if (type === 'installment') {
+            input.value = meta.installment;
+        } else if (type === 'full') {
+            input.value = meta.balance;
+        }
+        input.dispatchEvent(new Event('input'));
+    }
+
+    function setCashTendered(val) {
+        var input = document.getElementById('cash-tendered-input');
+        if (input) {
+            input.value = val;
+            input.dispatchEvent(new Event('input'));
+        }
+    }
+
+    function clearCashTendered() {
+        var input = document.getElementById('cash-tendered-input');
+        if (input) {
+            input.value = '';
+            input.dispatchEvent(new Event('input'));
+        }
+    }
+
+    function updatePaymentCalculations() {
+        var meta = getLoanMeta();
+        var amountInput = document.getElementById('id_amount_paid');
+        var amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
+
+        // Formatted preview badge
+        var previewBox = document.getElementById('payment-amount-preview');
+        var previewText = document.getElementById('payment-formatted-text');
+        var wordsText = document.getElementById('payment-words-text');
+
+        if (previewBox && previewText) {
+            if (amount > 0) {
+                previewBox.classList.remove('hidden');
+                previewText.textContent = formatMoney(amount);
+                if (wordsText) {
+                    if (amount >= 1000000) {
+                        wordsText.textContent = '(Takriban Milioni ' + (amount / 1000000).toFixed(1) + ')';
+                    } else if (amount >= 100000) {
+                        wordsText.textContent = '(Takriban Laki ' + (amount / 100000).toFixed(1) + ')';
+                    } else {
+                        wordsText.textContent = '';
+                    }
+                }
+            } else {
+                previewBox.classList.add('hidden');
+            }
+        }
+
+        // New Balance calculation
+        var newBalance = Math.max(0, meta.balance - amount);
+        var newBalanceEl = document.getElementById('preview-new-balance');
+        if (newBalanceEl) {
+            newBalanceEl.textContent = formatMoney(newBalance);
+        }
+
+        // Banners
+        var clearedBanner = document.getElementById('loan-cleared-banner');
+        var overpaymentBanner = document.getElementById('overpayment-banner');
+        var overpaymentText = document.getElementById('overpayment-text');
+
+        if (amount >= meta.balance && meta.balance > 0) {
+            if (clearedBanner) clearedBanner.classList.remove('hidden');
+            if (amount > meta.balance) {
+                if (overpaymentBanner) {
+                    overpaymentBanner.classList.remove('hidden');
+                    var excess = amount - meta.balance;
+                    if (overpaymentText) overpaymentText.textContent = 'Tahadhari: Kiasi kinazidi salio la mkopo kwa ' + formatMoney(excess);
+                }
+            } else {
+                if (overpaymentBanner) overpaymentBanner.classList.add('hidden');
+            }
+        } else {
+            if (clearedBanner) clearedBanner.classList.add('hidden');
+            if (overpaymentBanner) overpaymentBanner.classList.add('hidden');
+        }
+
+        // Update change due
+        updateChangeDue();
+    }
+
+    function updateChangeDue() {
+        var amountInput = document.getElementById('id_amount_paid');
+        var tenderedInput = document.getElementById('cash-tendered-input');
+        var changeEl = document.getElementById('change-due-amount');
+        var statusEl = document.getElementById('change-due-status');
+
+        var amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
+        var tendered = parseFloat(tenderedInput ? tenderedInput.value : 0) || 0;
+
+        if (!changeEl || !statusEl) return;
+
+        if (tendered === 0) {
+            changeEl.textContent = 'TZS 0';
+            changeEl.className = 'font-heading font-black text-base sm:text-lg text-slate-400';
+            statusEl.textContent = 'Ingiza fedha taslimu ya mteja';
+        } else if (tendered >= amount) {
+            var change = tendered - amount;
+            changeEl.textContent = formatMoney(change);
+            changeEl.className = 'font-heading font-black text-base sm:text-lg text-emerald-400';
+            statusEl.textContent = change === 0 ? 'Pesa imetimia kamili (Bila chenji)' : 'Mpe mteja chenji hii';
+        } else {
+            var deficit = amount - tendered;
+            changeEl.textContent = '- ' + formatMoney(deficit);
+            changeEl.className = 'font-heading font-black text-base sm:text-lg text-rose-400';
+            statusEl.textContent = 'Fedha haitoshi, anadaiwa ' + formatMoney(deficit);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var amountInput = document.getElementById('id_amount_paid');
+        if (amountInput) {
+            amountInput.addEventListener('input', updatePaymentCalculations);
+            amountInput.addEventListener('change', updatePaymentCalculations);
+        }
+
+        var tenderedInput = document.getElementById('cash-tendered-input');
+        if (tenderedInput) {
+            tenderedInput.addEventListener('input', updateChangeDue);
+            tenderedInput.addEventListener('change', updateChangeDue);
+        }
+
+        updatePaymentCalculations();
+    });
+</script>
 {% endblock %}
